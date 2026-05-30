@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { formatMoney, formatDate } from '@/lib/utils';
-import { getProject } from './layout';
+import { getProject } from './queries';
 
 export default async function ProjectBriefPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

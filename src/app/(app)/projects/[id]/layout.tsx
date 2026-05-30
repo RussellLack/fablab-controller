@@ -2,14 +2,13 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { db, projects, clients, users } from '@/db';
 import { eq } from 'drizzle-orm';
-import { cache } from 'react';
+import { getProject } from './queries';
 import { formatDate } from '@/lib/utils';
 import { StageFlow } from '@/components/stage-flow';
 import { RoleBanner } from '@/components/role-banner';
 import { ProjectTabs } from '@/components/project-tabs';
 
 /** Cached lookup so layout + page share one query per request. */
-const getProject = cache(async (id: string) => {
   if (!process.env.DATABASE_URL) return null;
   try {
     const [row] = await db
