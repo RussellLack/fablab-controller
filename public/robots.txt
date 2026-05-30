@@ -1,0 +1,4 @@
+# The Fablab Controller is a staff-only internal tool.
+# Block search-engine indexing across the board.
+User-agent: *
+Disallow: /

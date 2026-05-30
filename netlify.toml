@@ -1,0 +1,52 @@
+# Netlify build config for the Fablab Controller.
+# Place this at the repo root that Netlify watches (i.e. inside `app/`
+# if you connect Netlify to the `app/` subdirectory of the repo).
+
+[build]
+  # Next.js build. The @netlify/plugin-nextjs handles RSC, route handlers,
+  # server actions, and middleware automatically.
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # React 19 RC has loose peer-dep ranges. legacy-peer-deps avoids
+  # warnings becoming errors during install.
+  NPM_FLAGS = "--legacy-peer-deps"
+  # Skip Next telemetry in CI builds
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Auto-detected, but pin to be explicit
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[functions]
+  # Bundle server actions and route handlers as compact esbuild functions
+  node_bundler = "esbuild"
+
+  # Bundle the postgres client and drizzle in functions so they work cold
+  external_node_modules = ["postgres"]
+
+# ── HEADERS ─────────────────────────────────────────────
+# Tighten security defaults. The Next plugin adds its own headers too;
+# these are additional.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# ── DEPLOY CONTEXTS ─────────────────────────────────────
+# Production deploys (from main branch)
+[context.production]
+  command = "npm run build"
+
+# Deploy previews (per-PR)
+[context.deploy-preview]
+  command = "npm run build"
+
+# Branch deploys (any other branch)
+[context.branch-deploy]
+  command = "npm run build"

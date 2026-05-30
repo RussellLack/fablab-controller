@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body { background: theme('colors.bg'); color: theme('colors.ink.DEFAULT'); font-family: theme('fontFamily.sans'); font-size: 14px; line-height: 1.5; }
+  *, *::before, *::after { box-sizing: border-box; }
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md text-[13px] font-medium border border-line bg-surface text-ink hover:bg-bg cursor-pointer transition-colors; }
+  .btn-primary { @apply bg-ink text-surface border-ink hover:bg-[#333]; }
+  .btn-ghost { @apply border-transparent bg-transparent hover:bg-bg; }
+
+  .ref { @apply font-mono text-xs text-ink-2; }
+  .muted { @apply text-ink-3; }
+
+  .card { @apply bg-surface border border-line rounded-lg p-[18px]; }
+  .card-title { @apply text-[12px] uppercase tracking-wider text-ink-3 mb-1; }
+  .card-value { @apply text-[26px] font-semibold tracking-tighter; }
+  .card-meta { @apply text-xs text-ink-2 mt-1.5; }
+
+  .pill { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold; }
+  .pill::before { @apply content-[''] w-1.5 h-1.5 rounded-full bg-current; }
+  .pill-brief { @apply text-info bg-info-soft; }
+  .pill-concept, .pill-design { @apply text-purple bg-purple-soft; }
+  .pill-spec { @apply text-warn bg-warn-soft; }
+  .pill-proc, .pill-install { @apply text-accent bg-accent-soft; }
+  .pill-handover { @apply text-ok bg-ok-soft; }
+}
