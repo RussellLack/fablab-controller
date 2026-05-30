@@ -9,7 +9,7 @@ import { RoleBanner } from '@/components/role-banner';
 import { ProjectTabs } from '@/components/project-tabs';
 
 /** Cached lookup so layout + page share one query per request. */
-export const getProject = cache(async (id: string) => {
+const getProject = cache(async (id: string) => {
   if (!process.env.DATABASE_URL) return null;
   try {
     const [row] = await db
