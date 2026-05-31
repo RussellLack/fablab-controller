@@ -7,7 +7,19 @@
  * Idempotent: deletes any prior seed rows (by `reference` prefix) before inserting.
  */
 
-import 'dotenv/config';
+// Next.js convention: read from .env.local first, then .env.
+// tsx doesn't auto-load .env.local; we do it explicitly.
+import { config } from 'dotenv';
+config({ path: '.env.local' });
+config({ path: '.env' });
+
+// Force the seed to use the session pooler (DIRECT_URL, port 5432) rather
+// than the transaction pooler. Seeding is a one-off CLI operation and the
+// transaction pooler can be flaky for long-running scripts.
+if (process.env.DIRECT_URL) {
+  process.env.DATABASE_URL = process.env.DIRECT_URL;
+}
+
 import {
   db, users, clients, projects, packages, items, leads,
   scopeBaselines, scopeBaselineVersions, approvals,

@@ -10,11 +10,17 @@
  *   npm run db:setup
  */
 
-import 'dotenv/config';
+// Next.js convention: read from .env.local first, then .env.
+// tsx doesn't auto-load .env.local; we do it explicitly.
+import { config } from 'dotenv';
+config({ path: '.env.local' });
+config({ path: '.env' });
+
 import postgres from 'postgres';
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
+  // Prefer DIRECT_URL (session pooler) for DDL; fall back to DATABASE_URL.
+  const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
   if (!connectionString) throw new Error('DATABASE_URL not set');
 
   const sql = postgres(connectionString, { prepare: false, max: 1 });
