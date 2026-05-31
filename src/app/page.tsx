@@ -1,5 +1,9 @@
-import { redirect } from 'next/navigation';
+import LoginButton from '@/components/LoginButton'
 
-export default function RootPage() {
-  redirect('/dashboard');
+export default function HomePage() {
+  return (
+    <main>
+      <LoginButton />
+    </main>
+  )
 }

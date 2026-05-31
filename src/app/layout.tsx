@@ -1,23 +1,14 @@
-import './globals.css';
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+import type { ReactNode } from 'react'
 
 export const metadata = {
-  title: 'Fablab Design Controller',
-  description: 'Operational system for Fablab Design interior projects'
-};
+  title: 'Fablab Controller',
+  description: 'Internal project management tool',
+}
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
-        </NextIntlClientProvider>
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
-  );
+  )
 }
