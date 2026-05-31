@@ -167,7 +167,7 @@ export default async function ApprovalDetailPage({
             </div>
             <hr className="border-line my-3" />
             <dl className="grid grid-cols-[120px_1fr] gap-y-1 gap-x-3 text-[13px]">
-              <dt className="text-ink-3">{t('approval.channel')}</dt>
+              <dt className="text-ink-3">{t('approval.channel_label')}</dt>
               <dd>{t(`approval.channel.${a.approvalChannel}`)}</dd>
               <dt className="text-ink-3">{t('approval.valid_until')}</dt>
               <dd>{formatDate(a.validUntil)}</dd>

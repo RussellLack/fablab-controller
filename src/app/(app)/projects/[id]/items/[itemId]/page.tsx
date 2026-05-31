@@ -87,7 +87,7 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
                     <th className="text-left py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.vendor')}</th>
                     <th className="text-right py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.unit')}</th>
                     <th className="text-right py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.lead')}</th>
-                    <th className="text-left py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.status')}</th>
+                    <th className="text-left py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.status_label')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -116,7 +116,7 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
           <div className="card">
             <h3 className="card-title mb-3">{t('item.commercial')}</h3>
             <dl className="grid grid-cols-[140px_1fr] gap-y-1 gap-x-4 text-[13px]">
-              <dt className="text-ink-3">{t('item.cost_state')}</dt><dd>{t(`item.cost_state.${item.costState}`)}</dd>
+              <dt className="text-ink-3">{t('item.cost_state_label')}</dt><dd>{t(`item.cost_state.${item.costState}`)}</dd>
               <dt className="text-ink-3">{t('item.winning_unit_cost')}</dt>
               <dd>{winningQuote ? formatMoney(winningQuote.quote.unitCost, winningQuote.quote.currency ?? 'NOK') : '—'}</dd>
               <dt className="text-ink-3">{t('item.country_of_origin')}</dt><dd>{item.countryOfOrigin ?? '—'}</dd>

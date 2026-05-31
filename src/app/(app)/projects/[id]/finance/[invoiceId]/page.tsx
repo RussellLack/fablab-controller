@@ -151,7 +151,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                     <th className="py-2">{t('invoice.payment_ref')}</th>
                     <th className="py-2">{t('invoice.payment_date')}</th>
                     <th className="py-2">{t('invoice.payment_method')}</th>
-                    <th className="py-2">{t('invoice.payment_status')}</th>
+                    <th className="py-2">{t('invoice.payment_status_label')}</th>
                     <th className="py-2 text-right">{t('invoice.payment_amount')}</th>
                   </tr>
                 </thead>

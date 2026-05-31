@@ -110,7 +110,7 @@ function ItemQuotesBlock({ projectId, rfqId, item, vendors, quotes }: {
             <th className="text-right py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.unit')}</th>
             <th className="text-right py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.lead')}</th>
             <th className="text-right py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.valid')}</th>
-            <th className="text-left py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.status')}</th>
+            <th className="text-left py-2 text-[11px] uppercase tracking-wider text-ink-3">{t('quote.status_label')}</th>
             <th className="py-2" />
           </tr>
         </thead>

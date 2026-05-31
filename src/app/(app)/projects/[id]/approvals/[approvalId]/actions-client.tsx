@@ -59,13 +59,13 @@ export function ApprovalActions({
             <div className="text-[12px] text-danger">{respState.error}</div>
           )}
           <div className="grid grid-cols-[100px_1fr] gap-2 items-center">
-            <label className="text-[12px] text-info">{t('approval.decision')}</label>
+            <label className="text-[12px] text-info">{t('approval.decision_label')}</label>
             <select name="decision" required className="px-2 py-1.5 border border-line rounded-md text-[13px]">
               <option value="approved">{t('approval.decision.approved')}</option>
               <option value="approved_with_conditions">{t('approval.decision.with_conditions')}</option>
               <option value="rejected">{t('approval.decision.rejected')}</option>
             </select>
-            <label className="text-[12px] text-info">{t('approval.channel')}</label>
+            <label className="text-[12px] text-info">{t('approval.channel_label')}</label>
             <select name="approvalChannel" required defaultValue="email" className="px-2 py-1.5 border border-line rounded-md text-[13px]">
               <option value="email">{t('approval.channel.email')}</option>
               <option value="portal">{t('approval.channel.portal')}</option>

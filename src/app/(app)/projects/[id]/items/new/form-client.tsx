@@ -29,7 +29,7 @@ export function ItemForm({ projectId, packages, defaultPackageId }: {
       <Row label={t('item.description')}>
         <textarea name="description" rows={3} className="w-full px-2.5 py-2 border border-line rounded-md text-[13px]" />
       </Row>
-      <Row label={t('item.type')} required>
+      <Row label={t('item.type_label')} required>
         <select name="itemType" required defaultValue="sourced" className="px-2.5 py-2 border border-line rounded-md text-[13px] w-48">
           <option value="sourced">{t('item.type.sourced')}</option>
           <option value="bespoke">{t('item.type.bespoke')}</option>

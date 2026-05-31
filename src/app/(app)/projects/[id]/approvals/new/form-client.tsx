@@ -112,7 +112,7 @@ export function NewApprovalForm({
         <Row label={t('approval.approver_email')} required>
           <input name="approverEmail" type="email" required className="w-full px-2.5 py-2 border border-line rounded-md text-[13px]" />
         </Row>
-        <Row label={t('approval.channel')} required>
+        <Row label={t('approval.channel_label')} required>
           <select name="approvalChannel" required className="w-full px-2.5 py-2 border border-line rounded-md text-[13px]">
             <option value="email">{t('approval.channel.email')}</option>
             <option value="portal">{t('approval.channel.portal')}</option>

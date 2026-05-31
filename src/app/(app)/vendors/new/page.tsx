@@ -30,7 +30,7 @@ export default function NewVendorPage() {
         <Row label={t('vendor.name')} required>
           <input name="name" required className="w-full px-2.5 py-2 border border-line rounded-md text-[13px]" />
         </Row>
-        <Row label={t('vendor.kind')} required>
+        <Row label={t('vendor.kind_label')} required>
           <select name="kind" required defaultValue="supplier" className="w-full px-2.5 py-2 border border-line rounded-md text-[13px]">
             <option value="supplier">{t('vendor.kind.supplier')}</option>
             <option value="fabricator">{t('vendor.kind.fabricator')}</option>

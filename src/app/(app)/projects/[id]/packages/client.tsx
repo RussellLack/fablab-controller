@@ -31,7 +31,7 @@ export function PackagesClient({ projectId, packages, items }: { projectId: stri
           <div className="grid grid-cols-[180px_1fr] gap-3 items-center">
             <label className="text-[13px] text-ink-2">{t('package.name')}*</label>
             <input name="name" required placeholder={t('package.name_placeholder')} className="px-2.5 py-2 border border-line rounded-md text-[13px]" />
-            <label className="text-[13px] text-ink-2">{t('package.kind')}*</label>
+            <label className="text-[13px] text-ink-2">{t('package.kind_label')}*</label>
             <select name="kind" required defaultValue="category" className="px-2.5 py-2 border border-line rounded-md text-[13px] w-48">
               <option value="room">{t('package.kind.room')}</option>
               <option value="category">{t('package.kind.category')}</option>

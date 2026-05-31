@@ -172,8 +172,8 @@ export default async function ProjectFinanceTabPage({ params }: { params: Promis
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-wider text-ink-3">
                 <th className="py-2">{t('finance.trigger_name')}</th>
-                <th className="py-2">{t('finance.trigger_event')}</th>
-                <th className="py-2">{t('finance.trigger_calc')}</th>
+                <th className="py-2">{t('finance.trigger_event_label')}</th>
+                <th className="py-2">{t('finance.trigger_calc_label')}</th>
                 <th className="py-2 text-right">{t('finance.trigger_amount')}</th>
               </tr>
             </thead>
