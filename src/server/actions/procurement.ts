@@ -248,6 +248,78 @@ export async function sendRfq(rfqId: string, projectId: string): Promise<ActionR
   return { ok: true, id: rfqId };
 }
 
+/**
+ * Wizard-friendly variant of createRfq — same insert logic but
+ *   - does NOT redirect (lets the wizard close the drawer + navigate itself)
+ *   - optionally chains sendRfq when `andSend === true`
+ *   - returns the created rfqId so the caller can router.push to it
+ */
+export async function createRfqAtomic(
+  projectId: string,
+  projectRef: string,
+  andSend: boolean,
+  formData: FormData
+): Promise<ActionResult & { rfqId?: string }> {
+  const userId = await currentUserId();
+  if (!userId) return { ok: false, error: 'Not authenticated' };
+
+  const raw = Object.fromEntries(formData.entries());
+  const parsed = newRfqSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: 'Invalid input',
+      fieldErrors: parsed.error.flatten().fieldErrors
+    };
+  }
+
+  const selectedItemIds = formData.getAll('itemIds').map(String).filter(Boolean);
+  const invitedVendorIds = formData.getAll('vendorIds').map(String).filter(Boolean);
+  if (selectedItemIds.length === 0) {
+    return { ok: false, error: 'Select at least one item' };
+  }
+  if (invitedVendorIds.length === 0) {
+    return { ok: false, error: 'Invite at least one vendor' };
+  }
+
+  const reference = await nextRef('RFQ', 'rfq', projectRef);
+
+  const [rfq] = await db
+    .insert(rfqs)
+    .values({
+      reference,
+      projectId,
+      packageId: parsed.data.packageId,
+      title: parsed.data.title,
+      description: parsed.data.description,
+      status: 'draft',
+      responseDeadline: parsed.data.responseDeadline.toISOString().slice(0, 10),
+      disclaimerText: parsed.data.disclaimerText || DEFAULT_RFQ_DISCLAIMER,
+      createdBy: userId
+    })
+    .returning({ id: rfqs.id });
+
+  if (!rfq) return { ok: false, error: 'Insert failed' };
+
+  await db.insert(rfqItems).values(
+    selectedItemIds.map((itemId) => ({ rfqId: rfq.id, itemId }))
+  );
+  await db.insert(rfqVendors).values(
+    invitedVendorIds.map((vendorId) => ({ rfqId: rfq.id, vendorId }))
+  );
+
+  if (andSend) {
+    const sendRes = await sendRfq(rfq.id, projectId);
+    if (!sendRes.ok) {
+      // RFQ exists as draft; surface the send error but don't roll back
+      return { ok: false, error: sendRes.error, rfqId: rfq.id };
+    }
+  }
+
+  revalidatePath(`/projects/${projectId}/rfqs`);
+  return { ok: true, rfqId: rfq.id };
+}
+
 /* ─────────────────────────── QUOTE ─────────────────────────── */
 
 /** Record a vendor's response — fills a `pending` Quote with prices/terms. */

@@ -69,7 +69,8 @@
     "mark_sent": "Marker som sendt",
     "record_payment": "+ Registrer betaling",
     "log_payment": "Loggfør betaling",
-    "new_item_guided": "+ Legg til vare (veiviser)"
+    "new_item_guided": "+ Legg til vare (veiviser)",
+    "new_rfq_guided": "+ Ny pristilbud-forespørsel (veiviser)"
   },
   "dash": {
     "title": "Dashbord",
@@ -885,5 +886,26 @@
     "review_helper": "Se gjennom og opprett — eller bruk den sekundære knappen for å starte en ny vare i samme pakke.",
     "review_package": "Pakke",
     "create_and_add": "Opprett og legg til en til"
+  },
+  "rfq_wizard": {
+    "title": "+ Ny pristilbud-forespørsel (veiviser)",
+    "step_basics": "Grunnleggende",
+    "step_items": "Varer",
+    "step_vendors": "Leverandører",
+    "step_review": "Gjennomgang",
+    "basics_helper": "Gi forespørselen en tydelig tittel og en realistisk svar-frist. Leverandører ser begge.",
+    "title_placeholder": "f.eks. Belysning til stue — pristilbud-forespørsel mai 2026",
+    "items_helper": "Velg varene leverandører skal gi tilbud på. Kun varer i `spesifisert` status vises.",
+    "no_items": "Ingen varer i `spesifisert` status. Opprett varer på Varer-trinnet først.",
+    "vendors_helper": "Leverandører hvis kategorier matcher valgte varer vises under \"Matchet\".",
+    "matched_vendors": "Matchede leverandører",
+    "other_vendors": "Andre leverandører",
+    "all_vendors": "Alle leverandører",
+    "no_vendors": "Ingen aktive leverandører. Legg til leverandører fra Leverandører-siden først.",
+    "review_helper": "Se gjennom forespørselen før den opprettes. Kryss av \"Send nå\" for å sende den umiddelbart og opprette tilbud-rader for hver leverandør × vare.",
+    "send_now": "Send nå",
+    "send_now_on": "Forespørselen opprettes og markeres umiddelbart som sendt — ventende tilbud-rader opprettes for hver leverandør × vare-kombinasjon.",
+    "send_now_off": "Forespørselen lagres som utkast. Du kan sende den senere fra detaljsiden.",
+    "submit": "Opprett forespørsel"
   }
 }

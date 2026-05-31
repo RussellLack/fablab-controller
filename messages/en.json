@@ -69,7 +69,8 @@
     "mark_sent": "Mark as sent",
     "record_payment": "+ Record payment",
     "log_payment": "Log payment",
-    "new_item_guided": "+ Guided add item"
+    "new_item_guided": "+ Guided add item",
+    "new_rfq_guided": "+ New RFQ (guided)"
   },
   "dash": {
     "title": "Dashboard",
@@ -885,5 +886,26 @@
     "review_helper": "Review and create — or use the secondary button to immediately start another item in the same package.",
     "review_package": "Package",
     "create_and_add": "Create and add another"
+  },
+  "rfq_wizard": {
+    "title": "+ New RFQ (guided)",
+    "step_basics": "Basics",
+    "step_items": "Items",
+    "step_vendors": "Vendors",
+    "step_review": "Review",
+    "basics_helper": "Give the RFQ a clear title and a realistic response deadline. Vendors see both.",
+    "title_placeholder": "e.g. Living room lighting RFQ — May 2026",
+    "items_helper": "Pick the items vendors should quote on. Only items in `specified` status are shown.",
+    "no_items": "No items in `specified` status. Create items on the Items step first.",
+    "vendors_helper": "Vendors whose categories match the selected items appear under \"Matched\".",
+    "matched_vendors": "Matched vendors",
+    "other_vendors": "Other vendors",
+    "all_vendors": "All vendors",
+    "no_vendors": "No active vendors. Add vendors from the Vendors page first.",
+    "review_helper": "Review the RFQ before creating. Tick \"Send now\" to dispatch it immediately and open Quote rows for each vendor × item.",
+    "send_now": "Send now",
+    "send_now_on": "The RFQ will be created and immediately marked as sent — pending Quote rows are created for every vendor × item combination.",
+    "send_now_off": "The RFQ will be saved as a draft. You can send it later from the RFQ detail page.",
+    "submit": "Create RFQ"
   }
 }

@@ -1,15 +1,72 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { db, rfqs } from '@/db';
-import { eq, desc } from 'drizzle-orm';
+import { db, rfqs, items, packages, vendors, projects } from '@/db';
+import { and, eq, desc } from 'drizzle-orm';
 import { formatDate, cx } from '@/lib/utils';
 import { NextActionBanner } from '@/components/next-action-banner';
+import { RfqLauncher } from './rfq-launcher';
 
-async function getRfqs(projectId: string) {
-  if (!process.env.DATABASE_URL) return [];
+async function getData(projectId: string) {
+  if (!process.env.DATABASE_URL) {
+    return {
+      rfqRows: [],
+      itemRows: [],
+      vendorRows: [],
+      projectRef: ''
+    };
+  }
   try {
-    return await db.select().from(rfqs).where(eq(rfqs.projectId, projectId)).orderBy(desc(rfqs.createdAt));
-  } catch { return []; }
+    const [project] = await db
+      .select({ reference: projects.reference })
+      .from(projects)
+      .where(eq(projects.id, projectId))
+      .limit(1);
+
+    const rfqRows = await db
+      .select()
+      .from(rfqs)
+      .where(eq(rfqs.projectId, projectId))
+      .orderBy(desc(rfqs.createdAt));
+
+    // Specified items in this project's packages — the RFQ candidates
+    const itemRows = await db
+      .select({
+        id: items.id,
+        name: items.name,
+        packageId: items.packageId,
+        packageName: packages.name,
+        category: items.category,
+        quantity: items.quantity,
+        unit: items.unit
+      })
+      .from(items)
+      .innerJoin(packages, eq(items.packageId, packages.id))
+      .where(
+        and(
+          eq(packages.projectId, projectId),
+          eq(items.status, 'specified')
+        )
+      );
+
+    const vendorRows = await db
+      .select({
+        id: vendors.id,
+        name: vendors.name,
+        kind: vendors.kind,
+        categories: vendors.categories
+      })
+      .from(vendors)
+      .where(eq(vendors.active, true));
+
+    return {
+      rfqRows,
+      itemRows,
+      vendorRows,
+      projectRef: project?.reference ?? ''
+    };
+  } catch {
+    return { rfqRows: [], itemRows: [], vendorRows: [], projectRef: '' };
+  }
 }
 
 const RFQ_PILL: Record<string, string> = {
@@ -24,16 +81,21 @@ const RFQ_PILL: Record<string, string> = {
 
 export default async function RfqsTabPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const rows = await getRfqs(id);
+  const { rfqRows, itemRows, vendorRows, projectRef } = await getData(id);
   const t = await getTranslations();
   return (
     <>
       <NextActionBanner projectId={id} gate="procurement" />
       <div className="flex items-center justify-between mb-4">
-        <p className="text-ink-2 text-[13px]">{rows.length} {t('rfq.count_suffix')}</p>
-        <Link href={`/projects/${id}/rfqs/new`} className="btn btn-primary">{t('action.new_rfq')}</Link>
+        <p className="text-ink-2 text-[13px]">{rfqRows.length} {t('rfq.count_suffix')}</p>
+        <RfqLauncher
+          projectId={id}
+          projectRef={projectRef}
+          items={itemRows}
+          vendors={vendorRows}
+        />
       </div>
-      {rows.length === 0 ? (
+      {rfqRows.length === 0 ? (
         <div className="card text-ink-2 text-[13px]">{t('rfq.empty')}</div>
       ) : (
         <table className="w-full bg-surface border border-line rounded-lg overflow-hidden">
@@ -47,7 +109,7 @@ export default async function RfqsTabPage({ params }: { params: Promise<{ id: st
             </tr>
           </thead>
           <tbody>
-            {rows.map(r => (
+            {rfqRows.map(r => (
               <tr key={r.id} className="hover:bg-bg">
                 <td className="p-3 px-3.5 border-b border-line text-[13px]">
                   <Link href={`/projects/${id}/rfqs/${r.id}`} className="ref hover:underline">{r.reference}</Link>
