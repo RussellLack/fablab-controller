@@ -12,12 +12,18 @@ async function getData(projectId: string) {
       rfqRows: [],
       itemRows: [],
       vendorRows: [],
-      projectRef: ''
+      projectRef: '',
+      projectTitle: '',
+      deliveryCountry: null as string | null
     };
   }
   try {
     const [project] = await db
-      .select({ reference: projects.reference })
+      .select({
+        reference: projects.reference,
+        title: projects.title,
+        deliveryCountry: projects.deliveryCountry
+      })
       .from(projects)
       .where(eq(projects.id, projectId))
       .limit(1);
@@ -28,7 +34,9 @@ async function getData(projectId: string) {
       .where(eq(rfqs.projectId, projectId))
       .orderBy(desc(rfqs.createdAt));
 
-    // Specified items in this project's packages — the RFQ candidates
+    // Specified items in this project's packages — the RFQ candidates.
+    // Extra spec fields surfaced so the wizard's body-template step has
+    // enough detail to produce a useful RFQ letter.
     const itemRows = await db
       .select({
         id: items.id,
@@ -37,7 +45,10 @@ async function getData(projectId: string) {
         packageName: packages.name,
         category: items.category,
         quantity: items.quantity,
-        unit: items.unit
+        unit: items.unit,
+        description: items.description,
+        manufacturer: items.manufacturer,
+        sku: items.sku
       })
       .from(items)
       .innerJoin(packages, eq(items.packageId, packages.id))
@@ -62,10 +73,19 @@ async function getData(projectId: string) {
       rfqRows,
       itemRows,
       vendorRows,
-      projectRef: project?.reference ?? ''
+      projectRef: project?.reference ?? '',
+      projectTitle: project?.title ?? '',
+      deliveryCountry: project?.deliveryCountry ?? null
     };
   } catch {
-    return { rfqRows: [], itemRows: [], vendorRows: [], projectRef: '' };
+    return {
+      rfqRows: [],
+      itemRows: [],
+      vendorRows: [],
+      projectRef: '',
+      projectTitle: '',
+      deliveryCountry: null
+    };
   }
 }
 
@@ -81,7 +101,7 @@ const RFQ_PILL: Record<string, string> = {
 
 export default async function RfqsTabPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { rfqRows, itemRows, vendorRows, projectRef } = await getData(id);
+  const { rfqRows, itemRows, vendorRows, projectRef, projectTitle, deliveryCountry } = await getData(id);
   const t = await getTranslations();
   return (
     <>
@@ -91,6 +111,8 @@ export default async function RfqsTabPage({ params }: { params: Promise<{ id: st
         <RfqLauncher
           projectId={id}
           projectRef={projectRef}
+          projectTitle={projectTitle}
+          deliveryCountry={deliveryCountry}
           items={itemRows}
           vendors={vendorRows}
         />

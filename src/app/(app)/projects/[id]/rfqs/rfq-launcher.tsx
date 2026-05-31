@@ -8,11 +8,15 @@ import { RfqWizard, type WizardItem, type WizardVendor } from '@/components/wiza
 export function RfqLauncher({
   projectId,
   projectRef,
+  projectTitle,
+  deliveryCountry,
   items,
   vendors
 }: {
   projectId: string;
   projectRef: string;
+  projectTitle: string;
+  deliveryCountry: string | null;
   items: WizardItem[];
   vendors: WizardVendor[];
 }) {
@@ -29,6 +33,8 @@ export function RfqLauncher({
         onClose={() => setOpen(false)}
         projectId={projectId}
         projectRef={projectRef}
+        projectTitle={projectTitle}
+        deliveryCountry={deliveryCountry}
         items={items}
         vendors={vendors}
       />

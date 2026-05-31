@@ -913,6 +913,12 @@
     "send_now": "Send now",
     "send_now_on": "The RFQ will be created and immediately marked as sent — pending Quote rows are created for every vendor × item combination.",
     "send_now_off": "The RFQ will be saved as a draft. You can send it later from the RFQ detail page.",
-    "submit": "Create RFQ"
+    "submit": "Create RFQ",
+    "step_body": "Body",
+    "body_label": "RFQ letter body",
+    "body_helper": "A draft RFQ letter has been generated for you from the Fablab specimen (per 20-doc-templates-best-practice.md, adapted for multi-supplier RFQ). Edit freely — the placeholders in [square brackets] are substituted per recipient at send time.",
+    "body_edited": "edited",
+    "body_regenerate": "Regenerate from template",
+    "body_placeholders_note": "Placeholders in [brackets] are filled per vendor at send time: [supplier contact name], [your name], [your role], [your email]."
   }
 }

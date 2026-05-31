@@ -913,6 +913,12 @@
     "send_now": "Send nå",
     "send_now_on": "Forespørselen opprettes og markeres umiddelbart som sendt — ventende tilbud-rader opprettes for hver leverandør × vare-kombinasjon.",
     "send_now_off": "Forespørselen lagres som utkast. Du kan sende den senere fra detaljsiden.",
-    "submit": "Opprett forespørsel"
+    "submit": "Opprett forespørsel",
+    "step_body": "Tekst",
+    "body_label": "Tekst i forespørselen",
+    "body_helper": "Et utkast er generert for deg fra Fablab-malen (per 20-doc-templates-best-practice.md, tilpasset for multi-leverandør-forespørsel). Rediger fritt — plassholderne i [klammer] erstattes per mottaker ved sending.",
+    "body_edited": "redigert",
+    "body_regenerate": "Generer på nytt fra mal",
+    "body_placeholders_note": "Plassholdere i [klammer] fylles inn per leverandør ved sending: [supplier contact name], [your name], [your role], [your email]."
   }
 }
