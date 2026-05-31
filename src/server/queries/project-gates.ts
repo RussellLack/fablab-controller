@@ -61,9 +61,11 @@ const ITEM_STATUS_ORDER: Record<string, number> = {
 };
 
 function itemStatusAtLeast(status: string, threshold: keyof typeof ITEM_STATUS_ORDER) {
-  // `??` falls back to -1 for any status outside the known set (defensive,
-  // in case the enum grows in the schema before this map is updated).
-  return (ITEM_STATUS_ORDER[status] ?? -1) >= ITEM_STATUS_ORDER[threshold];
+  // Both sides default to -1 for unknown statuses. Required even on the right
+  // (where `threshold` is keyof) because TypeScript's noUncheckedIndexedAccess
+  // returns `number | undefined` for record-typed indexing regardless of key
+  // narrowing.
+  return (ITEM_STATUS_ORDER[status] ?? -1) >= (ITEM_STATUS_ORDER[threshold] ?? -1);
 }
 
 /** Brief: description filled + role set + approved scope approval exists. */
