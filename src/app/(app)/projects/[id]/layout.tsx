@@ -37,7 +37,13 @@ export default async function ProjectLayout({
           </div>
           <h1 className="text-[22px] font-semibold tracking-tighter">{p.title}</h1>
           <p className="text-ink-2 text-[13px] mt-1">
-            {p.clientName ?? '—'} · Owner: {p.ownerName ?? '—'} · Site: {p.siteAddress ?? '—'}
+            {[
+              p.clientName,
+              p.ownerName ? `Owner: ${p.ownerName}` : null,
+              p.siteAddress ? `Site: ${p.siteAddress}` : null
+            ]
+              .filter(Boolean)
+              .join(' · ') || '—'}
           </p>
         </div>
         <div className="flex gap-2">

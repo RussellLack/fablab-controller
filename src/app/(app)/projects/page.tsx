@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { db, projects, clients } from '@/db';
 import { eq, sql } from 'drizzle-orm';
 import { formatMoney, formatDate, cx } from '@/lib/utils';
+import { ProjectRow } from './project-row';
 
 async function getProjects() {
   if (!process.env.DATABASE_URL) return [];
@@ -75,7 +76,7 @@ function ProjectsList({ rows }: { rows: Awaited<ReturnType<typeof getProjects>> 
           </thead>
           <tbody>
             {rows.map(r => (
-              <tr key={r.id} className="hover:bg-bg cursor-pointer">
+              <ProjectRow key={r.id} href={`/projects/${r.id}`}>
                 <td className="p-3 px-3.5 border-b border-line text-[13px]">
                   <Link href={`/projects/${r.id}`} className="ref hover:underline">{r.reference}</Link>
                 </td>
@@ -92,7 +93,7 @@ function ProjectsList({ rows }: { rows: Awaited<ReturnType<typeof getProjects>> 
                 <td className="p-3 px-3.5 border-b border-line text-[13px] text-ink-3">
                   {formatDate(r.targetHandoverDate)}
                 </td>
-              </tr>
+              </ProjectRow>
             ))}
           </tbody>
         </table>
