@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { saveGoogleTokens } from '@/server/lib/google-tokens'
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
@@ -28,7 +29,25 @@ export async function GET(request: Request) {
         }
       }
     )
-    await supabase.auth.exchangeCodeForSession(code)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+
+    // Persist the Google provider tokens (gmail.send scope) for later
+    // server-side use. Wrapped in try/catch so a missing/un-migrated
+    // user_google_tokens table doesn't block sign-in.
+    if (!error && data.session?.user?.id && data.session.provider_token) {
+      try {
+        await saveGoogleTokens(data.session.user.id, {
+          accessToken: data.session.provider_token,
+          refreshToken: data.session.provider_refresh_token ?? null,
+          scope:
+            'openid email profile https://www.googleapis.com/auth/gmail.send'
+        })
+      } catch {
+        // Token storage failure must not block sign-in. The user is still
+        // authenticated; Gmail-send features will be unavailable until the
+        // user_google_tokens table exists / is reachable.
+      }
+    }
   }
 
   // On Netlify, `request.url` resolves to the internal deploy URL

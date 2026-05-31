@@ -281,6 +281,24 @@ export const users = pgTable('users', {
   emailIdx: index('users_email_idx').on(t.email)
 }));
 
+/* ─────────────────────────── GOOGLE OAUTH TOKENS ─────────────────────────── */
+/**
+ * Per-user Google OAuth tokens, captured at sign-in callback when the
+ * gmail.send scope is granted. No FK to users — `user_id` is the Supabase
+ * `auth.users.id` directly, so we don't depend on a domain users row being
+ * present (some users have one, some don't).
+ *
+ * Tokens are refreshed on demand by `src/server/lib/google-tokens.ts`.
+ */
+export const userGoogleTokens = pgTable('user_google_tokens', {
+  userId: uuid('user_id').primaryKey(),
+  accessToken: text('access_token').notNull(),
+  refreshToken: text('refresh_token'),
+  expiresAt: timestamp('expires_at', { withTimezone: true }),
+  scope: text('scope'),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+});
+
 /* ─────────────────────────── LEADS ─────────────────────────── */
 
 export const leads = pgTable('leads', {

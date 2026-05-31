@@ -13,8 +13,20 @@ export default function LoginPage() {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        // openid+email+profile are the defaults Supabase already requests.
+        // `gmail.send` is added so the team member's account can be used to
+        // send RFQ / PO emails on their behalf from within the app.
+        scopes:
+          'openid email profile https://www.googleapis.com/auth/gmail.send',
         queryParams: {
-          hd: 'fablab.no'
+          hd: 'fablab.no',
+          // Required so Google returns a refresh_token we can persist for
+          // server-side Gmail API calls outside the browser session.
+          access_type: 'offline',
+          // Force the consent screen each time so the refresh_token is
+          // always returned (Google only returns it the first time a user
+          // grants a scope, unless prompt=consent is set).
+          prompt: 'consent'
         }
       }
     });
