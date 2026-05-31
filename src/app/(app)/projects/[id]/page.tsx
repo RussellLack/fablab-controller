@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { formatMoney, formatDate } from '@/lib/utils';
 import { getProject } from './queries';
+import { NextActionBanner } from '@/components/next-action-banner';
 
 export default async function ProjectBriefPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -10,7 +11,9 @@ export default async function ProjectBriefPage({ params }: { params: Promise<{ i
   const t = await getTranslations();
 
   return (
-    <div className="grid grid-cols-[2fr_1fr] gap-6">
+    <>
+      <NextActionBanner projectId={id} gate="brief" />
+      <div className="grid grid-cols-[2fr_1fr] gap-6">
       <div className="card">
         <h3 className="card-title mb-3">{t('proj.brief')}</h3>
         <p className="text-[13px] leading-6">{p.description ?? '—'}</p>
@@ -29,6 +32,7 @@ export default async function ProjectBriefPage({ params }: { params: Promise<{ i
           </dl>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -3,7 +3,8 @@ import { getTranslations } from 'next-intl/server';
 import { getProject } from './queries';
 import { StageFlow } from '@/components/stage-flow';
 import { RoleBanner } from '@/components/role-banner';
-import { ProjectTabs } from '@/components/project-tabs';
+import { ProjectStepper } from '@/components/project-stepper';
+import { getProjectGates } from '@/server/queries/project-gates';
 
 export default async function ProjectLayout({
   params,
@@ -16,6 +17,7 @@ export default async function ProjectLayout({
   const p = await getProject(id);
   if (!p) notFound();
   const t = await getTranslations();
+  const gates = await getProjectGates(id);
 
   return (
     <>
@@ -55,7 +57,7 @@ export default async function ProjectLayout({
       <RoleBanner role={p.fablabRole} />
       <StageFlow currentStage={p.currentStage} />
       <div className="mt-6">
-        <ProjectTabs projectId={p.id} />
+        <ProjectStepper projectId={p.id} gates={gates} />
         {children}
       </div>
     </>

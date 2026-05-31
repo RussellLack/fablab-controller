@@ -4,6 +4,7 @@ import { db, packages, items } from '@/db';
 import { eq, asc } from 'drizzle-orm';
 import { formatMoney } from '@/lib/utils';
 import { PackagesClient } from './client';
+import { NextActionBanner } from '@/components/next-action-banner';
 
 async function getPackagesAndItems(projectId: string) {
   if (!process.env.DATABASE_URL) return { pkgs: [], items: [] };
@@ -33,10 +34,13 @@ export default async function PackagesTabPage({ params }: { params: Promise<{ id
   const { pkgs, items: itemRows } = await getPackagesAndItems(id);
   const t = await getTranslations();
   return (
-    <PackagesClient
-      projectId={id}
-      packages={pkgs.map(p => ({ ...p, budget: p.budget ?? null }))}
-      items={itemRows}
-    />
+    <>
+      <NextActionBanner projectId={id} gate="items" />
+      <PackagesClient
+        projectId={id}
+        packages={pkgs.map(p => ({ ...p, budget: p.budget ?? null }))}
+        items={itemRows}
+      />
+    </>
   );
 }

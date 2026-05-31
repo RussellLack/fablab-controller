@@ -823,5 +823,34 @@
     "not_an_order": "IKKE EN BESTILLING",
     "awaiting_written": "VENTER PÅ SKRIFTLIG GODKJENNING",
     "selected_not_ordered": "valgt, ikke bestilt"
+  },
+  "gate": {
+    "whats_next": "Hva som er neste:",
+    "brief": {
+      "next_description": "Fyll inn prosjektbeskrivelsen.",
+      "next_role": "Bekreft Fablab-rollen på henvendelsen — denne overføres til prosjektet.",
+      "next_approval": "Be om en omfangs-godkjenning og marker den som godkjent for å fullføre Oppdrag."
+    },
+    "scope": {
+      "next_brief": "Fullfør Oppdrag først.",
+      "next_approve": "Opprett en omfangs-versjon og få den godkjent."
+    },
+    "items": {
+      "next_scope": "Godkjenn en omfangs-versjon først.",
+      "next_create": "Legg til minst én vare via Pakker.",
+      "next_quote": "Loggfør tilbud for gjenværende varer slik at alle har kostnadstilstand minst Tilbudt."
+    },
+    "procurement": {
+      "next_items": "Alle varer må nå Tilbudt kostnadstilstand først.",
+      "next_issue": "Utsted minst én innkjøpsordre for å gå videre i Innkjøp."
+    },
+    "delivery": {
+      "next_procurement": "Utsted minst én PO først.",
+      "next_track": "Følg varer gjennom Bestilt → Sendt → Mottatt."
+    },
+    "handover": {
+      "next_delivery": "Alle varer må være Mottatt før Overlevering begynner.",
+      "next_signoff": "Godkjenn gjenværende varer for å fullføre Overlevering."
+    }
   }
 }

@@ -823,5 +823,34 @@
     "not_an_order": "NOT AN ORDER",
     "awaiting_written": "AWAITING WRITTEN APPROVAL",
     "selected_not_ordered": "selected, not ordered"
+  },
+  "gate": {
+    "whats_next": "What's next:",
+    "brief": {
+      "next_description": "Fill in the project description.",
+      "next_role": "Confirm the Fablab role on the lead — this carries through to the project.",
+      "next_approval": "Request a Scope-target approval and mark it approved to complete the Brief."
+    },
+    "scope": {
+      "next_brief": "Complete the Brief first.",
+      "next_approve": "Create a Scope version and get it approved."
+    },
+    "items": {
+      "next_scope": "Approve a Scope version first.",
+      "next_create": "Add at least one Item via Packages.",
+      "next_quote": "Record quotes for the remaining items so every item has cost state at least Quoted."
+    },
+    "procurement": {
+      "next_items": "All items must reach Quoted cost state first.",
+      "next_issue": "Issue at least one Purchase Order to advance Procurement."
+    },
+    "delivery": {
+      "next_procurement": "Issue at least one PO first.",
+      "next_track": "Track items through Ordered → Shipped → Received."
+    },
+    "handover": {
+      "next_delivery": "All items must be Received before Handover begins.",
+      "next_signoff": "Sign off remaining items to complete Handover."
+    }
   }
 }

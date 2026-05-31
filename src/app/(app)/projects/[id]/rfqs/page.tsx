@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { db, rfqs } from '@/db';
 import { eq, desc } from 'drizzle-orm';
 import { formatDate, cx } from '@/lib/utils';
+import { NextActionBanner } from '@/components/next-action-banner';
 
 async function getRfqs(projectId: string) {
   if (!process.env.DATABASE_URL) return [];
@@ -27,6 +28,7 @@ export default async function RfqsTabPage({ params }: { params: Promise<{ id: st
   const t = await getTranslations();
   return (
     <>
+      <NextActionBanner projectId={id} gate="procurement" />
       <div className="flex items-center justify-between mb-4">
         <p className="text-ink-2 text-[13px]">{rows.length} {t('rfq.count_suffix')}</p>
         <Link href={`/projects/${id}/rfqs/new`} className="btn btn-primary">{t('action.new_rfq')}</Link>
