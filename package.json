@@ -18,21 +18,22 @@
     "test:e2e:install": "playwright install --with-deps chromium"
   },
   "dependencies": {
+    "@imgly/background-removal": "^1.5.0",
     "@sentry/nextjs": "^8.40.0",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.106.2",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.0",
     "next": "^15.0.3",
     "next-intl": "^3.25.0",
+    "onnxruntime-web": "^1.16.0",
     "postgres": "^3.4.5",
     "react": "^19.0.0-rc-1",
     "react-dom": "^19.0.0-rc-1",
-    "zod": "^3.23.8",
-    "@imgly/background-removal": "^1.5.0",
-    "date-fns": "^4.1.0",
-    "date-fns-tz": "^3.2.0"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
