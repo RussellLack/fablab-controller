@@ -11,7 +11,7 @@ import {
   type ProjectGates,
   type GateName,
   type GateState
-} from '@/server/queries/project-gates';
+} from '@/lib/project-gates';
 
 /**
  * Linear stepper rendered at the top of every /projects/[id]/* page.

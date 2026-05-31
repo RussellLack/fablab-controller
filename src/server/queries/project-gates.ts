@@ -10,6 +10,20 @@ import {
   scopeBaselines,
   scopeBaselineVersions
 } from '@/db';
+import type { GateResult, ProjectGates } from '@/lib/project-gates';
+
+// Re-export the client-safe pieces so existing server-side callers don't have
+// to track that they moved. Client components must import these from
+// '@/lib/project-gates' directly to avoid pulling in the postgres driver.
+export {
+  GATE_ORDER,
+  GATE_NUMERAL,
+  gateHref,
+  type GateName,
+  type GateState,
+  type GateResult,
+  type ProjectGates
+} from '@/lib/project-gates';
 
 /**
  * Phase 2 gate detection. One server query per project that returns the
@@ -23,27 +37,6 @@ import {
  * Each gate also returns a `nextActionKey` — the i18n key for the
  * "What's next" banner on the corresponding tab page.
  */
-
-export type GateName =
-  | 'brief'
-  | 'scope'
-  | 'items'
-  | 'procurement'
-  | 'delivery'
-  | 'handover';
-
-export type GateState = 'done' | 'in_progress' | 'locked';
-
-export type GateResult = {
-  state: GateState;
-  nextActionKey?: string;
-  /** Optional count for display (e.g. items: total). */
-  count?: number;
-  /** Optional total for ratio display (e.g. items received / total). */
-  total?: number;
-};
-
-export type ProjectGates = Record<GateName, GateResult>;
 
 /** Items considered "out of flow" — they don't count toward delivery/handover. */
 const ITEM_EXCEPTIONS = ['on_hold', 'substituted', 'cancelled'] as const;
@@ -339,35 +332,5 @@ export const getProjectGates = cache(
   }
 );
 
-/** Order matters — the stepper renders in this sequence. */
-export const GATE_ORDER: GateName[] = [
-  'brief',
-  'scope',
-  'items',
-  'procurement',
-  'delivery',
-  'handover'
-];
-
-/** Map a gate name to the route slug it lands on, given a project id. */
-export function gateHref(gate: GateName, projectId: string): string {
-  const base = `/projects/${projectId}`;
-  switch (gate) {
-    case 'brief':       return base;
-    case 'scope':       return `${base}/scope`;
-    case 'items':       return `${base}/packages`;       // Phase 2 keeps existing route
-    case 'procurement': return `${base}/rfqs`;           // landing on RFQs
-    case 'delivery':    return `${base}/delivery`;
-    case 'handover':    return `${base}/handover`;
-  }
-}
-
-/** Step numerals — Unicode circled digits for the stepper UI. */
-export const GATE_NUMERAL: Record<GateName, string> = {
-  brief: '①',
-  scope: '②',
-  items: '③',
-  procurement: '④',
-  delivery: '⑤',
-  handover: '⑥'
-};
+// (Constants and pure helpers live in src/lib/project-gates.ts and are
+// re-exported at the top of this file.)
