@@ -23,6 +23,8 @@ export type ElementListItemRow = {
   description: string | null;
   manufacturer: string | null;
   sku: string | null;
+  material: string | null;
+  colour: string | null;
   quantity: string;                 // numeric stored as string by drizzle
   unit: string;
   status: string;
@@ -168,6 +170,8 @@ export const getElementListData = cache(async (projectId: string): Promise<Eleme
         description: it.description,
         manufacturer: it.manufacturer,
         sku: it.sku,
+        material: it.material,
+        colour: it.colour,
         quantity: it.quantity,
         unit: it.unit,
         status: it.status,
