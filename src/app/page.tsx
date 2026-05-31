@@ -1,9 +1,5 @@
-import LoginButton from '@/components/LoginButton'
+import { redirect } from 'next/navigation'
 
 export default function HomePage() {
-  return (
-    <main>
-      <LoginButton />
-    </main>
-  )
+  redirect('/login')
 }
