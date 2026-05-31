@@ -24,7 +24,10 @@
     "vendors": "Leverandører",
     "workshop": "Verksted",
     "templates": "Maler",
-    "translation": "Oversettelser"
+    "translation": "Oversettelser",
+    "today": "I dag",
+    "risk": "Risikoregister",
+    "reporting": "Rapportering"
   },
   "action": {
     "new_project": "+ Nytt prosjekt",
@@ -256,7 +259,14 @@
     "rfqs": "Pristilbud",
     "pos": "Innkjøpsordrer",
     "elementList": "Elementliste",
-    "finance": "Økonomi"
+    "finance": "Økonomi",
+    "items": "Varer",
+    "procurement": "Innkjøp",
+    "delivery": "Levering",
+    "handover": "Overlevering",
+    "change_control": "Endringsstyring",
+    "risk": "Risiko",
+    "reporting": "Rapportering"
   },
   "scope": {
     "version_status": {
@@ -794,5 +804,17 @@
     "cascadeNote": "Beregnede kolonner produseres ved visning fra enhetskostnad × antall × margin %, deretter rabatt og MVA. Lagring av resultatet kan bli utdatert hvis rabatt eller MVA endres.",
     "printBtn": "Skriv ut",
     "exportBtn": "Eksporter…"
+  },
+  "sidebar": {
+    "group_today": "I dag",
+    "group_pipeline": "Pipeline",
+    "group_cross_project": "Tverrprosjekt",
+    "group_reference": "Referanse",
+    "pcf_title": "Prosjektkontrollfil",
+    "switch_projects": "Bytt prosjekt",
+    "back_to_global": "Tilbake til hovedmeny",
+    "linear": "Lineær",
+    "transverse": "Tverrgående",
+    "soon": "snart"
   }
 }

@@ -24,7 +24,10 @@
     "vendors": "Vendors",
     "workshop": "Workshop",
     "templates": "Templates",
-    "translation": "Translations"
+    "translation": "Translations",
+    "today": "Today",
+    "risk": "Risk register",
+    "reporting": "Reporting"
   },
   "action": {
     "new_project": "+ New project",
@@ -256,7 +259,14 @@
     "rfqs": "RFQs",
     "pos": "POs",
     "elementList": "Element List",
-    "finance": "Finance"
+    "finance": "Finance",
+    "items": "Items",
+    "procurement": "Procurement",
+    "delivery": "Delivery",
+    "handover": "Handover",
+    "change_control": "Change control",
+    "risk": "Risk",
+    "reporting": "Reporting"
   },
   "scope": {
     "version_status": {
@@ -794,5 +804,17 @@
     "cascadeNote": "Derived columns are computed at render time from unit cost × quantity × margin %, then discount and VAT. Storing the result risks staleness when discount or VAT change.",
     "printBtn": "Print",
     "exportBtn": "Export…"
+  },
+  "sidebar": {
+    "group_today": "Today",
+    "group_pipeline": "Pipeline",
+    "group_cross_project": "Cross-project",
+    "group_reference": "Reference",
+    "pcf_title": "Project Control File",
+    "switch_projects": "Switch projects",
+    "back_to_global": "Back to global nav",
+    "linear": "Linear",
+    "transverse": "Transverse",
+    "soon": "soon"
   }
 }
