@@ -418,6 +418,12 @@
       "category": "Kategori",
       "trade": "Fag",
       "phase": "Fase"
+    },
+    "kind_help": {
+      "room": "Grupper varer etter fysisk rom — f.eks. \"Hotell-lobby FF&E\".",
+      "category": "Grupper varer etter produktkategori — f.eks. \"All belysning på tvers av prosjektet\".",
+      "trade": "Grupper varer etter fagdisiplin som leverer eller installerer dem — f.eks. \"All snekkerarbeid\", \"Alt elektrisk\", \"All glassarbeid\".",
+      "phase": "Grupper varer etter leverings- / installasjonsfase — f.eks. \"Fase 1 installasjon\"."
     }
   },
   "item": {

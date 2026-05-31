@@ -157,6 +157,9 @@ function WhereStep({
                 <option value="trade">{t('package.kind.trade')}</option>
                 <option value="phase">{t('package.kind.phase')}</option>
               </select>
+              <p className="text-[11px] text-ink-3 italic mt-1">
+                {t(`package.kind_help.${state.newPackageKind}`)}
+              </p>
             </div>
             <div>
               <label className="text-[12px] text-ink-2 block mb-1">

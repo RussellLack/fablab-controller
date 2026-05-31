@@ -15,6 +15,7 @@ export function PackagesClient({ projectId, packages, items }: { projectId: stri
   const t = useTranslations();
   const router = useRouter();
   const [adding, setAdding] = useState(false);
+  const [newPkgKind, setNewPkgKind] = useState<'room' | 'category' | 'trade' | 'phase'>('category');
   const [wizardPkg, setWizardPkg] = useState<string | null | undefined>(undefined);
   // undefined = wizard closed, null = open with no preselection, string = open with package preselected
   const bound = createPackage.bind(null, projectId);
@@ -48,12 +49,23 @@ export function PackagesClient({ projectId, packages, items }: { projectId: stri
             <label className="text-[13px] text-ink-2">{t('package.name')}*</label>
             <input name="name" required placeholder={t('package.name_placeholder')} className="px-2.5 py-2 border border-line rounded-md text-[13px]" />
             <label className="text-[13px] text-ink-2">{t('package.kind_label')}*</label>
-            <select name="kind" required defaultValue="category" className="px-2.5 py-2 border border-line rounded-md text-[13px] w-48">
-              <option value="room">{t('package.kind.room')}</option>
-              <option value="category">{t('package.kind.category')}</option>
-              <option value="trade">{t('package.kind.trade')}</option>
-              <option value="phase">{t('package.kind.phase')}</option>
-            </select>
+            <div>
+              <select
+                name="kind"
+                required
+                value={newPkgKind}
+                onChange={(e) => setNewPkgKind(e.target.value as typeof newPkgKind)}
+                className="px-2.5 py-2 border border-line rounded-md text-[13px] w-48"
+              >
+                <option value="room">{t('package.kind.room')}</option>
+                <option value="category">{t('package.kind.category')}</option>
+                <option value="trade">{t('package.kind.trade')}</option>
+                <option value="phase">{t('package.kind.phase')}</option>
+              </select>
+              <p className="text-[11px] text-ink-3 italic mt-1">
+                {t(`package.kind_help.${newPkgKind}`)}
+              </p>
+            </div>
             <label className="text-[13px] text-ink-2">{t('package.budget')}</label>
             <input name="budget" type="number" step="1000" className="px-2.5 py-2 border border-line rounded-md text-[13px] w-48" />
           </div>

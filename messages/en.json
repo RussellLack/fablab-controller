@@ -418,6 +418,12 @@
       "category": "Category",
       "trade": "Trade",
       "phase": "Phase"
+    },
+    "kind_help": {
+      "room": "Group items by physical room — e.g. \"Hotel lobby FF&E\".",
+      "category": "Group items by product category — e.g. \"All lighting across the project\".",
+      "trade": "Group items by specialist discipline that produces or installs them — e.g. \"All joinery\", \"All electrical\", \"All glazing\".",
+      "phase": "Group items by delivery / install stage — e.g. \"Phase 1 install\"."
     }
   },
   "item": {
