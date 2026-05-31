@@ -61,7 +61,9 @@ const ITEM_STATUS_ORDER: Record<string, number> = {
 };
 
 function itemStatusAtLeast(status: string, threshold: keyof typeof ITEM_STATUS_ORDER) {
-  return ITEM_STATUS_ORDER[status] >= ITEM_STATUS_ORDER[threshold];
+  // `??` falls back to -1 for any status outside the known set (defensive,
+  // in case the enum grows in the schema before this map is updated).
+  return (ITEM_STATUS_ORDER[status] ?? -1) >= ITEM_STATUS_ORDER[threshold];
 }
 
 /** Brief: description filled + role set + approved scope approval exists. */
