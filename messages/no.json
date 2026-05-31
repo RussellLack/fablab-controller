@@ -1,5 +1,9 @@
 {
   "brand": "Fablab Design Kontroller",
+  "common": {
+    "coming_soon": "Kommer snart",
+    "coming_soon_body": "Denne seksjonen er ikke bygget ennå."
+  },
   "login": {
     "sub": "Logg inn med Fablab Google-kontoen din",
     "btn": "Fortsett med Google",

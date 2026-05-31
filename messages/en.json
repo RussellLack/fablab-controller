@@ -1,5 +1,9 @@
 {
   "brand": "Fablab Design Controller",
+  "common": {
+    "coming_soon": "Coming soon",
+    "coming_soon_body": "This section hasn't been built yet."
+  },
   "login": {
     "sub": "Sign in with your Fablab Google account",
     "btn": "Continue with Google",
