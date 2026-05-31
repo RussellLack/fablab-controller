@@ -142,14 +142,14 @@ function Th({ children }: { children: React.ReactNode }) {
 function ThR({ children }: { children: React.ReactNode }) {
   return <th className="text-right text-[10px] uppercase tracking-wider text-ink-3 font-semibold px-2 py-2.5">{children}</th>;
 }
-function Td({ children, muted, colSpan }: { children: React.ReactNode; muted?: boolean; colSpan?: number }) {
+function Td({ children, muted, colSpan }: { children?: React.ReactNode; muted?: boolean; colSpan?: number }) {
   return (
     <td colSpan={colSpan} className={`px-2 py-2.5 align-middle ${muted ? 'text-ink-3' : ''} text-[13px]`}>
       {children}
     </td>
   );
 }
-function TdR({ children, muted }: { children: React.ReactNode; muted?: boolean }) {
+function TdR({ children, muted }: { children?: React.ReactNode; muted?: boolean }) {
   return (
     <td className={`px-2 py-2.5 align-middle text-right tabular-nums ${muted ? 'text-ink-3' : ''} text-[13px]`}>
       {children}
