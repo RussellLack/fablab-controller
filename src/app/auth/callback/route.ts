@@ -28,14 +28,7 @@ export async function GET(request: Request) {
         }
       }
     )
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (error) {
-      console.error('[auth/callback] exchangeCodeForSession failed:', error.message, error)
-    } else {
-      console.log('[auth/callback] exchangeCodeForSession succeeded')
-    }
-  } else {
-    console.warn('[auth/callback] no code in query string')
+    await supabase.auth.exchangeCodeForSession(code)
   }
 
   // On Netlify, `request.url` resolves to the internal deploy URL
