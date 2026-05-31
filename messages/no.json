@@ -68,7 +68,8 @@
     "issue_invoice": "Marker som utstedt",
     "mark_sent": "Marker som sendt",
     "record_payment": "+ Registrer betaling",
-    "log_payment": "Loggfør betaling"
+    "log_payment": "Loggfør betaling",
+    "new_item_guided": "+ Legg til vare (veiviser)"
   },
   "dash": {
     "title": "Dashbord",
@@ -852,5 +853,31 @@
       "next_delivery": "Alle varer må være Mottatt før Overlevering begynner.",
       "next_signoff": "Godkjenn gjenværende varer for å fullføre Overlevering."
     }
+  },
+  "wizard": {
+    "cancel": "Avbryt",
+    "back": "Tilbake",
+    "next": "Neste",
+    "create": "Opprett",
+    "close": "Lukk",
+    "skip_to_flat_form": "Hopp til flat form",
+    "generic_error": "Noe gikk galt.",
+    "step_of": "{current} av {total}"
+  },
+  "items_wizard": {
+    "title": "+ Legg til vare (veiviser)",
+    "step_where": "Hvor",
+    "step_identity": "Identitet",
+    "step_specification": "Spesifikasjon",
+    "step_quantity": "Antall",
+    "step_review": "Gjennomgang",
+    "where_helper": "Varer ligger inne i pakker — velg pakken denne varen tilhører, eller opprett en ny pakke først.",
+    "pick_package": "Velg en eksisterende pakke",
+    "new_package": "Eller opprett en ny pakke",
+    "new_package_suffix": "ny pakke",
+    "specification_helper": "Alt er valgfritt. Fyll inn det du vet nå; du kan redigere senere.",
+    "review_helper": "Se gjennom og opprett — eller bruk den sekundære knappen for å starte en ny vare i samme pakke.",
+    "review_package": "Pakke",
+    "create_and_add": "Opprett og legg til en til"
   }
 }

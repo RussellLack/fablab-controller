@@ -1,26 +1,42 @@
 'use client';
 
 import { useActionState, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { createPackage } from '@/server/actions/procurement';
 import { cx, formatMoney } from '@/lib/utils';
+import { ItemWizard } from '@/components/wizard/item-wizard';
 
 type Pkg = { id: string; name: string; kind: string; sequence: number; status: string; budget: string | null };
 type Item = { id: string; name: string; packageId: string; quantity: string; unit: string; status: string; itemType: string; costState: string };
 
 export function PackagesClient({ projectId, packages, items }: { projectId: string; packages: Pkg[]; items: Item[] }) {
   const t = useTranslations();
+  const router = useRouter();
   const [adding, setAdding] = useState(false);
+  const [wizardPkg, setWizardPkg] = useState<string | null | undefined>(undefined);
+  // undefined = wizard closed, null = open with no preselection, string = open with package preselected
   const bound = createPackage.bind(null, projectId);
   const [state, action, pending] = useActionState(bound, null);
+
+  const wizardOpen = wizardPkg !== undefined;
+  const onWizardSuccess = () => router.refresh();
 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <p className="text-ink-2 text-[13px]">{packages.length} {t('package.count_suffix')}</p>
         <div className="flex gap-2">
-          {!adding && <button onClick={() => setAdding(true)} className="btn btn-primary">{t('action.new_package')}</button>}
+          {packages.length > 0 && (
+            <button
+              onClick={() => setWizardPkg(null)}
+              className="btn btn-primary"
+            >
+              {t('action.new_item_guided')}
+            </button>
+          )}
+          {!adding && <button onClick={() => setAdding(true)} className="btn btn-ghost">{t('action.new_package')}</button>}
         </div>
       </div>
 
@@ -66,9 +82,12 @@ export function PackagesClient({ projectId, packages, items }: { projectId: stri
                       {pkg.budget && ` · ${formatMoney(pkg.budget, 'NOK')}`}
                     </div>
                   </div>
-                  <Link href={`/projects/${projectId}/items/new?packageId=${pkg.id}`} className="btn btn-ghost text-[12px]">
+                  <button
+                    onClick={() => setWizardPkg(pkg.id)}
+                    className="btn btn-ghost text-[12px]"
+                  >
                     {t('action.new_item')}
-                  </Link>
+                  </button>
                 </div>
 
                 {pkgItems.length > 0 && (
@@ -100,6 +119,15 @@ export function PackagesClient({ projectId, packages, items }: { projectId: stri
           })}
         </div>
       )}
+
+      <ItemWizard
+        open={wizardOpen}
+        onClose={() => setWizardPkg(undefined)}
+        projectId={projectId}
+        packages={packages.map((p) => ({ id: p.id, name: p.name, kind: p.kind }))}
+        preselectedPackageId={wizardPkg ?? undefined}
+        onSuccess={onWizardSuccess}
+      />
     </>
   );
 }

@@ -68,7 +68,8 @@
     "issue_invoice": "Mark as issued",
     "mark_sent": "Mark as sent",
     "record_payment": "+ Record payment",
-    "log_payment": "Log payment"
+    "log_payment": "Log payment",
+    "new_item_guided": "+ Guided add item"
   },
   "dash": {
     "title": "Dashboard",
@@ -852,5 +853,31 @@
       "next_delivery": "All items must be Received before Handover begins.",
       "next_signoff": "Sign off remaining items to complete Handover."
     }
+  },
+  "wizard": {
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "create": "Create",
+    "close": "Close",
+    "skip_to_flat_form": "Skip to flat form",
+    "generic_error": "Something went wrong.",
+    "step_of": "{current} of {total}"
+  },
+  "items_wizard": {
+    "title": "+ Add item (guided)",
+    "step_where": "Where",
+    "step_identity": "Identity",
+    "step_specification": "Specification",
+    "step_quantity": "Quantity",
+    "step_review": "Review",
+    "where_helper": "Items live inside packages — pick the one this item belongs to, or create a new package first.",
+    "pick_package": "Pick an existing package",
+    "new_package": "Or create a new package",
+    "new_package_suffix": "new package",
+    "specification_helper": "All optional. Fill in what you know now; you can edit later.",
+    "review_helper": "Review and create — or use the secondary button to immediately start another item in the same package.",
+    "review_package": "Package",
+    "create_and_add": "Create and add another"
   }
 }
