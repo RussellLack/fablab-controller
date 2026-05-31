@@ -492,7 +492,8 @@
     "no_quotes": "Ingen tilbud ennå. Legg denne varen til et pristilbud for å begynne å samle priser.",
     "cost_state_label": "Kostnadstilstand",
     "winning_unit_cost": "Vinnende enhetspris",
-    "expected_delivery": "Forventet levering"
+    "expected_delivery": "Forventet levering",
+    "in_rfqs": "Inkludert i pristilbud-forespørsler"
   },
   "quote": {
     "vendor": "Leverandør",
@@ -550,7 +551,8 @@
     "winner_selected": "Vinner valgt",
     "winner_label": "Vinner",
     "send_result_ok": "{count} e-post(er) sendt.",
-    "send_result_partial": "{sent} sendt, {failed} feilet:"
+    "send_result_partial": "{sent} sendt, {failed} feilet:",
+    "send_retry_failed": "Prøv feilede sendinger på nytt"
   },
   "po": {
     "count_suffix": "innkjøpsordre(r)",

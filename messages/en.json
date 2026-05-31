@@ -492,7 +492,8 @@
     "no_quotes": "No quotes yet. Add this item to an RFQ to start collecting prices.",
     "cost_state_label": "Cost state",
     "winning_unit_cost": "Winning unit cost",
-    "expected_delivery": "Expected delivery"
+    "expected_delivery": "Expected delivery",
+    "in_rfqs": "Included in RFQs"
   },
   "quote": {
     "vendor": "Vendor",
@@ -550,7 +551,8 @@
     "winner_selected": "Winner selected",
     "winner_label": "Winner",
     "send_result_ok": "{count} email(s) sent successfully.",
-    "send_result_partial": "{sent} sent, {failed} failed:"
+    "send_result_partial": "{sent} sent, {failed} failed:",
+    "send_retry_failed": "Retry failed sends"
   },
   "po": {
     "count_suffix": "PO(s)",

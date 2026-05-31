@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { db, items, packages, quotes, vendors, itemImages } from '@/db';
+import { db, items, packages, quotes, vendors, itemImages, rfqs, rfqItems } from '@/db';
 import { eq, and } from 'drizzle-orm';
 import { formatMoney, formatDate, cx } from '@/lib/utils';
 import { getItemApprovalState } from '@/server/actions/approvals';
@@ -25,7 +25,13 @@ async function getItem(itemId: string, projectId: string) {
         .where(eq(itemImages.id, row.item.primaryImageId)).limit(1);
       primaryImage = img ?? null;
     }
-    return { ...row, quotes: itemQuotes, primaryImage };
+    // Bidirectional view: which RFQs include this item.
+    const includingRfqs = await db
+      .select({ id: rfqs.id, reference: rfqs.reference, title: rfqs.title, status: rfqs.status })
+      .from(rfqItems)
+      .innerJoin(rfqs, eq(rfqItems.rfqId, rfqs.id))
+      .where(eq(rfqItems.itemId, itemId));
+    return { ...row, quotes: itemQuotes, primaryImage, includingRfqs };
   } catch { return null; }
 }
 
@@ -76,6 +82,28 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
           </Link>
         )}
       </div>
+
+      {data.includingRfqs.length > 0 && (
+        <div className="mb-4 text-[12px] text-ink-2 flex items-center gap-2 flex-wrap">
+          <span className="text-[11px] uppercase tracking-wider text-ink-3">
+            {t('item.in_rfqs')}:
+          </span>
+          {data.includingRfqs.map((r) => (
+            <Link
+              key={r.id}
+              href={`/projects/${id}/rfqs/${r.id}`}
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-line rounded-md hover:bg-bg"
+            >
+              <span className="ref">{r.reference}</span>
+              <span className="text-ink-3">·</span>
+              <span>{r.title}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg text-ink-3">
+                {t(`rfq.status.${r.status}`)}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-[2fr_1fr] gap-6">
         <div className="space-y-4">

@@ -19,6 +19,8 @@ export type SendGmailInput = {
   to: string;
   /** Optional Cc address. */
   cc?: string;
+  /** Optional Bcc address (defaults to the sender for record-keeping). */
+  bcc?: string;
   subject: string;
   /** Plain-text body. */
   body: string;
@@ -73,6 +75,7 @@ function buildMime(input: SendGmailInput): string {
     `From: ${fromHeader}`,
     `To: ${input.to}`,
     ...(input.cc ? [`Cc: ${input.cc}`] : []),
+    ...(input.bcc ? [`Bcc: ${input.bcc}`] : []),
     `Subject: ${encodeSubject(input.subject)}`,
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset="UTF-8"',

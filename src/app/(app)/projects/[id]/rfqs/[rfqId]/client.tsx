@@ -29,7 +29,7 @@ export function RfqDetailClient({ projectId, rfq, items, vendors, quotes }: {
     sent?: number;
     failed?: number;
     error?: string;
-    errors?: { vendor: string; error: string }[];
+    errors?: { vendorId: string; vendor: string; error: string }[];
   }>(null);
 
   const isDraft = rfq.status === 'draft';
@@ -84,13 +84,41 @@ export function RfqDetailClient({ projectId, rfq, items, vendors, quotes }: {
               : 'bg-warn-soft border-warn text-warn'
           )}
         >
-          <div className="font-semibold">
-            {sendResult.ok
-              ? t('rfq.send_result_ok', { count: sendResult.sent ?? 0 })
-              : t('rfq.send_result_partial', {
-                  sent: sendResult.sent ?? 0,
-                  failed: sendResult.failed ?? 0
-                })}
+          <div className="font-semibold flex items-center justify-between gap-2">
+            <span>
+              {sendResult.ok
+                ? t('rfq.send_result_ok', { count: sendResult.sent ?? 0 })
+                : t('rfq.send_result_partial', {
+                    sent: sendResult.sent ?? 0,
+                    failed: sendResult.failed ?? 0
+                  })}
+            </span>
+            {sendResult.errors && sendResult.errors.length > 0 && !sending && (
+              <button
+                className="btn btn-ghost text-[12px]"
+                disabled={sending}
+                onClick={() => {
+                  const failedIds = sendResult.errors?.map((e) => e.vendorId) ?? [];
+                  startSend(async () => {
+                    const res = await sendRfqViaGmail(rfq.id, projectId, failedIds);
+                    setSendResult(
+                      'sent' in res
+                        ? {
+                            ok: res.ok,
+                            sent: res.sent,
+                            failed: res.failed,
+                            error: res.ok ? undefined : res.error,
+                            errors: res.errors
+                          }
+                        : { ok: false, error: res.ok ? undefined : res.error }
+                    );
+                    router.refresh();
+                  });
+                }}
+              >
+                {t('rfq.send_retry_failed')}
+              </button>
+            )}
           </div>
           {sendResult.error && !sendResult.errors && (
             <div className="mt-1 text-[12px]">{sendResult.error}</div>

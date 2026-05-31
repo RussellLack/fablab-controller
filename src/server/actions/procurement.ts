@@ -343,12 +343,14 @@ export async function createRfqAtomic(
  */
 export async function sendRfqViaGmail(
   rfqId: string,
-  projectId: string
+  projectId: string,
+  /** Optional vendor filter — when provided, only those vendor ids are emailed. Used for retry-failed-only. */
+  vendorIdFilter?: string[]
 ): Promise<
   ActionResult & {
     sent?: number;
     failed?: number;
-    errors?: { vendor: string; error: string }[];
+    errors?: { vendorId: string; vendor: string; error: string }[];
   }
 > {
   const supabase = await supabaseServer();
@@ -381,7 +383,7 @@ export async function sendRfqViaGmail(
   const [rfq] = await db.select().from(rfqs).where(eq(rfqs.id, rfqId)).limit(1);
   if (!rfq) return { ok: false, error: 'RFQ not found' };
 
-  const invited = await db
+  const invitedAll = await db
     .select({
       id: vendors.id,
       name: vendors.name,
@@ -392,6 +394,15 @@ export async function sendRfqViaGmail(
     .innerJoin(vendors, eq(rfqVendors.vendorId, vendors.id))
     .where(eq(rfqVendors.rfqId, rfqId));
 
+  // Apply optional retry-failed-only filter
+  const invited = vendorIdFilter
+    ? invitedAll.filter((v) => vendorIdFilter.includes(v.id))
+    : invitedAll;
+
+  if (invited.length === 0) {
+    return { ok: false, error: 'No vendors to send to', sent: 0, failed: 0 };
+  }
+
   // CC=Siv unless sender IS Siv (case-insensitive)
   const cc = senderEmail.toLowerCase() === SIV_EMAIL ? undefined : SIV_EMAIL;
 
@@ -400,12 +411,12 @@ export async function sendRfqViaGmail(
 
   let sent = 0;
   let failed = 0;
-  const errors: { vendor: string; error: string }[] = [];
+  const errors: { vendorId: string; vendor: string; error: string }[] = [];
 
   for (const v of invited) {
     if (!v.contactEmail) {
       failed++;
-      errors.push({ vendor: v.name, error: 'No contact email on vendor record' });
+      errors.push({ vendorId: v.id, vendor: v.name, error: 'No contact email on vendor record' });
       continue;
     }
 
@@ -421,6 +432,7 @@ export async function sendRfqViaGmail(
       fromName: senderName,
       to: v.contactEmail,
       cc,
+      bcc: senderEmail, // bcc the sender for their own records
       subject,
       body
     });
@@ -429,7 +441,7 @@ export async function sendRfqViaGmail(
       sent++;
     } else {
       failed++;
-      errors.push({ vendor: v.name, error: result.error });
+      errors.push({ vendorId: v.id, vendor: v.name, error: result.error });
     }
   }
 
