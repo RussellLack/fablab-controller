@@ -1,5 +1,6 @@
 import { Sidebar } from '@/components/sidebar';
 import { Header } from '@/components/header';
+import { JourneyOverlay } from '@/components/journey-overlay';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
@@ -22,6 +23,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Header userName={name} userInitials={initials} />
       <Sidebar />
       <main className="p-6 px-8 overflow-auto">{children}</main>
+      <JourneyOverlay />
     </div>
   );
 }
