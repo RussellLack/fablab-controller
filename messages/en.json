@@ -925,5 +925,16 @@
     "body_edited": "edited",
     "body_regenerate": "Regenerate from template",
     "body_placeholders_note": "Placeholders in [brackets] are filled per vendor at send time: [supplier contact name], [your name], [your role], [your email]."
+  },
+  "rfq_attachments": {
+    "title": "Attachments",
+    "attach": "+ Attach files",
+    "uploading": "Uploading…",
+    "empty": "No attachments. Add specifications, drawings, or reference PDFs that will go out with the email.",
+    "too_large": "{name} is over the {max} limit and was not uploaded.",
+    "delete": "Remove",
+    "delete_failed": "Could not delete attachment.",
+    "confirm_delete": "Remove this attachment?",
+    "download_failed": "Could not generate download link."
   }
 }

@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation';
 import { and, eq, sql, inArray } from 'drizzle-orm';
 import {
   db, vendors, packages, items, rfqs, rfqItems, rfqVendors, quotes,
-  purchaseOrders, purchaseOrderLines, projects, vendorCommunications
+  purchaseOrders, purchaseOrderLines, projects, vendorCommunications,
+  rfqAttachments
 } from '@/db';
 import { createClient as supabaseServer } from '@/lib/supabase/server';
 import {
@@ -15,7 +16,7 @@ import {
 import { canIssuePurchaseOrder } from './approvals';
 import { applyBillingTrigger } from './finance';
 import { getOrRefreshGoogleAccessToken } from '@/server/lib/google-tokens';
-import { sendGmail } from '@/server/lib/gmail-send';
+import { sendGmail, type GmailAttachment } from '@/server/lib/gmail-send';
 
 /** CC this address on every team-member email. Skipped if author IS this address. */
 const SIV_EMAIL = 'siv@fablabdesign.com';
@@ -409,6 +410,26 @@ export async function sendRfqViaGmail(
   const subject = `${rfq.reference} — ${rfq.title} (REQUEST FOR QUOTATION — NOT AN ORDER)`;
   const bodyTemplate = rfq.description ?? '';
 
+  // Fetch attachments from Supabase Storage once — same set goes to every vendor.
+  // Use the supabase client already obtained for auth.
+  const attachmentRows = await db
+    .select()
+    .from(rfqAttachments)
+    .where(eq(rfqAttachments.rfqId, rfqId));
+  const attachments: GmailAttachment[] = [];
+  for (const att of attachmentRows) {
+    const { data: blob, error: dlErr } = await supabase.storage
+      .from('rfq-attachments')
+      .download(att.storagePath);
+    if (dlErr || !blob) continue;          // skip silently — surfaced as missing in email
+    const buf = Buffer.from(await blob.arrayBuffer());
+    attachments.push({
+      filename: att.filename,
+      mimeType: att.mimeType,
+      content: buf
+    });
+  }
+
   let sent = 0;
   let failed = 0;
   const errors: { vendorId: string; vendor: string; error: string }[] = [];
@@ -434,7 +455,8 @@ export async function sendRfqViaGmail(
       cc,
       bcc: senderEmail, // bcc the sender for their own records
       subject,
-      body
+      body,
+      attachments: attachments.length > 0 ? attachments : undefined
     });
 
     if (result.ok) {

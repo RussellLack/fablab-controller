@@ -281,6 +281,27 @@ export const users = pgTable('users', {
   emailIdx: index('users_email_idx').on(t.email)
 }));
 
+/* ─────────────────────────── RFQ ATTACHMENTS ─────────────────────────── */
+/**
+ * Files attached to an RFQ — uploaded to Supabase Storage by the browser,
+ * registered here, then included as multipart/mixed parts in the outgoing
+ * Gmail email. Follows the same direct-upload pattern as item images (Wave 5).
+ *
+ * No FK to a project — derivable via rfqs.projectId; saves a join column.
+ */
+export const rfqAttachments = pgTable('rfq_attachments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  rfqId: uuid('rfq_id').notNull().references(() => rfqs.id, { onDelete: 'cascade' }),
+  filename: varchar('filename', { length: 300 }).notNull(),
+  storagePath: text('storage_path').notNull(),
+  mimeType: varchar('mime_type', { length: 120 }).notNull(),
+  sizeBytes: integer('size_bytes').notNull(),
+  uploadedBy: uuid('uploaded_by').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+}, t => ({
+  rfqIdx: index('rfq_attachments_rfq_idx').on(t.rfqId)
+}));
+
 /* ─────────────────────────── GOOGLE OAUTH TOKENS ─────────────────────────── */
 /**
  * Per-user Google OAuth tokens, captured at sign-in callback when the

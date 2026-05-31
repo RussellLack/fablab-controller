@@ -925,5 +925,16 @@
     "body_edited": "redigert",
     "body_regenerate": "Generer på nytt fra mal",
     "body_placeholders_note": "Plassholdere i [klammer] fylles inn per leverandør ved sending: [supplier contact name], [your name], [your role], [your email]."
+  },
+  "rfq_attachments": {
+    "title": "Vedlegg",
+    "attach": "+ Legg ved filer",
+    "uploading": "Laster opp…",
+    "empty": "Ingen vedlegg. Legg til spesifikasjoner, tegninger eller referanse-PDF-er som skal sendes med e-posten.",
+    "too_large": "{name} er over {max}-grensen og ble ikke lastet opp.",
+    "delete": "Fjern",
+    "delete_failed": "Kunne ikke slette vedlegg.",
+    "confirm_delete": "Fjern dette vedlegget?",
+    "download_failed": "Kunne ikke generere nedlastingslenke."
   }
 }

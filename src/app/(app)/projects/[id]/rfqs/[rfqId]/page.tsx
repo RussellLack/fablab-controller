@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { db, rfqs, rfqItems, rfqVendors, quotes, items, vendors } from '@/db';
-import { eq, inArray } from 'drizzle-orm';
+import { db, rfqs, rfqItems, rfqVendors, quotes, items, vendors, rfqAttachments } from '@/db';
+import { eq, inArray, asc } from 'drizzle-orm';
 import { formatDate } from '@/lib/utils';
 import { RfqDetailClient } from './client';
+import { RfqAttachments } from '@/components/rfq-attachments';
 
 async function getRfqDetail(rfqId: string, projectId: string) {
   if (!process.env.DATABASE_URL) return null;
@@ -25,7 +26,20 @@ async function getRfqDetail(rfqId: string, projectId: string) {
 
     const quoteRows = await db.select().from(quotes).where(eq(quotes.rfqId, rfqId));
 
-    return { rfq, items: itemDetails, vendors: vendorDetails, quotes: quoteRows };
+    const attachmentRows = await db
+      .select({
+        id: rfqAttachments.id,
+        filename: rfqAttachments.filename,
+        storagePath: rfqAttachments.storagePath,
+        mimeType: rfqAttachments.mimeType,
+        sizeBytes: rfqAttachments.sizeBytes,
+        createdAt: rfqAttachments.createdAt
+      })
+      .from(rfqAttachments)
+      .where(eq(rfqAttachments.rfqId, rfqId))
+      .orderBy(asc(rfqAttachments.createdAt));
+
+    return { rfq, items: itemDetails, vendors: vendorDetails, quotes: quoteRows, attachments: attachmentRows };
   } catch { return null; }
 }
 
@@ -57,6 +71,18 @@ export default async function RfqDetailPage({ params }: { params: Promise<{ id: 
         vendors={data.vendors}
         quotes={data.quotes}
       />
+
+      <div className="mt-4">
+        <RfqAttachments
+          projectId={id}
+          rfqId={data.rfq.id}
+          initial={data.attachments.map(a => ({
+            ...a,
+            createdAt: a.createdAt.toISOString()
+          }))}
+          canEdit={data.rfq.status === 'draft'}
+        />
+      </div>
     </>
   );
 }
