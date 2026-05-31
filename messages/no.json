@@ -70,7 +70,8 @@
     "record_payment": "+ Registrer betaling",
     "log_payment": "Loggfør betaling",
     "new_item_guided": "+ Legg til vare (veiviser)",
-    "new_rfq_guided": "+ Ny pristilbud-forespørsel (veiviser)"
+    "new_rfq_guided": "+ Ny pristilbud-forespørsel (veiviser)",
+    "send_via_gmail": "Send via Gmail"
   },
   "dash": {
     "title": "Dashbord",
@@ -547,7 +548,9 @@
     "items_in_rfq": "Varer i denne forespørselen:",
     "vendors_invited": "Leverandører invitert:",
     "winner_selected": "Vinner valgt",
-    "winner_label": "Vinner"
+    "winner_label": "Vinner",
+    "send_result_ok": "{count} e-post(er) sendt.",
+    "send_result_partial": "{sent} sendt, {failed} feilet:"
   },
   "po": {
     "count_suffix": "innkjøpsordre(r)",

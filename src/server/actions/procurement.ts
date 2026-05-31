@@ -14,6 +14,11 @@ import {
 } from '@/lib/validations/procurement';
 import { canIssuePurchaseOrder } from './approvals';
 import { applyBillingTrigger } from './finance';
+import { getOrRefreshGoogleAccessToken } from '@/server/lib/google-tokens';
+import { sendGmail } from '@/server/lib/gmail-send';
+
+/** CC this address on every team-member email. Skipped if author IS this address. */
+const SIV_EMAIL = 'siv@fablabdesign.com';
 
 type ActionResult = { ok: true; id?: string; url?: string } | { ok: false; error: string; fieldErrors?: Record<string, string[]> };
 
@@ -318,6 +323,132 @@ export async function createRfqAtomic(
 
   revalidatePath(`/projects/${projectId}/rfqs`);
   return { ok: true, rfqId: rfq.id };
+}
+
+/**
+ * Send an RFQ via Gmail under the current user's identity.
+ *
+ * Calls the existing `sendRfq` first (status → sent, pending Quote rows
+ * created, VendorCommunication logged). Then iterates the invited
+ * vendors, builds a per-vendor personalised email by substituting
+ * placeholders in the stored body, and POSTs to Gmail.
+ *
+ * CC=siv@fablabdesign.com unless the sender IS Siv (case-insensitive
+ * email compare). Per-vendor failures are reported but don't roll back
+ * the status change — that's intentional: the audit trail of "we tried
+ * to send" is more valuable than reverting to draft.
+ *
+ * Returns counts and a list of per-vendor errors for the caller to
+ * surface in the UI.
+ */
+export async function sendRfqViaGmail(
+  rfqId: string,
+  projectId: string
+): Promise<
+  ActionResult & {
+    sent?: number;
+    failed?: number;
+    errors?: { vendor: string; error: string }[];
+  }
+> {
+  const supabase = await supabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || !user.id) return { ok: false, error: 'Not authenticated' };
+  const senderEmail = user.email;
+  if (!senderEmail) return { ok: false, error: 'No email on signed-in account' };
+  const senderName =
+    (user.user_metadata?.full_name as string | undefined) ?? senderEmail;
+
+  // Need an access token to call Gmail. Returns null if the user hasn't
+  // granted the scope (or if refresh failed) — surface a clear error.
+  const accessToken = await getOrRefreshGoogleAccessToken(user.id);
+  if (!accessToken) {
+    return {
+      ok: false,
+      error:
+        'No Google authorisation on file. Sign out and back in to grant the Gmail send permission, then try again.'
+    };
+  }
+
+  // Run the existing status-transition + pending-quotes + comm-log path
+  // first. If the RFQ is already sent we tolerate that and re-send emails.
+  const transitionRes = await sendRfq(rfqId, projectId);
+  const alreadySent = !transitionRes.ok && transitionRes.error === 'Only draft RFQs can be sent';
+  if (!transitionRes.ok && !alreadySent) {
+    return { ok: false, error: transitionRes.error };
+  }
+
+  const [rfq] = await db.select().from(rfqs).where(eq(rfqs.id, rfqId)).limit(1);
+  if (!rfq) return { ok: false, error: 'RFQ not found' };
+
+  const invited = await db
+    .select({
+      id: vendors.id,
+      name: vendors.name,
+      contactName: vendors.contactName,
+      contactEmail: vendors.contactEmail
+    })
+    .from(rfqVendors)
+    .innerJoin(vendors, eq(rfqVendors.vendorId, vendors.id))
+    .where(eq(rfqVendors.rfqId, rfqId));
+
+  // CC=Siv unless sender IS Siv (case-insensitive)
+  const cc = senderEmail.toLowerCase() === SIV_EMAIL ? undefined : SIV_EMAIL;
+
+  const subject = `${rfq.reference} — ${rfq.title} (REQUEST FOR QUOTATION — NOT AN ORDER)`;
+  const bodyTemplate = rfq.description ?? '';
+
+  let sent = 0;
+  let failed = 0;
+  const errors: { vendor: string; error: string }[] = [];
+
+  for (const v of invited) {
+    if (!v.contactEmail) {
+      failed++;
+      errors.push({ vendor: v.name, error: 'No contact email on vendor record' });
+      continue;
+    }
+
+    const body = bodyTemplate
+      .replace(/\[supplier contact name\]/g, v.contactName ?? v.name)
+      .replace(/\[your name\]/g, senderName)
+      .replace(/\[your email\]/g, senderEmail)
+      .replace(/\[your role\]/g, ''); // role not in our user metadata yet
+
+    const result = await sendGmail({
+      accessToken,
+      from: senderEmail,
+      fromName: senderName,
+      to: v.contactEmail,
+      cc,
+      subject,
+      body
+    });
+
+    if (result.ok) {
+      sent++;
+    } else {
+      failed++;
+      errors.push({ vendor: v.name, error: result.error });
+    }
+  }
+
+  revalidatePath(`/projects/${projectId}/rfqs/${rfqId}`);
+  if (failed > 0) {
+    return {
+      ok: false,
+      error: `${failed} vendor email(s) failed; see details.`,
+      sent,
+      failed,
+      errors
+    };
+  }
+  return {
+    ok: true,
+    sent,
+    failed,
+    errors: undefined
+  };
 }
 
 /* ─────────────────────────── QUOTE ─────────────────────────── */

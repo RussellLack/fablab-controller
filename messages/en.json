@@ -70,7 +70,8 @@
     "record_payment": "+ Record payment",
     "log_payment": "Log payment",
     "new_item_guided": "+ Guided add item",
-    "new_rfq_guided": "+ New RFQ (guided)"
+    "new_rfq_guided": "+ New RFQ (guided)",
+    "send_via_gmail": "Send via Gmail"
   },
   "dash": {
     "title": "Dashboard",
@@ -547,7 +548,9 @@
     "items_in_rfq": "Items in this RFQ:",
     "vendors_invited": "Vendors invited:",
     "winner_selected": "Winner selected",
-    "winner_label": "Winner"
+    "winner_label": "Winner",
+    "send_result_ok": "{count} email(s) sent successfully.",
+    "send_result_partial": "{sent} sent, {failed} failed:"
   },
   "po": {
     "count_suffix": "PO(s)",

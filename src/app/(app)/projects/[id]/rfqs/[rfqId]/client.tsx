@@ -3,7 +3,7 @@
 import { useActionState, useTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { sendRfq, recordQuote, selectWinningQuote } from '@/server/actions/procurement';
+import { sendRfqViaGmail, recordQuote, selectWinningQuote } from '@/server/actions/procurement';
 import { formatMoney, formatDate, cx } from '@/lib/utils';
 import { BindingBadge } from '@/components/binding-badge';
 
@@ -24,6 +24,13 @@ export function RfqDetailClient({ projectId, rfq, items, vendors, quotes }: {
   const t = useTranslations();
   const router = useRouter();
   const [sending, startSend] = useTransition();
+  const [sendResult, setSendResult] = useState<null | {
+    ok: boolean;
+    sent?: number;
+    failed?: number;
+    error?: string;
+    errors?: { vendor: string; error: string }[];
+  }>(null);
 
   const isDraft = rfq.status === 'draft';
   const isSent = rfq.status !== 'draft' && rfq.status !== 'cancelled';
@@ -48,14 +55,57 @@ export function RfqDetailClient({ projectId, rfq, items, vendors, quotes }: {
             className="btn btn-primary"
             disabled={sending}
             onClick={() => startSend(async () => {
-              await sendRfq(rfq.id, projectId);
+              const res = await sendRfqViaGmail(rfq.id, projectId);
+              setSendResult(
+                'sent' in res
+                  ? {
+                      ok: res.ok,
+                      sent: res.sent,
+                      failed: res.failed,
+                      error: res.ok ? undefined : res.error,
+                      errors: res.errors
+                    }
+                  : { ok: false, error: res.ok ? undefined : res.error }
+              );
               router.refresh();
             })}
           >
-            {sending ? t('action.sending') : t('action.send_rfq')}
+            {sending ? t('action.sending') : t('action.send_via_gmail')}
           </button>
         )}
       </div>
+
+      {sendResult && (
+        <div
+          className={cx(
+            'border rounded-lg px-3.5 py-2.5 mb-4 text-[13px]',
+            sendResult.ok
+              ? 'bg-ok-soft border-ok text-ok'
+              : 'bg-warn-soft border-warn text-warn'
+          )}
+        >
+          <div className="font-semibold">
+            {sendResult.ok
+              ? t('rfq.send_result_ok', { count: sendResult.sent ?? 0 })
+              : t('rfq.send_result_partial', {
+                  sent: sendResult.sent ?? 0,
+                  failed: sendResult.failed ?? 0
+                })}
+          </div>
+          {sendResult.error && !sendResult.errors && (
+            <div className="mt-1 text-[12px]">{sendResult.error}</div>
+          )}
+          {sendResult.errors && sendResult.errors.length > 0 && (
+            <ul className="mt-1 text-[12px] list-disc list-inside space-y-0.5">
+              {sendResult.errors.map((e, i) => (
+                <li key={i}>
+                  <strong>{e.vendor}:</strong> {e.error}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {isSent && items.map(item => (
         <ItemQuotesBlock
