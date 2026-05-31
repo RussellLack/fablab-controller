@@ -670,6 +670,92 @@ export async function createPoDraft(
 }
 
 /**
+ * Wizard-friendly variant of createPoDraft.
+ *
+ * Same insert logic but returns the new poId in the result instead of
+ * redirecting, so the PO wizard can close its drawer and navigate
+ * client-side. Always creates a DRAFT — issuing (which is BINDING per R3)
+ * is still a separate action on the PO detail page behind canIssuePurchaseOrder.
+ */
+export async function createPoDraftAtomic(
+  projectId: string,
+  projectRef: string,
+  formData: FormData
+): Promise<ActionResult & { poId?: string }> {
+  const userId = await currentUserId();
+  if (!userId) return { ok: false, error: 'Not authenticated' };
+
+  const raw = Object.fromEntries(formData.entries());
+  const parsed = newPoSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { ok: false, error: 'Invalid input', fieldErrors: parsed.error.flatten().fieldErrors };
+  }
+
+  const candidates = await db.execute<{
+    item_id: string; quote_id: string; unit_cost: string; quoted_quantity: string;
+  }>(
+    sql`SELECT i.id AS item_id, q.id AS quote_id, q.unit_cost, q.quoted_quantity
+        FROM items i
+        JOIN packages p ON p.id = i.package_id
+        JOIN quotes q ON q.id = i.winning_quote_id
+        WHERE p.project_id = ${projectId}
+          AND q.vendor_id = ${parsed.data.vendorId}
+          AND NOT EXISTS (
+            SELECT 1 FROM purchase_order_lines pol
+            JOIN purchase_orders po ON po.id = pol.purchase_order_id
+            WHERE pol.item_id = i.id AND po.status != 'cancelled'
+          )`
+  );
+
+  if (candidates.length === 0) {
+    return { ok: false, error: 'No items with a winning quote against this vendor are available' };
+  }
+
+  const subtotal = candidates.reduce((sum, c) =>
+    sum + parseFloat(c.unit_cost) * parseFloat(c.quoted_quantity ?? '1'), 0);
+  const vatRate = 0.25;
+  const vatAmount = subtotal * vatRate;
+  const totalGross = subtotal + vatAmount;
+  const reference = await nextRef('PO', 'po', projectRef);
+
+  const [project] = await db.select({ siteAddress: projects.siteAddress })
+    .from(projects).where(eq(projects.id, projectId)).limit(1);
+
+  const [po] = await db.insert(purchaseOrders).values({
+    reference,
+    projectId,
+    vendorId: parsed.data.vendorId,
+    status: 'draft',
+    currency: parsed.data.currency,
+    subtotalNet: subtotal.toFixed(2),
+    vatAmount: vatAmount.toFixed(2),
+    totalGross: totalGross.toFixed(2),
+    deliveryAddress: parsed.data.deliveryAddress || project?.siteAddress,
+    deliveryDeadline: parsed.data.deliveryDeadline?.toISOString().slice(0, 10),
+    deliveryInstructions: parsed.data.deliveryInstructions,
+    freightTerms: parsed.data.freightTerms,
+    freightResponsibleParty: parsed.data.freightResponsibleParty,
+    customsRequirements: parsed.data.customsRequirements,
+    approvalReferenceId: parsed.data.approvalReferenceId,
+    notes: parsed.data.notes,
+    terms: parsed.data.terms
+  }).returning({ id: purchaseOrders.id });
+
+  if (!po) return { ok: false, error: 'Insert failed' };
+
+  await db.insert(purchaseOrderLines).values(candidates.map(c => ({
+    purchaseOrderId: po.id,
+    itemId: c.item_id,
+    quantity: c.quoted_quantity ?? '1',
+    unitCost: c.unit_cost,
+    lineTotal: (parseFloat(c.unit_cost) * parseFloat(c.quoted_quantity ?? '1')).toFixed(2)
+  })));
+
+  revalidatePath(`/projects/${projectId}/pos`);
+  return { ok: true, poId: po.id };
+}
+
+/**
  * Issue a PO — calls the canIssuePurchaseOrder gate from approvals.ts.
  * Refuses if R3 is violated. On success: PO → `issued`, all Items advance
  * to `ordered`, VendorCommunication logged with stage='po_issued'.

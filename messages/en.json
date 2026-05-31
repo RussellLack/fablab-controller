@@ -71,7 +71,8 @@
     "log_payment": "Log payment",
     "new_item_guided": "+ Guided add item",
     "new_rfq_guided": "+ New RFQ (guided)",
-    "send_via_gmail": "Send via Gmail"
+    "send_via_gmail": "Send via Gmail",
+    "new_po_guided": "+ New PO (guided)"
   },
   "dash": {
     "title": "Dashboard",
@@ -936,5 +937,27 @@
     "delete_failed": "Could not delete attachment.",
     "confirm_delete": "Remove this attachment?",
     "download_failed": "Could not generate download link."
+  },
+  "po_wizard": {
+    "title": "+ New PO (guided)",
+    "step_vendor": "Vendor",
+    "step_lines": "Lines",
+    "step_delivery": "Delivery",
+    "step_authorisation": "Authorisation",
+    "step_review": "Review",
+    "vendor_helper": "Only vendors with at least one winning quote on this project — and items not already on a non-cancelled PO — appear here.",
+    "no_candidates": "No vendors have winning quotes ready to order on this project. Select winning quotes on the RFQs tab first.",
+    "pick_vendor_first": "Pick a vendor on step 1 first.",
+    "lines_helper": "These lines are auto-generated from the vendor’s winning quotes. Edit quantities or unit costs later on the PO detail page if needed.",
+    "delivery_helper": "Delivery, freight, and customs terms travel with the PO when it is issued and bind both parties.",
+    "authorisation_helper": "Rule R3 requires every PO to cite the approved Approval that authorises it. Pick one below.",
+    "no_approvals_yet": "There are no approved Approvals on this project yet, so a PO cannot be issued (R3 gate). Create and approve an Approval first.",
+    "create_approval": "Create approval",
+    "approval_r3_note": "Per Rule R3 (00- §22), no PO may be issued without an approved authorising Approval on file. This link is recorded permanently on the PO.",
+    "review_helper": "Review the PO and create it as a DRAFT. Issuing the PO (which is BINDING) is a separate, gated action on the PO detail page.",
+    "draft_only_label": "Draft only.",
+    "draft_only_body": "This wizard creates an unissued draft. The vendor will not receive it and no commitment exists until you click \"Issue\" on the detail page — which is BINDING.",
+    "submit": "Create draft",
+    "item_count": "{count, plural, =1 {1 item} other {# items}}"
   }
 }

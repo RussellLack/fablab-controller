@@ -71,7 +71,8 @@
     "log_payment": "Loggfør betaling",
     "new_item_guided": "+ Legg til vare (veiviser)",
     "new_rfq_guided": "+ Ny pristilbud-forespørsel (veiviser)",
-    "send_via_gmail": "Send via Gmail"
+    "send_via_gmail": "Send via Gmail",
+    "new_po_guided": "+ Ny innkjøpsordre (veiviser)"
   },
   "dash": {
     "title": "Dashbord",
@@ -936,5 +937,27 @@
     "delete_failed": "Kunne ikke slette vedlegg.",
     "confirm_delete": "Fjern dette vedlegget?",
     "download_failed": "Kunne ikke generere nedlastingslenke."
+  },
+  "po_wizard": {
+    "title": "+ Ny innkjøpsordre (veiviser)",
+    "step_vendor": "Leverandør",
+    "step_lines": "Linjer",
+    "step_delivery": "Levering",
+    "step_authorisation": "Autorisasjon",
+    "step_review": "Gjennomgang",
+    "vendor_helper": "Kun leverandører med minst ett vinnende tilbud på dette prosjektet — og varer som ikke allerede ligger på en ikke-kansellert PO — vises her.",
+    "no_candidates": "Ingen leverandører har vinnende tilbud klare for bestilling. Velg vinnende tilbud på pristilbud-fanen først.",
+    "pick_vendor_first": "Velg en leverandør på trinn 1 først.",
+    "lines_helper": "Linjene genereres automatisk fra leverandørens vinnende tilbud. Rediger antall eller enhetspris senere på PO-detaljsiden.",
+    "delivery_helper": "Leverings-, frakt- og toll-vilkår følger PO når den utstedes og er bindende for begge parter.",
+    "authorisation_helper": "Regel R3 krever at hver PO viser til den godkjente Godkjenningen som autoriserer den. Velg en nedenfor.",
+    "no_approvals_yet": "Det finnes ingen godkjente Godkjenninger på prosjektet ennå, så en PO kan ikke utstedes (R3-port). Opprett og godkjenn en Godkjenning først.",
+    "create_approval": "Opprett godkjenning",
+    "approval_r3_note": "Per Regel R3 (00- §22) kan ingen PO utstedes uten en godkjent autoriserende Godkjenning. Denne lenken registreres permanent på PO-en.",
+    "review_helper": "Se gjennom PO-en og opprett den som UTKAST. Utstedelse (som er BINDENDE) skjer separat fra detaljsiden.",
+    "draft_only_label": "Kun utkast.",
+    "draft_only_body": "Veiviseren oppretter et uutstedt utkast. Leverandøren mottar den ikke og ingen forpliktelse oppstår før du klikker \"Utsted\" på detaljsiden — som er BINDENDE.",
+    "submit": "Opprett utkast",
+    "item_count": "{count, plural, =1 {1 vare} other {# varer}}"
   }
 }
