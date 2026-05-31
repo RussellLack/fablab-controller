@@ -131,6 +131,9 @@ function WhereStep({
 
         {state.mode === 'new' && (
           <div className="mt-2 space-y-2.5 pl-6">
+            <p className="text-[11px] text-ink-3 italic leading-snug">
+              {t('package.intro')}
+            </p>
             <div>
               <label className="text-[12px] text-ink-2 block mb-1">
                 {t('package.name')} *
@@ -152,12 +155,20 @@ function WhereStep({
                 }
                 className="w-full px-2.5 py-2 border border-line rounded-md text-[13px]"
               >
-                <option value="room">{t('package.kind.room')}</option>
-                <option value="category">{t('package.kind.category')}</option>
-                <option value="trade">{t('package.kind.trade')}</option>
-                <option value="phase">{t('package.kind.phase')}</option>
+                <option value="room" title={t('package.kind_short.room')}>
+                  {t('package.kind.room')} — {t('package.kind_short.room')}
+                </option>
+                <option value="category" title={t('package.kind_short.category')}>
+                  {t('package.kind.category')} — {t('package.kind_short.category')}
+                </option>
+                <option value="trade" title={t('package.kind_short.trade')}>
+                  {t('package.kind.trade')} — {t('package.kind_short.trade')}
+                </option>
+                <option value="phase" title={t('package.kind_short.phase')}>
+                  {t('package.kind.phase')} — {t('package.kind_short.phase')}
+                </option>
               </select>
-              <p className="text-[11px] text-ink-3 italic mt-1">
+              <p className="text-[11px] text-ink-3 italic mt-1 leading-snug">
                 {t(`package.kind_help.${state.newPackageKind}`)}
               </p>
             </div>

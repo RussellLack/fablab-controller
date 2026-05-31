@@ -43,7 +43,10 @@ export function PackagesClient({ projectId, packages, items }: { projectId: stri
 
       {adding && (
         <form action={action} className="card mb-4">
-          <h3 className="card-title mb-3">{t('package.new')}</h3>
+          <h3 className="card-title mb-1">{t('package.new')}</h3>
+          <p className="text-[12px] text-ink-3 italic leading-snug mb-3">
+            {t('package.intro')}
+          </p>
           {state && !state.ok && <div className="text-danger text-[12px] mb-2">{state.error}</div>}
           <div className="grid grid-cols-[180px_1fr] gap-3 items-center">
             <label className="text-[13px] text-ink-2">{t('package.name')}*</label>
@@ -55,14 +58,22 @@ export function PackagesClient({ projectId, packages, items }: { projectId: stri
                 required
                 value={newPkgKind}
                 onChange={(e) => setNewPkgKind(e.target.value as typeof newPkgKind)}
-                className="px-2.5 py-2 border border-line rounded-md text-[13px] w-48"
+                className="px-2.5 py-2 border border-line rounded-md text-[13px] w-72"
               >
-                <option value="room">{t('package.kind.room')}</option>
-                <option value="category">{t('package.kind.category')}</option>
-                <option value="trade">{t('package.kind.trade')}</option>
-                <option value="phase">{t('package.kind.phase')}</option>
+                <option value="room" title={t('package.kind_short.room')}>
+                  {t('package.kind.room')} — {t('package.kind_short.room')}
+                </option>
+                <option value="category" title={t('package.kind_short.category')}>
+                  {t('package.kind.category')} — {t('package.kind_short.category')}
+                </option>
+                <option value="trade" title={t('package.kind_short.trade')}>
+                  {t('package.kind.trade')} — {t('package.kind_short.trade')}
+                </option>
+                <option value="phase" title={t('package.kind_short.phase')}>
+                  {t('package.kind.phase')} — {t('package.kind_short.phase')}
+                </option>
               </select>
-              <p className="text-[11px] text-ink-3 italic mt-1">
+              <p className="text-[11px] text-ink-3 italic mt-1 leading-snug">
                 {t(`package.kind_help.${newPkgKind}`)}
               </p>
             </div>

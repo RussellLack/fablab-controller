@@ -412,7 +412,7 @@
     "new": "Ny pakke",
     "name": "Navn",
     "name_placeholder": "f.eks. Stue FF&E",
-    "kind_label": "Type",
+    "kind_label": "Grupper etter",
     "budget": "Budsjett (NOK)",
     "kind": {
       "room": "Rom",
@@ -421,10 +421,17 @@
       "phase": "Fase"
     },
     "kind_help": {
-      "room": "Grupper varer etter fysisk rom — f.eks. \"Hotell-lobby FF&E\".",
-      "category": "Grupper varer etter produktkategori — f.eks. \"All belysning på tvers av prosjektet\".",
-      "trade": "Grupper varer etter fagdisiplin som leverer eller installerer dem — f.eks. \"All snekkerarbeid\", \"Alt elektrisk\", \"All glassarbeid\".",
-      "phase": "Grupper varer etter leverings- / installasjonsfase — f.eks. \"Fase 1 installasjon\"."
+      "room": "Alle varer installert i ett fysisk rom. Velg Rom når beslutninger og budsjett følger per rom — typisk for bolig, hotell og butikkinnredning.",
+      "category": "Alle varer av én produkttype på tvers av hele prosjektet. Velg Kategori når du kjøper én kategori fra én spesialist — f.eks. all belysning fra én leverandør.",
+      "trade": "Alle varer som leveres eller installeres av samme spesialist-disiplin (snekker, elektriker, glasshåndverker, maler, osv.). Velg Fag på bygge-ledede prosjekter der tilbud går til fag-entreprenører.",
+      "phase": "Alle varer som leveres eller installeres samtidig i én etappe. Velg Fase når prosjektet sendes i bølger — f.eks. Fase 1 installasjon lander før Fase 2 design er ferdig."
+    },
+    "intro": "Pakker grupperer varer slik at du kan håndtere dem samlet. Du kan blande grupperingstyper i samme prosjekt — f.eks. én \"Hotell-lobby FF&E\" (Rom) pluss én \"Alt snekkerarbeid\" (Fag) pluss én \"Fase 1 installasjon\" (Fase).",
+    "kind_short": {
+      "room": "Fysisk rom",
+      "category": "Produkttype",
+      "trade": "Spesialist-disiplin",
+      "phase": "Leverings-etappe"
     }
   },
   "item": {

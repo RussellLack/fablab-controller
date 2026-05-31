@@ -412,7 +412,7 @@
     "new": "New package",
     "name": "Name",
     "name_placeholder": "e.g. Living Room FF&E",
-    "kind_label": "Kind",
+    "kind_label": "Group by",
     "budget": "Budget (NOK)",
     "kind": {
       "room": "Room",
@@ -421,10 +421,17 @@
       "phase": "Phase"
     },
     "kind_help": {
-      "room": "Group items by physical room — e.g. \"Hotel lobby FF&E\".",
-      "category": "Group items by product category — e.g. \"All lighting across the project\".",
-      "trade": "Group items by specialist discipline that produces or installs them — e.g. \"All joinery\", \"All electrical\", \"All glazing\".",
-      "phase": "Group items by delivery / install stage — e.g. \"Phase 1 install\"."
+      "room": "All items installed in one physical space. Reach for Room when decisions and budget track per room — typical for residential, hospitality and retail fit-outs.",
+      "category": "All items of one product type across the whole project. Reach for Category when you’re sourcing one category from a single specialist — e.g. all lighting from one supplier.",
+      "trade": "All items the same specialist discipline delivers or installs (joinery, electrical, glazing, painting, etc.). Reach for Trade on construction-led projects where bid packages go out to trade contractors.",
+      "phase": "All items delivered or installed together in one stage. Reach for Phase when the project ships in waves — e.g. Phase 1 install lands before Phase 2 design is complete."
+    },
+    "intro": "Packages group items so you can manage them together. You can mix grouping types within the same project — e.g. one \"Hotel lobby FF&E\" (Room) plus one \"All joinery\" (Trade) plus one \"Phase 1 install\" (Phase).",
+    "kind_short": {
+      "room": "Physical space",
+      "category": "Product type",
+      "trade": "Specialist discipline",
+      "phase": "Delivery stage"
     }
   },
   "item": {
