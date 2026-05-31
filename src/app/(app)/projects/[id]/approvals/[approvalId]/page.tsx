@@ -5,6 +5,7 @@ import { db, approvals, users } from '@/db';
 import { eq } from 'drizzle-orm';
 import { formatDate, formatMoney, cx } from '@/lib/utils';
 import { ApprovalPill } from '@/components/approval-pill';
+import { BindingBadge } from '@/components/binding-badge';
 import { ApprovalActions } from './actions-client';
 
 async function getApproval(approvalId: string, projectId: string) {
@@ -41,7 +42,9 @@ function bannerVariant(status: string): { tone: 'info' | 'ok' | 'warn' | 'danger
     case 'draft':
       return { tone: 'muted', labelKey: 'approval.banner.draft', bodyKey: 'approval.banner.draft_body' };
     case 'sent_for_approval':
-      return { tone: 'info', labelKey: 'approval.banner.sent', bodyKey: 'approval.banner.sent_body' };
+      // Amber, not blue — the "approval pending" state needs visual urgency
+      // per the doctrine in 00- §22 that verbal approval is non-binding.
+      return { tone: 'warn', labelKey: 'approval.banner.sent', bodyKey: 'approval.banner.sent_body' };
     case 'approved':
       return { tone: 'ok', labelKey: 'approval.banner.approved', bodyKey: 'approval.banner.approved_body' };
     case 'approved_with_conditions':
@@ -98,6 +101,7 @@ export default async function ApprovalDetailPage({
             <span className="inline-block text-[11px] py-0.5 px-2 rounded bg-bg text-ink-2 border border-line">
               {t(targetTypeKey(a))}
             </span>
+            {a.status === 'sent_for_approval' && <BindingBadge state="awaiting" />}
           </div>
           <h2 className="text-[20px] font-semibold tracking-tighter">{a.subject}</h2>
           <p className="text-ink-2 text-[13px] mt-1">

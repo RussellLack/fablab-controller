@@ -5,6 +5,7 @@ import { db, purchaseOrders, purchaseOrderLines, items, vendors, approvals } fro
 import { eq, and } from 'drizzle-orm';
 import { formatDate, formatMoney, cx } from '@/lib/utils';
 import { canIssuePurchaseOrder } from '@/server/actions/approvals';
+import { BindingBadge, poStatusToBinding } from '@/components/binding-badge';
 import { PoActions } from './actions-client';
 
 async function getPo(poId: string, projectId: string) {
@@ -75,6 +76,7 @@ export default async function PoDetailPage({ params }: { params: Promise<{ id: s
             <span className={cx('text-[11px] px-2 py-0.5 rounded-full', banner?.tone)}>
               {t(`po.status.${po.status}`)}
             </span>
+            <BindingBadge state={poStatusToBinding(po.status)} />
           </div>
           <h1 className="text-[22px] font-semibold tracking-tighter">
             PO {t('po.to')} {data.vendorName}

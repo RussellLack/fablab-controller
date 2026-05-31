@@ -816,5 +816,12 @@
     "linear": "Lineær",
     "transverse": "Tverrgående",
     "soon": "snart"
+  },
+  "binding": {
+    "binding": "BINDENDE",
+    "not_binding": "IKKE UTSTEDT",
+    "not_an_order": "IKKE EN BESTILLING",
+    "awaiting_written": "VENTER PÅ SKRIFTLIG GODKJENNING",
+    "selected_not_ordered": "valgt, ikke bestilt"
   }
 }

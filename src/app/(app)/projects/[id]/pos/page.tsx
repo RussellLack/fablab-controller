@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { db, purchaseOrders, vendors } from '@/db';
 import { eq, desc } from 'drizzle-orm';
 import { formatDate, formatMoney, cx } from '@/lib/utils';
+import { BindingBadge, poStatusToBinding } from '@/components/binding-badge';
 
 async function getPos(projectId: string) {
   if (!process.env.DATABASE_URL) return [];
@@ -58,9 +59,12 @@ export default async function PosTabPage({ params }: { params: Promise<{ id: str
                 <td className="p-3 px-3.5 border-b border-line text-[13px]">{vendorName ?? '—'}</td>
                 <td className="p-3 px-3.5 border-b border-line text-[13px]">{formatMoney(po.totalGross, po.currency)}</td>
                 <td className="p-3 px-3.5 border-b border-line text-[13px]">
-                  <span className={cx('text-[11px] px-2 py-0.5 rounded-full', PO_PILL[po.status] ?? 'bg-bg text-ink-3')}>
-                    {t(`po.status.${po.status}`)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={cx('text-[11px] px-2 py-0.5 rounded-full', PO_PILL[po.status] ?? 'bg-bg text-ink-3')}>
+                      {t(`po.status.${po.status}`)}
+                    </span>
+                    <BindingBadge state={poStatusToBinding(po.status)} />
+                  </div>
                 </td>
                 <td className="p-3 px-3.5 border-b border-line text-[13px] text-ink-3">{formatDate(po.issuedAt)}</td>
               </tr>

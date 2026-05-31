@@ -816,5 +816,12 @@
     "linear": "Linear",
     "transverse": "Transverse",
     "soon": "soon"
+  },
+  "binding": {
+    "binding": "BINDING",
+    "not_binding": "NOT YET ISSUED",
+    "not_an_order": "NOT AN ORDER",
+    "awaiting_written": "AWAITING WRITTEN APPROVAL",
+    "selected_not_ordered": "selected, not ordered"
   }
 }

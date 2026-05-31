@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { sendRfq, recordQuote, selectWinningQuote } from '@/server/actions/procurement';
 import { formatMoney, formatDate, cx } from '@/lib/utils';
+import { BindingBadge } from '@/components/binding-badge';
 
 type Item = { id: string; name: string; quantity: string; unit: string; winningQuoteId: string | null };
 type Vendor = { id: string; name: string };
@@ -34,6 +35,7 @@ export function RfqDetailClient({ projectId, rfq, items, vendors, quotes }: {
           <div className="flex items-center gap-2 mb-1">
             <span className="ref">{rfq.reference}</span>
             <span className="text-[11px] px-2 py-0.5 rounded-full bg-info-soft text-info">{t(`rfq.status.${rfq.status}`)}</span>
+            <BindingBadge state="not-an-order" />
           </div>
           <h1 className="text-[22px] font-semibold tracking-tighter">{rfq.title}</h1>
           <p className="text-ink-2 text-[13px] mt-1">
@@ -186,12 +188,17 @@ function QuoteRow({ projectId, rfqId, item, vendor, quote }: {
       <td className="py-2 text-right text-ink-2">{quote.leadTimeDays ? `${quote.leadTimeDays} d` : '—'}</td>
       <td className="py-2 text-right text-ink-3">{formatDate(quote.validUntil)}</td>
       <td className="py-2">
-        <span className={cx('text-[11px] px-2 py-0.5 rounded-full',
-          quote.status === 'winning' ? 'bg-ok-soft text-ok' :
-          quote.status === 'pending' ? 'bg-warn-soft text-warn' :
-          quote.status === 'received' ? 'bg-info-soft text-info' :
-          'bg-bg text-ink-3'
-        )}>{t(`quote.status.${quote.status}`)}</span>
+        <div className="flex items-center gap-1.5">
+          <span className={cx('text-[11px] px-2 py-0.5 rounded-full',
+            quote.status === 'winning' ? 'bg-ok-soft text-ok' :
+            quote.status === 'pending' ? 'bg-warn-soft text-warn' :
+            quote.status === 'received' ? 'bg-info-soft text-info' :
+            'bg-bg text-ink-3'
+          )}>{t(`quote.status.${quote.status}`)}</span>
+          {quote.status === 'winning' && (
+            <span className="text-[10px] text-ink-3 italic">{t('binding.selected_not_ordered')}</span>
+          )}
+        </div>
       </td>
       <td className="py-2 text-right">
         {isPending && <button onClick={() => setRecording(true)} className="btn btn-ghost text-[12px]">{t('action.record_quote')}</button>}
