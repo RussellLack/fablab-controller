@@ -3,6 +3,11 @@ import { Header } from '@/components/header';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
+// Every authenticated route depends on the session cookie and queries the
+// database per request — they must never be statically prerendered. Setting
+// `dynamic = 'force-dynamic'` on this layout cascades to all child routes.
+export const dynamic = 'force-dynamic';
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
