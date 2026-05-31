@@ -97,6 +97,53 @@ async function main() {
     console.log(`   ✓ Backfilled ${backfilled.length} public.users row(s)`);
   }
 
+  // 5. Storage bucket for item images (Wave 5 v7)
+  //
+  // Created idempotently by inserting into storage.buckets directly (which is
+  // a regular Postgres table). The bucket is public-read so the Controller
+  // can render thumbnails via plain URLs — fine because the URLs aren't
+  // predictable (UUID-keyed paths) and item photos aren't sensitive. When we
+  // add the share-link feature we'll layer signed URLs on top for the
+  // customer-facing paths.
+  await sql.unsafe(`
+    INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+    VALUES (
+      'item-images',
+      'item-images',
+      true,
+      5242880,                  -- 5 MB hard limit at the storage layer (matches v7 spec)
+      ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/avif']
+    )
+    ON CONFLICT (id) DO UPDATE SET
+      public = EXCLUDED.public,
+      file_size_limit = EXCLUDED.file_size_limit,
+      allowed_mime_types = EXCLUDED.allowed_mime_types;
+  `);
+  console.log('   ✓ Storage bucket "item-images" present');
+
+  // RLS: any authenticated user can read/write inside this bucket.
+  // Path scoping (only under `projects/{their_project_ids}/`) is enforced
+  // app-side in the upload route — overly granular SQL policies are fragile
+  // when project membership shifts (we don't have a project_members table yet).
+  await sql.unsafe(`DROP POLICY IF EXISTS item_images_authenticated_write ON storage.objects;`);
+  await sql.unsafe(`
+    CREATE POLICY item_images_authenticated_write
+      ON storage.objects
+      FOR ALL
+      TO authenticated
+      USING (bucket_id = 'item-images')
+      WITH CHECK (bucket_id = 'item-images');
+  `);
+  await sql.unsafe(`DROP POLICY IF EXISTS item_images_public_read ON storage.objects;`);
+  await sql.unsafe(`
+    CREATE POLICY item_images_public_read
+      ON storage.objects
+      FOR SELECT
+      TO anon
+      USING (bucket_id = 'item-images');
+  `);
+  console.log('   ✓ Storage RLS policies for item-images installed');
+
   console.log('✅ Setup complete.');
   await sql.end();
   process.exit(0);

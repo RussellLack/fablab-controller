@@ -10,6 +10,7 @@ const TABS = [
   { slug: 'scope', key: 'tab.scope' },
   { slug: 'approvals', key: 'tab.approvals' },
   { slug: 'packages', key: 'tab.packages' },
+  { slug: 'element-list', key: 'tab.elementList' },
   { slug: 'rfqs', key: 'tab.rfqs' },
   { slug: 'pos', key: 'tab.pos' },
   { slug: 'finance', key: 'tab.finance' }

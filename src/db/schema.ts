@@ -230,7 +230,8 @@ export const timeCategoryEnum = pgEnum('time_category', [
 ]);
 
 export const docTemplateSlugEnum = pgEnum('doc_template_slug', [
-  'rfq', 'purchase_order', 'invoice', 'change_order_request', 'approval_request',
+  'rfq', 'price_request', 'purchase_order', 'installation_order',
+  'invoice', 'change_order_request', 'approval_request',
   'letter_of_agreement', 'fee_proposal', 'project_status_report',
   'handover_document', 'defect_notification', 'decline_notification', 'other'
 ]);
@@ -361,6 +362,10 @@ export const projects = pgTable('projects', {
   vatRate: numeric('vat_rate', { precision: 5, scale: 2 }).notNull().default('25.00'),
   targetHandoverDate: date('target_handover_date'),
   currentScopeBaselineId: uuid('current_scope_baseline_id'),
+
+  // Wave 5 v7 — Element List
+  defaultDiscountPct: numeric('default_discount_pct', { precision: 5, scale: 2 }),  // applied to all items lacking a per-item discount
+  deliveryCountry: varchar('delivery_country', { length: 2 }),                       // ISO 3166-1 alpha-2; drives VAT context
 
   // Wave 2 rollups (refreshed by background job)
   totalCommittedCost: numeric('total_committed_cost', { precision: 14, scale: 2 }).default('0'),
@@ -523,6 +528,13 @@ export const items = pgTable('items', {
 
   specFileId: uuid('spec_file_id'),
   notes: text('notes'),
+
+  // Wave 5 v7 — Element List
+  primaryImageId: uuid('primary_image_id'),                                          // → item_images.id (FK declared inline below)
+  discountPct: numeric('discount_pct', { precision: 5, scale: 2 }),                  // per-item discount; if null, project default applies
+  discountAmount: numeric('discount_amount', { precision: 14, scale: 2 }),           // alternative absolute discount; mutually exclusive with pct (app-level enforced)
+  discountReason: varchar('discount_reason', { length: 200 }),
+  showOnCustomerView: boolean('show_on_customer_view').notNull().default(true),
 
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
@@ -1381,4 +1393,163 @@ export const itemsRelations = relations(items, ({ one, many }) => ({
 export const packagesRelations = relations(packages, ({ one, many }) => ({
   project: one(projects, { fields: [packages.projectId], references: [projects.id] }),
   items: many(items)
+}));
+
+/* ─────────────────────────── WAVE 5 — ELEMENT LIST ─────────────────────────── */
+
+export const elementListViewKindEnum = pgEnum('element_list_view_kind', [
+  'internal', 'customer', 'supplier'
+]);
+
+export const elementListExportFormatEnum = pgEnum('element_list_export_format', [
+  'pdf', 'xlsx', 'csv', 'web_link'
+]);
+
+export const dropboxExportStatusEnum = pgEnum('dropbox_export_status', [
+  'queued', 'uploading', 'done', 'failed'
+]);
+
+/**
+ * ItemImage — the product photo that appears next to each item on the Element List.
+ *
+ * Separate from spec_file_id (which is for technical spec sheets / CAD).
+ * Holds three variants: original (as uploaded), processed (background removed
+ * via @imgly/background-removal in the browser), and thumbnail.
+ */
+export const itemImages = pgTable('item_images', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  itemId: uuid('item_id').notNull().references(() => items.id, { onDelete: 'cascade' }),
+  originalBlobUri: varchar('original_blob_uri', { length: 600 }).notNull(),
+  processedBlobUri: varchar('processed_blob_uri', { length: 600 }),
+  thumbnailBlobUri: varchar('thumbnail_blob_uri', { length: 600 }),
+  originalMime: varchar('original_mime', { length: 60 }).notNull(),
+  originalBytes: integer('original_bytes').notNull(),
+  processedBytes: integer('processed_bytes'),
+  widthPx: integer('width_px'),
+  heightPx: integer('height_px'),
+  backgroundRemovedAt: timestamp('background_removed_at', { withTimezone: true }),
+  uploadedBy: uuid('uploaded_by').notNull().references(() => users.id),
+  uploadedAt: timestamp('uploaded_at', { withTimezone: true }).notNull().defaultNow(),
+  caption: varchar('caption', { length: 300 }),
+  displayOrder: integer('display_order').notNull().default(0)
+}, t => ({
+  itemIdx: index('item_images_item_idx').on(t.itemId, t.displayOrder)
+}));
+
+/**
+ * ElementListSnapshot — point-in-time exports.
+ *
+ * Every PDF / Excel / CSV export creates a row here so we can answer
+ * "what did Siv send on 31.05.2026?" months later.
+ */
+export const elementListSnapshots = pgTable('element_list_snapshots', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  reference: varchar('reference', { length: 40 }).notNull().unique(),    // ELS-014-008
+  projectId: uuid('project_id').notNull().references(() => projects.id),
+  version: integer('version').notNull(),                                  // per-project autoincrement
+  viewKind: elementListViewKindEnum('view_kind').notNull(),
+  supplierVendorId: uuid('supplier_vendor_id').references(() => vendors.id),
+  exportFormat: elementListExportFormatEnum('export_format').notNull(),
+  blobUri: varchar('blob_uri', { length: 600 }),                          // null for web_link
+  shareLinkId: uuid('share_link_id'),                                     // populated when export_format = web_link
+  filtersApplied: jsonb('filters_applied'),                               // room/package/status filters at time of export
+  itemCount: integer('item_count').notNull(),
+  totalValue: numeric('total_value', { precision: 14, scale: 2 }),
+  totalValueCurrency: currencyEnum('total_value_currency'),
+  generatedBy: uuid('generated_by').notNull().references(() => users.id),
+  generatedAt: timestamp('generated_at', { withTimezone: true }).notNull().defaultNow(),
+  notes: text('notes')
+}, t => ({
+  projectIdx: index('els_project_idx').on(t.projectId, t.generatedAt),
+  versionIdx: uniqueIndex('els_project_version_idx').on(t.projectId, t.version)
+}));
+
+/**
+ * ElementListShareLink — token-secured public URL.
+ *
+ * Lets a client or supplier view their slice of the Element List without
+ * logging in. Revocable, expirable, audit-tracked.
+ */
+export const elementListShareLinks = pgTable('element_list_share_links', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  token: varchar('token', { length: 64 }).notNull().unique(),             // base64url, 48 chars + buffer
+  projectId: uuid('project_id').notNull().references(() => projects.id),
+  viewKind: elementListViewKindEnum('view_kind').notNull(),               // customer | supplier
+  supplierVendorId: uuid('supplier_vendor_id').references(() => vendors.id),
+  createdBy: uuid('created_by').notNull().references(() => users.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }),
+  revokedAt: timestamp('revoked_at', { withTimezone: true }),
+  revokedBy: uuid('revoked_by').references(() => users.id),
+  passwordHash: varchar('password_hash', { length: 100 }),                // bcrypt; optional
+  lastAccessedAt: timestamp('last_accessed_at', { withTimezone: true }),
+  accessCount: integer('access_count').notNull().default(0),
+  label: varchar('label', { length: 200 })                                // staff-facing label e.g. "Anna pre-meeting review"
+}, t => ({
+  tokenIdx: uniqueIndex('els_share_link_token_idx').on(t.token),
+  projectIdx: index('els_share_link_project_idx').on(t.projectId, t.revokedAt)
+}));
+
+/**
+ * DropboxCredentials — OAuth tokens for per-user Dropbox export.
+ *
+ * One row per user. Tokens encrypted at rest (the *_encrypted columns
+ * hold base64-wrapped ciphertext; the app decrypts on use using a key
+ * sourced from Supabase Vault).
+ */
+export const dropboxCredentials = pgTable('dropbox_credentials', {
+  userId: uuid('user_id').primaryKey().references(() => users.id, { onDelete: 'cascade' }),
+  accessTokenEncrypted: text('access_token_encrypted').notNull(),
+  refreshTokenEncrypted: text('refresh_token_encrypted').notNull(),
+  tokenExpiresAt: timestamp('token_expires_at', { withTimezone: true }).notNull(),
+  accountEmail: varchar('account_email', { length: 320 }),
+  accountName: varchar('account_name', { length: 200 }),
+  connectedAt: timestamp('connected_at', { withTimezone: true }).notNull().defaultNow(),
+  revokedAt: timestamp('revoked_at', { withTimezone: true })
+});
+
+/**
+ * DropboxExports — audit log of files pushed to Dropbox.
+ */
+export const dropboxExports = pgTable('dropbox_exports', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  projectId: uuid('project_id').notNull().references(() => projects.id),
+  sourceBlobUri: varchar('source_blob_uri', { length: 600 }).notNull(),   // Supabase Storage URI of the file pushed
+  sourceFileName: varchar('source_file_name', { length: 400 }).notNull(), // local filename (with DD.MM.YYYY)
+  sourceFileRecordId: uuid('source_file_record_id'),                      // optional FK into file_records if the file lives there
+  dropboxPath: varchar('dropbox_path', { length: 800 }).notNull(),
+  dropboxFileId: varchar('dropbox_file_id', { length: 120 }),
+  status: dropboxExportStatusEnum('status').notNull().default('queued'),
+  errorMessage: text('error_message'),
+  exportedBy: uuid('exported_by').notNull().references(() => users.id),
+  exportedAt: timestamp('exported_at', { withTimezone: true }).notNull().defaultNow(),
+  completedAt: timestamp('completed_at', { withTimezone: true })
+}, t => ({
+  projectIdx: index('dropbox_exports_project_idx').on(t.projectId, t.exportedAt),
+  userIdx: index('dropbox_exports_user_idx').on(t.exportedBy, t.exportedAt)
+}));
+
+/* Relations for Wave 5 entities */
+
+export const itemImagesRelations = relations(itemImages, ({ one }) => ({
+  item: one(items, { fields: [itemImages.itemId], references: [items.id] }),
+  uploadedByUser: one(users, { fields: [itemImages.uploadedBy], references: [users.id] })
+}));
+
+export const elementListSnapshotsRelations = relations(elementListSnapshots, ({ one }) => ({
+  project: one(projects, { fields: [elementListSnapshots.projectId], references: [projects.id] }),
+  supplierVendor: one(vendors, { fields: [elementListSnapshots.supplierVendorId], references: [vendors.id] }),
+  shareLink: one(elementListShareLinks, { fields: [elementListSnapshots.shareLinkId], references: [elementListShareLinks.id] }),
+  generatedByUser: one(users, { fields: [elementListSnapshots.generatedBy], references: [users.id] })
+}));
+
+export const elementListShareLinksRelations = relations(elementListShareLinks, ({ one }) => ({
+  project: one(projects, { fields: [elementListShareLinks.projectId], references: [projects.id] }),
+  supplierVendor: one(vendors, { fields: [elementListShareLinks.supplierVendorId], references: [vendors.id] }),
+  createdByUser: one(users, { fields: [elementListShareLinks.createdBy], references: [users.id] })
+}));
+
+export const dropboxExportsRelations = relations(dropboxExports, ({ one }) => ({
+  project: one(projects, { fields: [dropboxExports.projectId], references: [projects.id] }),
+  exportedByUser: one(users, { fields: [dropboxExports.exportedBy], references: [users.id] })
 }));

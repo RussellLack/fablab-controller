@@ -2,7 +2,8 @@
   "brand": "Fablab Design Controller",
   "common": {
     "coming_soon": "Coming soon",
-    "coming_soon_body": "This section hasn't been built yet."
+    "coming_soon_body": "This section hasn't been built yet.",
+    "comingSoon": "Coming soon"
   },
   "login": {
     "sub": "Sign in with your Fablab Google account",
@@ -253,7 +254,8 @@
     "approvals": "Approvals",
     "packages": "Packages",
     "rfqs": "RFQs",
-    "pos": "POs"
+    "pos": "POs",
+    "elementList": "Element List"
   },
   "scope": {
     "version_status": {
@@ -751,5 +753,45 @@
     "amount": "Amount",
     "received_date": "Received date",
     "bank_ref": "Bank ref"
+  },
+  "elementList": {
+    "title": "Element List",
+    "bannerInternal": "Internal view — shows cost prices, margins and markup. Never share outside Fablab.",
+    "bannerCustomer": "Customer view — cost prices and margins are masked at the database query level.",
+    "bannerSupplier": "Supplier view — filtered to this supplier's items only; no margin or customer pricing shown.",
+    "view": {
+      "internal": "Internal",
+      "customer": "Customer",
+      "supplier": "Supplier"
+    },
+    "col": {
+      "image": "Image",
+      "item": "Item",
+      "vendor": "Vendor",
+      "unitCost": "Unit Cost",
+      "qty": "Qty",
+      "unitTotalValue": "Unit Total Value",
+      "marginPct": "Margin %",
+      "markup": "Markup",
+      "clientNet": "Client Net",
+      "discountPct": "Discount %",
+      "priceCustomerExVat": "Price to Customer ex VAT",
+      "priceCustomerIncVat": "Price to Customer inc VAT",
+      "state": "State",
+      "unitListPrice": "Unit List Price",
+      "listPriceExVat": "List Price Ex VAT",
+      "subTotalExVat": "SubTotal Ex VAT",
+      "subTotalIncVat": "SubTotal Inc VAT",
+      "discount": "Discount"
+    },
+    "totals": "Totals",
+    "totalExVat": "Total Ex VAT",
+    "totalIncVat": "Total Inc VAT",
+    "vatLabel": "VAT",
+    "itemsCount": "items",
+    "empty": "No items in this project yet. Add items to a package to start the Element List.",
+    "cascadeNote": "Derived columns are computed at render time from unit cost × quantity × margin %, then discount and VAT. Storing the result risks staleness when discount or VAT change.",
+    "printBtn": "Print",
+    "exportBtn": "Export…"
   }
 }

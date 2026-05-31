@@ -1,7 +1,15 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { withSentryConfig } from '@sentry/nextjs';
 
 const withNextIntl = createNextIntlPlugin('./src/lib/i18n.ts');
+
+// Pin the workspace root to this directory so Next.js doesn't pick up a
+// stray package-lock.json elsewhere on the filesystem (e.g. ~/package-lock.json).
+// Knock-on effect: Sentry's webpack plugin then finds src/app/global-error.tsx
+// correctly and stops warning about a missing global error handler.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Build allowed origins from env so the same config works locally and on Netlify.
 // Netlify sets `URL` for production deploys and `DEPLOY_PRIME_URL` for previews.
@@ -17,6 +25,7 @@ addOrigin(process.env.NEXT_PUBLIC_APP_URL);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  outputFileTracingRoot: __dirname,
   experimental: {
     serverActions: { allowedOrigins }
   }

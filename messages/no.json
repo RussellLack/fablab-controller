@@ -2,7 +2,8 @@
   "brand": "Fablab Design Kontroller",
   "common": {
     "coming_soon": "Kommer snart",
-    "coming_soon_body": "Denne seksjonen er ikke bygget ennå."
+    "coming_soon_body": "Denne seksjonen er ikke bygget ennå.",
+    "comingSoon": "Kommer snart"
   },
   "login": {
     "sub": "Logg inn med Fablab Google-kontoen din",
@@ -253,7 +254,8 @@
     "approvals": "Godkjenninger",
     "packages": "Pakker",
     "rfqs": "Pristilbud",
-    "pos": "Innkjøpsordrer"
+    "pos": "Innkjøpsordrer",
+    "elementList": "Elementliste"
   },
   "scope": {
     "version_status": {
@@ -751,5 +753,45 @@
     "amount": "Beløp",
     "received_date": "Mottatt-dato",
     "bank_ref": "Bank-ref."
+  },
+  "elementList": {
+    "title": "Elementliste",
+    "bannerInternal": "Internt visning — viser kostpriser, margin og påslag. Skal ikke deles utenfor Fablab.",
+    "bannerCustomer": "Kundevisning — kostpriser og margin er filtrert ut på databasenivå.",
+    "bannerSupplier": "Leverandørvisning — viser kun denne leverandørens elementer; ingen margin eller kundepris.",
+    "view": {
+      "internal": "Internt",
+      "customer": "Kunde",
+      "supplier": "Leverandør"
+    },
+    "col": {
+      "image": "Bilde",
+      "item": "Element",
+      "vendor": "Leverandør",
+      "unitCost": "Enhetskostnad",
+      "qty": "Antall",
+      "unitTotalValue": "Sum enhetsverdi",
+      "marginPct": "Margin %",
+      "markup": "Påslag",
+      "clientNet": "Klient netto",
+      "discountPct": "Rabatt %",
+      "priceCustomerExVat": "Pris til kunde eks. MVA",
+      "priceCustomerIncVat": "Pris til kunde ink. MVA",
+      "state": "Status",
+      "unitListPrice": "Listepris pr. stk.",
+      "listPriceExVat": "Listepris eks. MVA",
+      "subTotalExVat": "Delsum eks. MVA",
+      "subTotalIncVat": "Delsum ink. MVA",
+      "discount": "Rabatt"
+    },
+    "totals": "Sum",
+    "totalExVat": "Totalt eks. MVA",
+    "totalIncVat": "Totalt ink. MVA",
+    "vatLabel": "MVA",
+    "itemsCount": "elementer",
+    "empty": "Ingen elementer i prosjektet ennå. Legg til elementer i en pakke for å bygge Elementlisten.",
+    "cascadeNote": "Beregnede kolonner produseres ved visning fra enhetskostnad × antall × margin %, deretter rabatt og MVA. Lagring av resultatet kan bli utdatert hvis rabatt eller MVA endres.",
+    "printBtn": "Skriv ut",
+    "exportBtn": "Eksporter…"
   }
 }

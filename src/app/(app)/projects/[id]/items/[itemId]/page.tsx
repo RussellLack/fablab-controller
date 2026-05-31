@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { db, items, packages, quotes, vendors } from '@/db';
+import { db, items, packages, quotes, vendors, itemImages } from '@/db';
 import { eq, and } from 'drizzle-orm';
 import { formatMoney, formatDate, cx } from '@/lib/utils';
 import { getItemApprovalState } from '@/server/actions/approvals';
+import { ImageUploader } from '@/components/element-list/image-uploader';
 
 async function getItem(itemId: string, projectId: string) {
   if (!process.env.DATABASE_URL) return null;
@@ -17,7 +18,14 @@ async function getItem(itemId: string, projectId: string) {
     const itemQuotes = await db.select({ quote: quotes, vendorName: vendors.name })
       .from(quotes).leftJoin(vendors, eq(quotes.vendorId, vendors.id))
       .where(eq(quotes.itemId, itemId));
-    return { ...row, quotes: itemQuotes };
+    // Load primary image if set
+    let primaryImage: typeof itemImages.$inferSelect | null = null;
+    if (row.item.primaryImageId) {
+      const [img] = await db.select().from(itemImages)
+        .where(eq(itemImages.id, row.item.primaryImageId)).limit(1);
+      primaryImage = img ?? null;
+    }
+    return { ...row, quotes: itemQuotes, primaryImage };
   } catch { return null; }
 }
 
@@ -112,7 +120,28 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
           </div>
         </div>
 
-        <div>
+        <div className="space-y-4">
+          {/* Wave 5: product image */}
+          <div>
+            {data.primaryImage?.thumbnailBlobUri ? (
+              <div className="card mb-3">
+                <h3 className="card-title mb-3">Product image</h3>
+                <div className="grid place-items-center bg-bg rounded p-3">
+                  <img
+                    src={data.primaryImage.processedBlobUri ?? data.primaryImage.originalBlobUri}
+                    alt={item.name}
+                    className="max-h-48 object-contain"
+                  />
+                </div>
+                <p className="text-[11px] text-ink-3 mt-2">
+                  {data.primaryImage.widthPx}×{data.primaryImage.heightPx}px
+                  {data.primaryImage.backgroundRemovedAt && ' · background removed'}
+                </p>
+              </div>
+            ) : null}
+            <ImageUploader projectId={id} itemId={itemId} hasExistingImage={!!data.primaryImage} />
+          </div>
+
           <div className="card">
             <h3 className="card-title mb-3">{t('item.commercial')}</h3>
             <dl className="grid grid-cols-[140px_1fr] gap-y-1 gap-x-4 text-[13px]">
