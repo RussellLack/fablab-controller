@@ -14,7 +14,6 @@ export default function LoginPage() {
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
-          // Hosted domain restriction — only fablab.no Workspace accounts
           hd: 'fablab.no'
         }
       }
