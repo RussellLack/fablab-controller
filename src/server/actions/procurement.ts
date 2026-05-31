@@ -6,7 +6,7 @@ import { and, eq, sql, inArray } from 'drizzle-orm';
 import {
   db, vendors, packages, items, rfqs, rfqItems, rfqVendors, quotes,
   purchaseOrders, purchaseOrderLines, projects, vendorCommunications,
-  rfqAttachments
+  rfqAttachments, poAttachments
 } from '@/db';
 import { createClient as supabaseServer } from '@/lib/supabase/server';
 import {
@@ -17,6 +17,8 @@ import { canIssuePurchaseOrder } from './approvals';
 import { applyBillingTrigger } from './finance';
 import { getOrRefreshGoogleAccessToken } from '@/server/lib/google-tokens';
 import { sendGmail, type GmailAttachment } from '@/server/lib/gmail-send';
+import { buildPoBodyTemplate } from '@/lib/po-body-template';
+import { formatMoney } from '@/lib/utils';
 
 /** CC this address on every team-member email. Skipped if author IS this address. */
 const SIV_EMAIL = 'siv@fablabdesign.com';
@@ -824,4 +826,196 @@ export async function issuePurchaseOrder(poId: string, projectId: string): Promi
   revalidatePath(`/projects/${projectId}/pos`);
   revalidatePath(`/projects/${projectId}/finance`);
   return { ok: true, id: poId };
+}
+
+/**
+ * Issue a PO AND email it to the vendor via Gmail.
+ *
+ * Chains:
+ *   1. issuePurchaseOrder — enforces R3 gate, transitions status to
+ *      `issued` (BINDING), advances items to `ordered`, logs
+ *      VendorCommunication, fires billing triggers.
+ *   2. If the issue succeeded, fetches the vendor + project + lines +
+ *      attachments, builds the PO body from the §2 specimen template,
+ *      and sends one multipart/mixed email to the vendor's contact
+ *      email.
+ *
+ * If the issue itself fails (R3 violation, wrong status, etc.), no
+ * email goes. If the issue succeeds but the email fails (vendor lacks
+ * an email, Gmail API error, no Google authorisation), the PO STAYS
+ * issued — the binding event has happened; the email is just the
+ * messenger. Email failure is surfaced for the user to resend manually.
+ */
+export async function issuePurchaseOrderAndSend(
+  poId: string,
+  projectId: string
+): Promise<
+  ActionResult & {
+    issued?: boolean;
+    emailSent?: boolean;
+    emailError?: string;
+  }
+> {
+  // Step 1: issue (R3 gate inside)
+  const issueRes = await issuePurchaseOrder(poId, projectId);
+  if (!issueRes.ok) {
+    return { ok: false, error: issueRes.error, issued: false };
+  }
+
+  // Step 2: email
+  const supabase = await supabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user?.email) {
+    return {
+      ok: false,
+      issued: true,
+      emailSent: false,
+      emailError: 'PO issued, but no sender email on signed-in account.',
+      error: 'PO issued, but email could not be sent.'
+    };
+  }
+  const senderEmail = user.email;
+  const senderName =
+    (user.user_metadata?.full_name as string | undefined) ?? senderEmail;
+
+  const accessToken = await getOrRefreshGoogleAccessToken(user.id);
+  if (!accessToken) {
+    return {
+      ok: false,
+      issued: true,
+      emailSent: false,
+      emailError: 'PO issued, but no Google authorisation on file. Sign out and back in to re-authorise.',
+      error: 'PO issued, but email could not be sent.'
+    };
+  }
+
+  // Fetch the PO + vendor + project + lines + attachments
+  const [poRow] = await db
+    .select({
+      po: purchaseOrders,
+      vendorName: vendors.name,
+      vendorContactName: vendors.contactName,
+      vendorContactEmail: vendors.contactEmail,
+      projectTitle: projects.title,
+      projectReference: projects.reference,
+      projectVatRate: projects.vatRate
+    })
+    .from(purchaseOrders)
+    .leftJoin(vendors, eq(purchaseOrders.vendorId, vendors.id))
+    .leftJoin(projects, eq(purchaseOrders.projectId, projects.id))
+    .where(eq(purchaseOrders.id, poId))
+    .limit(1);
+  if (!poRow) {
+    return { ok: false, issued: true, error: 'PO not found after issue', emailSent: false };
+  }
+  const po = poRow.po;
+
+  if (!poRow.vendorContactEmail) {
+    return {
+      ok: false,
+      issued: true,
+      emailSent: false,
+      emailError: `Vendor "${poRow.vendorName ?? '—'}" has no contact email — email not sent.`,
+      error: 'PO issued, but email could not be sent.'
+    };
+  }
+
+  const lineRows = await db
+    .select({
+      itemName: items.name,
+      description: items.description,
+      manufacturer: items.manufacturer,
+      sku: items.sku,
+      unit: items.unit,
+      quantity: purchaseOrderLines.quantity,
+      unitCost: purchaseOrderLines.unitCost,
+      lineTotal: purchaseOrderLines.lineTotal
+    })
+    .from(purchaseOrderLines)
+    .innerJoin(items, eq(purchaseOrderLines.itemId, items.id))
+    .where(eq(purchaseOrderLines.purchaseOrderId, poId));
+
+  const vatRatePercent = Math.round(parseFloat(poRow.projectVatRate ?? '0.25') * 100);
+
+  const body = buildPoBodyTemplate({
+    poReference: po.reference,
+    issuedAtDate: po.issuedAt ?? new Date().toISOString().slice(0, 10),
+    projectTitle: poRow.projectTitle ?? '',
+    projectReference: poRow.projectReference ?? '',
+    deliveryAddress: po.deliveryAddress ?? '—',
+    deliveryDeadline: po.deliveryDeadline,
+    freightTerms: po.freightTerms,
+    freightResponsibleParty: po.freightResponsibleParty,
+    vatRatePercent,
+    subtotalNet: formatMoney(po.subtotalNet, po.currency),
+    vatAmount: formatMoney(po.vatAmount, po.currency),
+    totalGross: formatMoney(po.totalGross, po.currency),
+    currency: po.currency,
+    vendorName: poRow.vendorName ?? '—',
+    lines: lineRows.map(l => ({
+      itemName: l.itemName,
+      description: l.description,
+      manufacturer: l.manufacturer,
+      sku: l.sku,
+      quantity: l.quantity,
+      unit: l.unit,
+      unitCostFormatted: formatMoney(l.unitCost, po.currency),
+      lineTotalFormatted: formatMoney(l.lineTotal, po.currency)
+    })),
+    paymentTermsText: null
+  });
+
+  // Substitute per-recipient placeholders
+  const personalised = body
+    .replace(/\[supplier contact name\]/g, poRow.vendorContactName ?? poRow.vendorName ?? 'Supplier')
+    .replace(/\[your name\]/g, senderName)
+    .replace(/\[your email\]/g, senderEmail)
+    .replace(/\[your role\]/g, '');
+
+  // Fetch attachments
+  const attRows = await db
+    .select()
+    .from(poAttachments)
+    .where(eq(poAttachments.poId, poId));
+  const attachments: GmailAttachment[] = [];
+  for (const att of attRows) {
+    const { data: blob } = await supabase.storage
+      .from('po-attachments')
+      .download(att.storagePath);
+    if (!blob) continue;
+    const buf = Buffer.from(await blob.arrayBuffer());
+    attachments.push({
+      filename: att.filename,
+      mimeType: att.mimeType,
+      content: buf
+    });
+  }
+
+  const cc = senderEmail.toLowerCase() === SIV_EMAIL ? undefined : SIV_EMAIL;
+  const subject = `PURCHASE ORDER · ${po.reference} · ${poRow.projectReference ?? ''} — BINDING ORDER`;
+
+  const sendRes = await sendGmail({
+    accessToken,
+    from: senderEmail,
+    fromName: senderName,
+    to: poRow.vendorContactEmail,
+    cc,
+    bcc: senderEmail,
+    subject,
+    body: personalised,
+    attachments: attachments.length > 0 ? attachments : undefined
+  });
+
+  revalidatePath(`/projects/${projectId}/pos/${poId}`);
+
+  if (!sendRes.ok) {
+    return {
+      ok: false,
+      issued: true,
+      emailSent: false,
+      emailError: sendRes.error,
+      error: 'PO issued, but email failed to send.'
+    };
+  }
+  return { ok: true, id: poId, issued: true, emailSent: true };
 }

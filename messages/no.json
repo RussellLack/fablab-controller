@@ -72,7 +72,8 @@
     "new_item_guided": "+ Legg til vare (veiviser)",
     "new_rfq_guided": "+ Ny pristilbud-forespørsel (veiviser)",
     "send_via_gmail": "Send via Gmail",
-    "new_po_guided": "+ Ny innkjøpsordre (veiviser)"
+    "new_po_guided": "+ Ny innkjøpsordre (veiviser)",
+    "issue_po_and_send": "Utsted og send til leverandør (bindende)"
   },
   "dash": {
     "title": "Dashbord",
@@ -628,7 +629,9 @@
     "net": "netto",
     "gross": "brutto",
     "to": "til",
-    "no_authorising_approval": "Ingen autoriserende Godkjenning knyttet — R3 krever en."
+    "no_authorising_approval": "Ingen autoriserende Godkjenning knyttet — R3 krever en.",
+    "issue_and_send_ok": "PO utstedt og sendt til leverandør.",
+    "issue_ok_email_failed": "PO utstedt men e-post kunne ikke sendes:"
   },
   "finance": {
     "cross_title": "Økonomi",
@@ -959,5 +962,16 @@
     "draft_only_body": "Veiviseren oppretter et uutstedt utkast. Leverandøren mottar den ikke og ingen forpliktelse oppstår før du klikker \"Utsted\" på detaljsiden — som er BINDENDE.",
     "submit": "Opprett utkast",
     "item_count": "{count, plural, =1 {1 vare} other {# varer}}"
+  },
+  "po_attachments": {
+    "title": "Vedlegg",
+    "attach": "+ Legg ved filer",
+    "uploading": "Laster opp…",
+    "empty": "Ingen vedlegg. Legg til tegninger, spesifikasjoner eller tilleggsvilkår som skal sendes med innkjøpsordren.",
+    "too_large": "{name} er over {max}-grensen og ble ikke lastet opp.",
+    "delete": "Fjern",
+    "delete_failed": "Kunne ikke slette vedlegg.",
+    "confirm_delete": "Fjern dette vedlegget?",
+    "download_failed": "Kunne ikke generere nedlastingslenke."
   }
 }

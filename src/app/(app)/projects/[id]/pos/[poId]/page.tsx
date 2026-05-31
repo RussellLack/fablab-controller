@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { db, purchaseOrders, purchaseOrderLines, items, vendors, approvals } from '@/db';
-import { eq, and } from 'drizzle-orm';
+import { db, purchaseOrders, purchaseOrderLines, items, vendors, approvals, poAttachments } from '@/db';
+import { eq, and, asc } from 'drizzle-orm';
 import { formatDate, formatMoney, cx } from '@/lib/utils';
 import { canIssuePurchaseOrder } from '@/server/actions/approvals';
 import { BindingBadge, poStatusToBinding } from '@/components/binding-badge';
 import { PoActions } from './actions-client';
+import { PoAttachments } from '@/components/po-attachments';
 
 async function getPo(poId: string, projectId: string) {
   if (!process.env.DATABASE_URL) return null;
@@ -30,7 +31,20 @@ async function getPo(poId: string, projectId: string) {
       authorising = appr ?? null;
     }
 
-    return { ...row, lines, authorising };
+    const attachmentRows = await db
+      .select({
+        id: poAttachments.id,
+        filename: poAttachments.filename,
+        storagePath: poAttachments.storagePath,
+        mimeType: poAttachments.mimeType,
+        sizeBytes: poAttachments.sizeBytes,
+        createdAt: poAttachments.createdAt
+      })
+      .from(poAttachments)
+      .where(eq(poAttachments.poId, poId))
+      .orderBy(asc(poAttachments.createdAt));
+
+    return { ...row, lines, authorising, attachments: attachmentRows };
   } catch { return null; }
 }
 
@@ -184,6 +198,16 @@ export default async function PoDetailPage({ params }: { params: Promise<{ id: s
               </div>
             )}
           </div>
+
+          <PoAttachments
+            projectId={id}
+            poId={po.id}
+            initial={data.attachments.map(a => ({
+              ...a,
+              createdAt: a.createdAt.toISOString()
+            }))}
+            canEdit={po.status === 'draft' || po.status === 'ready_for_review'}
+          />
         </div>
       </div>
     </>

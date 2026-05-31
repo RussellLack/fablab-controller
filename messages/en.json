@@ -72,7 +72,8 @@
     "new_item_guided": "+ Guided add item",
     "new_rfq_guided": "+ New RFQ (guided)",
     "send_via_gmail": "Send via Gmail",
-    "new_po_guided": "+ New PO (guided)"
+    "new_po_guided": "+ New PO (guided)",
+    "issue_po_and_send": "Issue and email vendor (binding)"
   },
   "dash": {
     "title": "Dashboard",
@@ -628,7 +629,9 @@
     "net": "net",
     "gross": "gross",
     "to": "to",
-    "no_authorising_approval": "No authorising Approval linked — R3 requires one."
+    "no_authorising_approval": "No authorising Approval linked — R3 requires one.",
+    "issue_and_send_ok": "PO issued and emailed to the vendor.",
+    "issue_ok_email_failed": "PO issued but email could not be sent:"
   },
   "finance": {
     "cross_title": "Finance",
@@ -959,5 +962,16 @@
     "draft_only_body": "This wizard creates an unissued draft. The vendor will not receive it and no commitment exists until you click \"Issue\" on the detail page — which is BINDING.",
     "submit": "Create draft",
     "item_count": "{count, plural, =1 {1 item} other {# items}}"
+  },
+  "po_attachments": {
+    "title": "Attachments",
+    "attach": "+ Attach files",
+    "uploading": "Uploading…",
+    "empty": "No attachments. Add drawings, specifications, or supplementary terms that will go out with the PO.",
+    "too_large": "{name} is over the {max} limit and was not uploaded.",
+    "delete": "Remove",
+    "delete_failed": "Could not delete attachment.",
+    "confirm_delete": "Remove this attachment?",
+    "download_failed": "Could not generate download link."
   }
 }

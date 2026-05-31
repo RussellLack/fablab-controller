@@ -302,6 +302,23 @@ export const rfqAttachments = pgTable('rfq_attachments', {
   rfqIdx: index('rfq_attachments_rfq_idx').on(t.rfqId)
 }));
 
+/**
+ * PO attachments — mirror of rfqAttachments for purchase orders. Sent as
+ * multipart/mixed parts when the PO is issued via Gmail (BINDING moment).
+ */
+export const poAttachments = pgTable('po_attachments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  poId: uuid('po_id').notNull().references(() => purchaseOrders.id, { onDelete: 'cascade' }),
+  filename: varchar('filename', { length: 300 }).notNull(),
+  storagePath: text('storage_path').notNull(),
+  mimeType: varchar('mime_type', { length: 120 }).notNull(),
+  sizeBytes: integer('size_bytes').notNull(),
+  uploadedBy: uuid('uploaded_by').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+}, t => ({
+  poIdx: index('po_attachments_po_idx').on(t.poId)
+}));
+
 /* ─────────────────────────── GOOGLE OAUTH TOKENS ─────────────────────────── */
 /**
  * Per-user Google OAuth tokens, captured at sign-in callback when the
