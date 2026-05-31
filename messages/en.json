@@ -255,7 +255,8 @@
     "packages": "Packages",
     "rfqs": "RFQs",
     "pos": "POs",
-    "elementList": "Element List"
+    "elementList": "Element List",
+    "finance": "Finance"
   },
   "scope": {
     "version_status": {

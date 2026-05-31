@@ -255,7 +255,8 @@
     "packages": "Pakker",
     "rfqs": "Pristilbud",
     "pos": "Innkjøpsordrer",
-    "elementList": "Elementliste"
+    "elementList": "Elementliste",
+    "finance": "Økonomi"
   },
   "scope": {
     "version_status": {
