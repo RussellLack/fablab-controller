@@ -1,11 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { LangToggle } from '@/components/lang-toggle';
 
 export default function LoginPage() {
   const t = useTranslations();
+  const [mode, setMode] = useState<'idle' | 'email-form'>('idle');
+  const [email, setEmail] = useState('');
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function signInWithGoogle() {
     const supabase = createClient();
@@ -32,6 +38,32 @@ export default function LoginPage() {
     });
   }
 
+  async function sendMagicLink(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setSending(true);
+    try {
+      const supabase = createClient();
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email: email.trim().toLowerCase(),
+        options: {
+          shouldCreateUser: false,
+          // The auth callback dispatches staff → /dashboard, customer → /portal
+          // based on email domain, so a plain /auth/callback is sufficient here.
+          // Customer-side invites from the staff app use ?next= to land on a
+          // specific project.
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+      if (otpError) throw otpError;
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('login.email_error'));
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <main className="min-h-screen grid place-items-center bg-bg relative">
       <div className="absolute top-6 right-6"><LangToggle /></div>
@@ -40,6 +72,7 @@ export default function LoginPage() {
           <span className="text-accent">●</span> {t('brand')}
         </div>
         <div className="text-ink-2 text-[13px] mb-7">{t('login.sub')}</div>
+
         <button
           onClick={signInWithGoogle}
           className="flex items-center justify-center gap-2.5 w-full p-3 border border-line rounded-lg bg-surface hover:bg-bg cursor-pointer text-[14px] font-medium"
@@ -52,6 +85,85 @@ export default function LoginPage() {
           </svg>
           {t('login.btn')}
         </button>
+
+        <div className="flex items-center gap-3 my-4 text-[11px] text-ink-3 uppercase tracking-wider">
+          <div className="flex-1 h-px bg-line" />
+          <span>{t('login.or')}</span>
+          <div className="flex-1 h-px bg-line" />
+        </div>
+
+        {mode === 'idle' && !sent && (
+          <button
+            onClick={() => setMode('email-form')}
+            className="w-full p-3 border border-line rounded-lg bg-surface hover:bg-bg cursor-pointer text-[14px] font-medium"
+          >
+            {t('login.email_btn')}
+          </button>
+        )}
+
+        {mode === 'email-form' && !sent && (
+          <form onSubmit={sendMagicLink} className="text-left space-y-3">
+            <p className="text-[12px] text-ink-2 leading-snug">
+              {t('login.email_sub')}
+            </p>
+            <input
+              type="email"
+              required
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              className="w-full px-3 py-2 border border-line rounded-md bg-surface text-[13px] focus:outline-none focus:ring-2 focus:ring-accent/30"
+            />
+            {error && (
+              <div className="text-[12px] text-warn bg-warn-soft border border-warn/20 rounded px-3 py-2">
+                {error}
+              </div>
+            )}
+            <div className="flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('idle');
+                  setError(null);
+                  setEmail('');
+                }}
+                className="btn btn-ghost text-[12px]"
+              >
+                {t('action.cancel')}
+              </button>
+              <button
+                type="submit"
+                disabled={sending || !email.trim()}
+                className="btn btn-primary text-[12px]"
+              >
+                {sending ? t('login.email_sending') : t('login.email_submit')}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {sent && (
+          <div className="text-left space-y-2">
+            <div className="text-[13px] font-medium text-ok">
+              {t('login.email_sent_title')}
+            </div>
+            <p className="text-[12px] text-ink-2 leading-snug">
+              {t('login.email_sent_body', { email })}
+            </p>
+            <button
+              onClick={() => {
+                setSent(false);
+                setMode('idle');
+                setEmail('');
+              }}
+              className="btn btn-ghost text-[12px] mt-1"
+            >
+              {t('login.email_sent_reset')}
+            </button>
+          </div>
+        )}
+
         <div className="mt-6 text-[12px] text-ink-3">{t('login.footer')}</div>
       </div>
     </main>

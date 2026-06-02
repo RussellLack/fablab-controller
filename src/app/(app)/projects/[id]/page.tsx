@@ -7,6 +7,7 @@ import { getProject } from './queries';
 import { getProjectGates } from '@/server/queries/project-gates';
 import { NextActionBanner } from '@/components/next-action-banner';
 import { BriefLauncher } from './brief-launcher';
+import { CustomerActivityCard } from './customer-activity-card';
 import type { IntakeContext } from '@/components/wizard/brief-wizard';
 
 type FablabRole =
@@ -95,9 +96,12 @@ export default async function ProjectBriefPage({ params }: { params: Promise<{ i
       </div>
 
       <div className="grid grid-cols-[2fr_1fr] gap-6">
-        <div className="card">
-          <h3 className="card-title mb-3">{t('proj.brief')}</h3>
-          <p className="text-[13px] leading-6 whitespace-pre-wrap">{p.description ?? '—'}</p>
+        <div className="space-y-6">
+          <div className="card">
+            <h3 className="card-title mb-3">{t('proj.brief')}</h3>
+            <p className="text-[13px] leading-6 whitespace-pre-wrap">{p.description ?? '—'}</p>
+          </div>
+          <CustomerActivityCard projectId={id} />
         </div>
         <div>
           <div className="card">

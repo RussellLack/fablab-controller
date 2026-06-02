@@ -8,7 +8,16 @@
   "login": {
     "sub": "Sign in with your Fablab Google account",
     "btn": "Continue with Google",
-    "footer": "Restricted to fablab.no Google Workspace accounts"
+    "footer": "Staff sign in with Google. Customers sign in with the email they were invited on.",
+    "or": "or",
+    "email_btn": "Continue with email",
+    "email_sub": "Enter the email address your designer invited. We'll send you a one-click sign-in link.",
+    "email_submit": "Send sign-in link",
+    "email_sending": "Sending…",
+    "email_error": "Couldn't send the link — try again or contact your designer.",
+    "email_sent_title": "Check your email",
+    "email_sent_body": "We sent a one-click sign-in link to {email}. Open it on this device to view your project.",
+    "email_sent_reset": "Use a different email"
   },
   "nav": {
     "work": "Work",
@@ -1091,5 +1100,29 @@
     "signoff_title": "Sign off the brief",
     "signoff_body": "When the brief reflects what you want, sign off to formally confirm it. This becomes the agreed starting point.",
     "coming_in_next_release": "Coming in the next release."
+  },
+  "customer_portal": {
+    "activity_heading": "Customer activity",
+    "activity_empty": "Nobody on the client side has been invited yet. Invite the customer once the brief is in good enough shape for them to review.",
+    "invite_cta": "+ Invite customer",
+    "invite_title": "Invite customer to this project",
+    "invite_body": "Sends a magic-link email so the customer can view this project's brief, upload references, comment, and sign off. They never see other projects unless you invite them separately.",
+    "invite_email_label": "Customer email",
+    "invite_note_label": "Personal note (optional)",
+    "invite_note_placeholder": "E.g. \"Hi Marit — please have a read and tell us if anything's missing. We'd like your sign-off by Friday.\"",
+    "invite_submit": "Send invitation",
+    "invite_sending": "Sending…",
+    "invite_sent": "Magic-link sent to {email}.",
+    "status_pending": "Invited",
+    "status_joined": "Joined",
+    "status_revoked": "Revoked",
+    "invited_on": "Invited {date}",
+    "joined_on": "Signed in {date}",
+    "revoked_on": "Revoked {date}",
+    "row_resend": "Resend link",
+    "row_sending": "Sending…",
+    "row_resent": "Sent.",
+    "row_revoke": "Revoke",
+    "revoke_confirm": "Revoke this customer's access? They'll no longer be able to view the project. The audit row is kept."
   }
 }

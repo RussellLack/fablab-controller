@@ -8,7 +8,16 @@
   "login": {
     "sub": "Logg inn med Fablab Google-kontoen din",
     "btn": "Fortsett med Google",
-    "footer": "Begrenset til fablab.no Google Workspace-kontoer"
+    "footer": "Ansatte logger inn med Google. Kunder logger inn med e-postadressen de ble invitert på.",
+    "or": "eller",
+    "email_btn": "Fortsett med e-post",
+    "email_sub": "Skriv inn e-postadressen designeren inviterte deg på. Vi sender deg en innloggings-lenke med ett klikk.",
+    "email_submit": "Send innloggings-lenke",
+    "email_sending": "Sender…",
+    "email_error": "Kunne ikke sende lenken — prøv igjen eller kontakt designeren din.",
+    "email_sent_title": "Sjekk e-posten din",
+    "email_sent_body": "Vi sendte en innloggings-lenke til {email}. Åpne den på denne enheten for å se prosjektet ditt.",
+    "email_sent_reset": "Bruk en annen e-post"
   },
   "nav": {
     "work": "Arbeid",
@@ -1091,5 +1100,29 @@
     "signoff_title": "Signer av oppdraget",
     "signoff_body": "Når oppdraget reflekterer det du ønsker, signer av for å formelt bekrefte det. Dette blir det avtalte utgangspunktet.",
     "coming_in_next_release": "Kommer i neste utgivelse."
+  },
+  "customer_portal": {
+    "activity_heading": "Kundeaktivitet",
+    "activity_empty": "Ingen på kundesiden er invitert ennå. Inviter kunden når oppdraget er i god nok form til at de kan se gjennom det.",
+    "invite_cta": "+ Inviter kunde",
+    "invite_title": "Inviter kunde til dette prosjektet",
+    "invite_body": "Sender en e-post med en innloggings-lenke slik at kunden kan se prosjektets oppdrag, laste opp referanser, kommentere og signere av. De ser aldri andre prosjekter uten at du inviterer dem separat.",
+    "invite_email_label": "Kundens e-post",
+    "invite_note_label": "Personlig melding (valgfritt)",
+    "invite_note_placeholder": "F.eks. «Hei Marit — les gjerne gjennom og si fra hvis noe mangler. Vi vil gjerne ha avsigneringen din innen fredag.»",
+    "invite_submit": "Send invitasjon",
+    "invite_sending": "Sender…",
+    "invite_sent": "Innloggings-lenke sendt til {email}.",
+    "status_pending": "Invitert",
+    "status_joined": "Logget på",
+    "status_revoked": "Tilbakekalt",
+    "invited_on": "Invitert {date}",
+    "joined_on": "Logget på {date}",
+    "revoked_on": "Tilbakekalt {date}",
+    "row_resend": "Send på nytt",
+    "row_sending": "Sender…",
+    "row_resent": "Sendt.",
+    "row_revoke": "Tilbakekall",
+    "revoke_confirm": "Tilbakekalle denne kundens tilgang? De vil ikke lenger kunne se prosjektet. Loggraden beholdes."
   }
 }
