@@ -319,6 +319,117 @@ export const poAttachments = pgTable('po_attachments', {
   poIdx: index('po_attachments_po_idx').on(t.poId)
 }));
 
+/* ────────────────────── CUSTOMER PORTAL (W4b) ────────────────────── */
+/**
+ * Per-project customer invitations. One row per (project × email).
+ * Customer auth happens via Supabase Auth email magic links; this
+ * table is the authorisation list — sign-in alone doesn't grant
+ * access; you also need an unrevoked, accepted invitation for the
+ * project you're trying to view.
+ *
+ * See `24-customer-portal.md` for the full design.
+ */
+export const projectCustomerInvitations = pgTable(
+  'project_customer_invitations',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    email: text('email').notNull(),
+    invitedBy: uuid('invited_by').notNull(), // staff auth user id
+    invitedAt: timestamp('invited_at', { withTimezone: true }).notNull().defaultNow(),
+    acceptedAt: timestamp('accepted_at', { withTimezone: true }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    note: text('note') // optional personal note from inviter
+  },
+  (t) => ({
+    // One invitation per (project, lower(email)) so accidental dupes are blocked.
+    projectEmailIdx: uniqueIndex('pci_project_email_idx').on(
+      t.projectId,
+      sql`lower(${t.email})`
+    ),
+    emailIdx: index('pci_email_idx').on(sql`lower(${t.email})`)
+  })
+);
+
+/**
+ * Files uploaded by the customer through the portal — mood boards,
+ * reference images, existing plans, sample photos. Mirrors the
+ * direct-upload pattern used by rfq_attachments / po_attachments.
+ *
+ * Bucket: `customer-uploads`
+ * Path: `projects/{projectId}/customer/{uuid}-{filename}`
+ */
+export const projectCustomerUploads = pgTable(
+  'project_customer_uploads',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    uploadedBy: uuid('uploaded_by').notNull(), // customer auth user id
+    filename: varchar('filename', { length: 300 }).notNull(),
+    storagePath: text('storage_path').notNull(),
+    mimeType: varchar('mime_type', { length: 120 }).notNull(),
+    sizeBytes: integer('size_bytes').notNull(),
+    caption: text('caption'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+  },
+  (t) => ({
+    projectIdx: index('pcu_project_idx').on(t.projectId)
+  })
+);
+
+/**
+ * Threaded comments on a project's brief. Both customer and staff
+ * post here; author_is_staff is denormalised so portal UI can render
+ * the two sides distinctly without a join.
+ */
+export const projectCustomerComments = pgTable(
+  'project_customer_comments',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    authorId: uuid('author_id').notNull(), // staff OR customer auth user id
+    authorIsStaff: boolean('author_is_staff').notNull(),
+    body: text('body').notNull(),
+    section: varchar('section', { length: 40 }), // nullable; "description", "intake", "general"
+    replyToId: uuid('reply_to_id'), // self-ref; FK added later if needed
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    editedAt: timestamp('edited_at', { withTimezone: true })
+  },
+  (t) => ({
+    projectIdx: index('pcc_project_created_idx').on(t.projectId, t.createdAt)
+  })
+);
+
+/**
+ * Customer sign-offs of the brief. A frozen snapshot of the brief
+ * text + role at the moment of sign-off is stored as the legal
+ * artefact ("approval is the contract" — 00- §22). Multiple rows
+ * allowed (re-brief → re-sign); latest signed_off_at is operative.
+ */
+export const projectBriefSignoffs = pgTable(
+  'project_brief_signoffs',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    signedOffBy: uuid('signed_off_by').notNull(), // customer auth user id
+    signedOffAt: timestamp('signed_off_at', { withTimezone: true }).notNull().defaultNow(),
+    briefSnapshot: jsonb('brief_snapshot'), // { description, fablabRole, projectRef, title } at sign-off
+    userAgent: text('user_agent'),
+    ip: text('ip')
+  },
+  (t) => ({
+    projectIdx: index('pbs_project_signed_idx').on(t.projectId, t.signedOffAt)
+  })
+);
+
 /* ─────────────────────────── GOOGLE OAUTH TOKENS ─────────────────────────── */
 /**
  * Per-user Google OAuth tokens, captured at sign-in callback when the
