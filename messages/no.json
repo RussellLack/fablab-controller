@@ -83,6 +83,9 @@
     "send_via_gmail": "Send via Gmail",
     "new_po_guided": "+ Ny innkjøpsordre (veiviser)",
     "issue_po_and_send": "Utsted og send til leverandør (bindende)",
+    "resend_po_email": "Send PO-e-post på nytt",
+    "resend_po_email_title": "Send det BINDENDE PO-brevet på nytt til leverandøren. Bruk når den opprinnelige leveransen feilet eller leverandøren ber om en kopi. Endrer ikke PO-status.",
+    "resending": "Sender på nytt…",
     "new_scope_version": "+ Ny omfangs-versjon (veiviser)",
     "review_brief": "Gjennomgå oppdrag (veiviser)"
   },
@@ -652,7 +655,9 @@
     "to": "til",
     "no_authorising_approval": "Ingen autoriserende Godkjenning knyttet — R3 krever en.",
     "issue_and_send_ok": "PO utstedt og sendt til leverandør.",
-    "issue_ok_email_failed": "PO utstedt men e-post kunne ikke sendes:"
+    "issue_ok_email_failed": "PO utstedt men e-post kunne ikke sendes:",
+    "resend_ok": "PO-e-post sendt til leverandøren igjen.",
+    "resend_failed": "Kunne ikke sende PO-e-posten på nytt:"
   },
   "finance": {
     "cross_title": "Økonomi",

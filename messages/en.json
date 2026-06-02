@@ -83,6 +83,9 @@
     "send_via_gmail": "Send via Gmail",
     "new_po_guided": "+ New PO (guided)",
     "issue_po_and_send": "Issue and email vendor (binding)",
+    "resend_po_email": "Resend PO email",
+    "resend_po_email_title": "Re-send the BINDING PO letter to the vendor. Use when the original delivery failed or the vendor asks for another copy. Doesn't change PO status.",
+    "resending": "Resending…",
     "new_scope_version": "+ New scope version (guided)",
     "review_brief": "Review brief (guided)"
   },
@@ -652,7 +655,9 @@
     "to": "to",
     "no_authorising_approval": "No authorising Approval linked — R3 requires one.",
     "issue_and_send_ok": "PO issued and emailed to the vendor.",
-    "issue_ok_email_failed": "PO issued but email could not be sent:"
+    "issue_ok_email_failed": "PO issued but email could not be sent:",
+    "resend_ok": "PO email re-sent to the vendor.",
+    "resend_failed": "Couldn't re-send the PO email:"
   },
   "finance": {
     "cross_title": "Finance",

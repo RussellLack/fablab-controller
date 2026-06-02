@@ -866,16 +866,84 @@ export async function issuePurchaseOrderAndSend(
     return { ok: false, error: issueRes.error, issued: false };
   }
 
-  // Step 2: email
+  // Step 2: email the issued PO to the vendor.
+  const emailRes = await sendIssuedPoEmail(poId, projectId);
+  if (emailRes.ok) {
+    return { ok: true, issued: true, emailSent: true };
+  }
+  return {
+    ok: false,
+    error: 'PO issued, but email could not be sent.',
+    issued: true,
+    emailSent: false,
+    emailError: emailRes.emailError
+  };
+}
+
+/**
+ * Resend the BINDING PO email to the vendor (same body, same attachments).
+ *
+ * Use case: the original issue-and-send succeeded at the binding moment
+ * but the Gmail delivery failed (vendor email typo since corrected,
+ * Gmail transient error, no Google authorisation at the time). The PO
+ * is already legally issued — this just re-attempts the delivery so
+ * the audit trail shows the vendor was successfully notified.
+ *
+ * Refuses on draft/ready_for_review POs: those should go through the
+ * normal Issue-and-email path so the binding event itself is recorded.
+ */
+export async function resendPurchaseOrderEmail(
+  poId: string,
+  projectId: string
+): Promise<
+  ActionResult & { emailSent?: boolean; emailError?: string }
+> {
+  const [po] = await db
+    .select({ status: purchaseOrders.status })
+    .from(purchaseOrders)
+    .where(eq(purchaseOrders.id, poId))
+    .limit(1);
+  if (!po) return { ok: false, error: 'PO not found' };
+  if (po.status !== 'issued') {
+    return {
+      ok: false,
+      error:
+        'Only issued POs can be re-emailed. For a draft, use Issue and email vendor.'
+    };
+  }
+
+  const res = await sendIssuedPoEmail(poId, projectId);
+  if (res.ok) {
+    return { ok: true, emailSent: true };
+  }
+  return {
+    ok: false,
+    error: 'Email failed to send.',
+    emailSent: false,
+    emailError: res.emailError
+  };
+}
+
+/**
+ * Internal: build + send the BINDING PO email for an already-issued PO.
+ * Shared by `issuePurchaseOrderAndSend` (called immediately after the
+ * status transition) and `resendPurchaseOrderEmail` (called later from
+ * the PO detail page if the initial send failed or needs re-delivery).
+ *
+ * Does NOT change PO status, does NOT do the R3 gate — those are the
+ * caller's responsibility. This function is *only* the email step.
+ */
+async function sendIssuedPoEmail(
+  poId: string,
+  projectId: string
+): Promise<{ ok: true; emailSent: true } | { ok: false; emailSent: false; emailError: string }> {
   const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email) {
     return {
       ok: false,
-      issued: true,
       emailSent: false,
-      emailError: 'PO issued, but no sender email on signed-in account.',
-      error: 'PO issued, but email could not be sent.'
+      emailError: 'No sender email on signed-in account.'
     };
   }
   const senderEmail = user.email;
@@ -886,10 +954,9 @@ export async function issuePurchaseOrderAndSend(
   if (!accessToken) {
     return {
       ok: false,
-      issued: true,
       emailSent: false,
-      emailError: 'PO issued, but no Google authorisation on file. Sign out and back in to re-authorise.',
-      error: 'PO issued, but email could not be sent.'
+      emailError:
+        'No Google authorisation on file. Sign out and back in to re-authorise, then try again.'
     };
   }
 
@@ -910,17 +977,15 @@ export async function issuePurchaseOrderAndSend(
     .where(eq(purchaseOrders.id, poId))
     .limit(1);
   if (!poRow) {
-    return { ok: false, issued: true, error: 'PO not found after issue', emailSent: false };
+    return { ok: false, emailSent: false, emailError: 'PO not found' };
   }
   const po = poRow.po;
 
   if (!poRow.vendorContactEmail) {
     return {
       ok: false,
-      issued: true,
       emailSent: false,
-      emailError: `Vendor "${poRow.vendorName ?? '—'}" has no contact email — email not sent.`,
-      error: 'PO issued, but email could not be sent.'
+      emailError: `Vendor "${poRow.vendorName ?? '—'}" has no contact email — email not sent.`
     };
   }
 
@@ -1015,13 +1080,7 @@ export async function issuePurchaseOrderAndSend(
   revalidatePath(`/projects/${projectId}/pos/${poId}`);
 
   if (!sendRes.ok) {
-    return {
-      ok: false,
-      issued: true,
-      emailSent: false,
-      emailError: sendRes.error,
-      error: 'PO issued, but email failed to send.'
-    };
+    return { ok: false, emailSent: false, emailError: sendRes.error };
   }
-  return { ok: true, id: poId, issued: true, emailSent: true };
+  return { ok: true, emailSent: true };
 }
