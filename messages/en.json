@@ -1143,6 +1143,33 @@
     "empty": "The customer hasn't uploaded anything yet.",
     "download_failed": "Couldn't open the file."
   },
+  "brief_signoff": {
+    "title": "Sign off the brief",
+    "intro": "When this brief reflects what you want, sign off below to make that confirmation part of the project record. This is the moment Fablab can plan, source, and commit on the basis of an agreed brief.",
+    "sign_cta": "I'm ready to sign off",
+    "resign_cta": "Re-sign the updated brief",
+    "signing": "Signing…",
+    "confirm_submit": "Yes, sign off",
+    "confirm_body": "By signing off, you confirm in writing that the brief above — the description, the Fablab role, and the captured intake — reflects your intent for the project.",
+    "confirm_legal": "Your name, the timestamp, and a frozen copy of the brief at this moment are recorded as evidence. You can comment or upload further references at any time; if the brief itself changes substantively, your designer will ask you to sign off again.",
+    "state_signed": "You've signed off this brief",
+    "signed_at": "Signed on {date}",
+    "signed_body": "Fablab now treats this brief as the agreed starting point for the project. You can still comment, upload, or talk to your designer at any time.",
+    "state_drifted": "Brief updated since your last sign-off",
+    "previous_signed_at": "You previously signed off on {date}.",
+    "drifted_body": "Your designer has revised the brief above. Please read the new version and re-sign so we can carry on with the agreed scope on record.",
+    "cannot_sign": "Sign-off isn't available from this account."
+  },
+  "brief_signoff_staff": {
+    "title": "Customer sign-off",
+    "pill_none": "Pending",
+    "pill_current": "Signed",
+    "pill_drifted": "Drifted",
+    "none_body": "The customer hasn't signed off the brief yet. Once they do, the timestamp and a frozen copy of the brief are recorded here as written evidence.",
+    "current_body": "The customer signed off the current brief on {date}. This sign-off is the operative agreed brief for the project.",
+    "drifted_body": "The customer signed off on {date}, but the brief has been edited since. Their consent no longer matches the live brief — ask them to re-sign before proceeding on the revised scope.",
+    "history_toggle": "Sign-off history ({n})"
+  },
   "brief_comments": {
     "title": "Brief discussion",
     "empty": "No comments yet. Start the conversation.",

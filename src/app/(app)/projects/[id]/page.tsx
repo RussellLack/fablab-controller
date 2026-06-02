@@ -10,6 +10,7 @@ import { BriefLauncher } from './brief-launcher';
 import { CustomerActivityCard } from './customer-activity-card';
 import { CustomerUploadsCard } from './customer-uploads-card';
 import { BriefCommentsCard } from './brief-comments-card';
+import { BriefSignoffCard } from './brief-signoff-card';
 import type { IntakeContext } from '@/components/wizard/brief-wizard';
 
 type FablabRole =
@@ -103,6 +104,7 @@ export default async function ProjectBriefPage({ params }: { params: Promise<{ i
             <h3 className="card-title mb-3">{t('proj.brief')}</h3>
             <p className="text-[13px] leading-6 whitespace-pre-wrap">{p.description ?? '—'}</p>
           </div>
+          <BriefSignoffCard projectId={id} />
           <CustomerActivityCard projectId={id} />
           <CustomerUploadsCard projectId={id} />
           <BriefCommentsCard projectId={id} />

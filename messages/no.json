@@ -1143,6 +1143,33 @@
     "empty": "Kunden har ikke lastet opp noe ennå.",
     "download_failed": "Kunne ikke åpne filen."
   },
+  "brief_signoff": {
+    "title": "Signer av briefen",
+    "intro": "Når denne briefen gjenspeiler det du ønsker, signer av nedenfor for å gjøre den bekreftelsen til en del av prosjektarkivet. Dette er øyeblikket Fablab kan planlegge, kjøpe inn og forplikte seg på grunnlag av en avtalt brief.",
+    "sign_cta": "Jeg er klar til å signere av",
+    "resign_cta": "Signer av den oppdaterte briefen",
+    "signing": "Signerer…",
+    "confirm_submit": "Ja, signer av",
+    "confirm_body": "Ved å signere av bekrefter du skriftlig at briefen over — beskrivelsen, Fablabs rolle og den fanget opp i intaket — gjenspeiler dine intensjoner for prosjektet.",
+    "confirm_legal": "Navnet ditt, tidsstempel og en frosset kopi av briefen i dette øyeblikket lagres som bevis. Du kan kommentere eller laste opp flere referanser når som helst; hvis briefen endres vesentlig, vil designeren din be deg signere av på nytt.",
+    "state_signed": "Du har signert av denne briefen",
+    "signed_at": "Signert {date}",
+    "signed_body": "Fablab behandler nå denne briefen som det avtalte utgangspunktet for prosjektet. Du kan fortsatt kommentere, laste opp eller snakke med designeren din når som helst.",
+    "state_drifted": "Briefen er oppdatert siden din siste signering",
+    "previous_signed_at": "Du signerte tidligere av {date}.",
+    "drifted_body": "Designeren din har revidert briefen over. Les den nye versjonen og signer på nytt slik at vi kan fortsette med det avtalte omfanget i arkivet.",
+    "cannot_sign": "Signering er ikke tilgjengelig fra denne kontoen."
+  },
+  "brief_signoff_staff": {
+    "title": "Kundens signering",
+    "pill_none": "Avventer",
+    "pill_current": "Signert",
+    "pill_drifted": "Avviker",
+    "none_body": "Kunden har ikke signert av briefen ennå. Når de gjør det, blir tidsstempelet og en frosset kopi av briefen registrert her som skriftlig bevis.",
+    "current_body": "Kunden signerte av den nåværende briefen {date}. Denne signeringen er den operative avtalte briefen for prosjektet.",
+    "drifted_body": "Kunden signerte {date}, men briefen er endret siden den gang. Samtykket deres samsvarer ikke lenger med den oppdaterte briefen — be dem signere på nytt før dere fortsetter med revidert omfang.",
+    "history_toggle": "Signaturhistorikk ({n})"
+  },
   "brief_comments": {
     "title": "Diskusjon om briefen",
     "empty": "Ingen kommentarer ennå. Start samtalen.",

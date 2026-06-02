@@ -10,12 +10,17 @@ import {
   users,
   projectCustomerInvitations,
   projectCustomerUploads,
-  projectCustomerComments
+  projectCustomerComments,
+  projectBriefSignoffs
 } from '@/db';
 import { createClient } from '@/lib/supabase/server';
 import { formatDate, formatMoney } from '@/lib/utils';
 import { CustomerUploads, type CustomerUpload } from '@/components/portal/customer-uploads';
 import { BriefComments, type BriefComment } from '@/components/portal/brief-comments';
+import {
+  BriefSignoff,
+  type BriefSignoffState
+} from '@/components/portal/brief-signoff';
 
 /**
  * Customer's read-only view of the project brief.
@@ -148,6 +153,33 @@ export default async function PortalProjectBriefPage({
     editedAt: c.editedAt ? c.editedAt.toISOString() : null
   }));
 
+  // Latest sign-off for this customer (signed_off_by = current user).
+  // We deliberately don't show other customers' sign-offs in this card —
+  // each customer experiences their own sign-off state. Staff side will
+  // see all sign-offs across customers.
+  const [latestMine] = user?.id
+    ? await db
+        .select({
+          signedOffAt: projectBriefSignoffs.signedOffAt,
+          briefSnapshot: projectBriefSignoffs.briefSnapshot
+        })
+        .from(projectBriefSignoffs)
+        .where(
+          and(
+            eq(projectBriefSignoffs.projectId, id),
+            eq(projectBriefSignoffs.signedOffBy, user.id)
+          )
+        )
+        .orderBy(desc(projectBriefSignoffs.signedOffAt))
+        .limit(1)
+    : [];
+
+  const signoffState: BriefSignoffState = !latestMine
+    ? 'none'
+    : signoffMatchesBrief(latestMine.briefSnapshot, p.description, p.fablabRole)
+      ? 'current'
+      : 'drifted';
+
   const t = await getTranslations();
 
   return (
@@ -243,9 +275,14 @@ export default async function PortalProjectBriefPage({
         canPost={true}
       />
 
-      <div className="grid grid-cols-1 gap-3">
-        <SoonCard titleKey="portal.signoff_title" bodyKey="portal.signoff_body" />
-      </div>
+      <BriefSignoff
+        projectId={id}
+        state={signoffState}
+        latestSignedAt={
+          latestMine?.signedOffAt ? latestMine.signedOffAt.toISOString() : null
+        }
+        canSign={true}
+      />
 
       <p className="text-[11px] text-ink-3 text-center pt-2">
         {t('portal.invited_on', { date: formatDate(invite.invitedAt) })}
@@ -263,21 +300,25 @@ function KV({ k, v }: { k: string; v: string | null | undefined }) {
   );
 }
 
-async function SoonCard({
-  titleKey,
-  bodyKey
-}: {
-  titleKey: string;
-  bodyKey: string;
-}) {
-  const t = await getTranslations();
+/**
+ * Drift detection: compares the snapshot taken at the moment of sign-off
+ * against the current brief. We only check description + fablabRole —
+ * those are the operative commercial fields. Project ref / title are
+ * stored in the snapshot for self-describing audit but don't drive drift
+ * (renaming a project shouldn't invalidate sign-off).
+ */
+function signoffMatchesBrief(
+  snapshot: unknown,
+  currentDescription: string | null,
+  currentRole: string | null
+): boolean {
+  if (!snapshot || typeof snapshot !== 'object') return false;
+  const s = snapshot as { description?: unknown; fablabRole?: unknown };
+  const snapDesc =
+    typeof s.description === 'string' ? s.description : '';
+  const snapRole = typeof s.fablabRole === 'string' ? s.fablabRole : '';
   return (
-    <div className="card border-dashed">
-      <h4 className="text-[12px] uppercase tracking-wider text-ink-3 mb-1">
-        {t(titleKey)}
-      </h4>
-      <p className="text-[12px] text-ink-2 leading-snug">{t(bodyKey)}</p>
-      <p className="text-[10px] text-ink-3 italic mt-2">{t('portal.coming_in_next_release')}</p>
-    </div>
+    snapDesc === (currentDescription ?? '') &&
+    snapRole === (currentRole ?? '')
   );
 }
