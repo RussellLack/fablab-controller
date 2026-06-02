@@ -138,6 +138,10 @@ export default function GlobalError({
             >
               Try again
             </button>
+            {/* Plain <a> by design — this is the global error boundary;
+                next/link relies on the same React runtime that just
+                crashed, so it can't be trusted as the recovery link. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/"
               style={{

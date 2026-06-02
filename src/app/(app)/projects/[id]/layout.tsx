@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { getProject } from './queries';
@@ -22,7 +23,7 @@ export default async function ProjectLayout({
   return (
     <>
       <div className="text-xs text-ink-3 mb-1.5">
-        <a href="/projects" className="hover:text-ink">{t('crumbs.projects')}</a>{' / '}
+        <Link href="/projects" className="hover:text-ink">{t('crumbs.projects')}</Link>{' / '}
         {p.reference}
       </div>
 
