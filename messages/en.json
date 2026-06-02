@@ -74,7 +74,8 @@
     "send_via_gmail": "Send via Gmail",
     "new_po_guided": "+ New PO (guided)",
     "issue_po_and_send": "Issue and email vendor (binding)",
-    "new_scope_version": "+ New scope version (guided)"
+    "new_scope_version": "+ New scope version (guided)",
+    "review_brief": "Review brief (guided)"
   },
   "dash": {
     "title": "Dashboard",
@@ -1043,5 +1044,30 @@
     "e_approval_gates": "Concept sign-off\nDesign development sign-off\nFF&E specification sign-off\nProcurement budget sign-off\nFinal installation sign-off",
     "f_known_deps": "Known dependencies",
     "h_known_deps": "External constraints that affect Fablab’s ability to deliver — builder schedule, permissions, client decisions, imported-goods lead times. List what you’re depending on."
+  },
+  "brief": {
+    "subtitle": "The Brief gate needs three things: project description filled, Fablab role confirmed, and at least one approved scope-target Approval (Phase 2)."
+  },
+  "brief_wizard": {
+    "title": "Review brief (guided)",
+    "step_intake": "Intake context",
+    "step_edit": "Description & role",
+    "step_gate": "Brief gate",
+    "submit": "Save brief",
+    "intake_intro": "These are the 16 intake fields from the lead this project was converted from (00- §2). They’re read-only here — use them as context for writing the brief on the next step. Edits to the original intake belong on the lead, not the project.",
+    "no_lead_context": "No originating lead is linked to this project — intake context is not available. You can still edit description and role in the next step.",
+    "edit_intro": "The project description is the brief. It seeds from the lead’s desired outcome (usually a single sentence) — expand it here into the working brief: what the project is, the design intent, the constraints, the stakeholders, anything a new team member should know on day one.",
+    "desc_placeholder": "A few paragraphs describing the project, design intent, key constraints, and stakeholders.",
+    "desc_placeholder_from_intake": "Expand on: \"{outcome}…\"",
+    "desc_helper": "Aim for something a new designer could read in 5 minutes and understand the engagement. The lead intake fields above give you the supporting facts.",
+    "gate_intro": "Phase 2’s Brief gate needs all three of these to flip ✓. The third — the approved scope-target Approval — is a separate Approvals action and is read here from the live gate state.",
+    "crit_description": "Project description filled",
+    "crit_role": "Fablab role set",
+    "crit_scope_approval": "Approved scope-target Approval exists",
+    "scope_pending_label": "No scope approval yet.",
+    "scope_pending_body": "Draft a scope version (the Scope tab) and request an Approval with target = Scope baseline. Once that approval reaches approved, the Brief gate flips to done.",
+    "scope_pending_link": "Request a Scope approval →",
+    "all_ok": "✓ All three Brief gate criteria met. Saving will persist the description and role; the Brief gate will read as done on the next refresh.",
+    "save_anyway": "You can still save description + role now. The Brief gate will flip to done once the missing criterion above is satisfied."
   }
 }

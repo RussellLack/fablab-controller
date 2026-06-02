@@ -74,7 +74,8 @@
     "send_via_gmail": "Send via Gmail",
     "new_po_guided": "+ Ny innkjøpsordre (veiviser)",
     "issue_po_and_send": "Utsted og send til leverandør (bindende)",
-    "new_scope_version": "+ Ny omfangs-versjon (veiviser)"
+    "new_scope_version": "+ Ny omfangs-versjon (veiviser)",
+    "review_brief": "Gjennomgå oppdrag (veiviser)"
   },
   "dash": {
     "title": "Dashbord",
@@ -1043,5 +1044,30 @@
     "e_approval_gates": "Konsept-signering\nDetaljutviklings-signering\nFF&E-spesifikasjon-signering\nInnkjøps-budsjett-signering\nEndelig installasjons-signering",
     "f_known_deps": "Kjente avhengigheter",
     "h_known_deps": "Eksterne begrensninger som påvirker Fablabs leveranseevne — entreprenør-tidsplan, tillatelser, kundebeslutninger, importerte-varer leveringstid. List hva du er avhengig av."
+  },
+  "brief": {
+    "subtitle": "Oppdrags-porten trenger tre ting: prosjektbeskrivelse fylt ut, Fablab-rolle bekreftet, og minst én godkjent omfangs-godkjenning (Fase 2)."
+  },
+  "brief_wizard": {
+    "title": "Gjennomgå oppdrag (veiviser)",
+    "step_intake": "Innhentings-kontekst",
+    "step_edit": "Beskrivelse & rolle",
+    "step_gate": "Oppdrags-port",
+    "submit": "Lagre oppdrag",
+    "intake_intro": "Dette er de 16 innhentings-feltene fra forespørselen prosjektet ble konvertert fra (00- §2). De er kun lesbare her — bruk dem som kontekst når du skriver oppdraget i neste trinn. Endringer på opprinnelig innhenting hører hjemme på forespørselen, ikke prosjektet.",
+    "no_lead_context": "Ingen opprinnelig forespørsel er koblet til dette prosjektet — innhentings-kontekst er ikke tilgjengelig. Du kan likevel redigere beskrivelse og rolle i neste trinn.",
+    "edit_intro": "Prosjektbeskrivelsen er oppdraget. Den seedes fra forespørselens ønskede resultat (vanligvis én setning) — utvid den her til det fungerende oppdraget: hva prosjektet er, designintensjonen, begrensningene, interessentene, alt en ny teamperson bør vite på dag én.",
+    "desc_placeholder": "Noen avsnitt som beskriver prosjektet, designintensjonen, sentrale begrensninger og interessenter.",
+    "desc_placeholder_from_intake": "Utvid: \"{outcome}…\"",
+    "desc_helper": "Sikt mot noe en ny designer kan lese på 5 minutter og forstå oppdraget. Innhentings-feltene over gir deg de støttende faktaene.",
+    "gate_intro": "Fase 2s Oppdrags-port trenger alle tre av disse for å bli ✓. Den tredje — den godkjente omfangs-godkjenningen — er en separat Godkjennings-handling og leses her fra live port-status.",
+    "crit_description": "Prosjektbeskrivelse fylt ut",
+    "crit_role": "Fablab-rolle satt",
+    "crit_scope_approval": "Godkjent omfangs-godkjenning finnes",
+    "scope_pending_label": "Ingen omfangs-godkjenning ennå.",
+    "scope_pending_body": "Lag en omfangs-versjon (Omfang-fanen) og be om en Godkjenning med mål = Omfangsbasislinje. Når den godkjenningen når godkjent, blir Oppdrags-porten ferdig.",
+    "scope_pending_link": "Be om en Omfangs-godkjenning →",
+    "all_ok": "✓ Alle tre Oppdrags-port-kriterier oppfylt. Lagring vil lagre beskrivelse og rolle; Oppdrags-porten vil leses som ferdig ved neste refresh.",
+    "save_anyway": "Du kan likevel lagre beskrivelse + rolle nå. Oppdrags-porten vil bli ferdig når det manglende kriteriet over er oppfylt."
   }
 }
