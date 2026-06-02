@@ -1069,5 +1069,27 @@
     "scope_pending_link": "Request a Scope approval →",
     "all_ok": "✓ All three Brief gate criteria met. Saving will persist the description and role; the Brief gate will read as done on the next refresh.",
     "save_anyway": "You can still save description + role now. The Brief gate will flip to done once the missing criterion above is satisfied."
+  },
+  "portal": {
+    "sign_out": "Sign out",
+    "welcome": "Hi {name}",
+    "welcome_sub": "These are the projects you have access to. Click one to view its brief and the current state of work.",
+    "no_projects": "You haven't been invited to any projects yet. Your designer at Fablab will invite you once your project's brief is ready to share.",
+    "all_projects": "All projects",
+    "your_designer": "Your designer",
+    "invited_on": "Invited on {date}",
+    "invited_accepted": "Joined {date}",
+    "invited_pending": "Invited {date}",
+    "brief_heading": "The brief",
+    "brief_empty": "Your designer is still writing the brief. Check back shortly.",
+    "intake_heading": "What we captured from the initial conversation",
+    "intake_sub": "This is what your designer noted during intake. If anything's wrong or missing, you'll be able to comment on it once that feature is enabled (coming next).",
+    "uploads_title": "Upload references",
+    "uploads_body": "Mood boards, inspiration photos, existing site plans, samples — anything that helps the designer see what you mean.",
+    "comments_title": "Comment on the brief",
+    "comments_body": "Add notes against any part of the brief. Corrections, clarifications, missing context — anything you want recorded.",
+    "signoff_title": "Sign off the brief",
+    "signoff_body": "When the brief reflects what you want, sign off to formally confirm it. This becomes the agreed starting point.",
+    "coming_in_next_release": "Coming in the next release."
   }
 }

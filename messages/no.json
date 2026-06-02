@@ -1069,5 +1069,27 @@
     "scope_pending_link": "Be om en Omfangs-godkjenning →",
     "all_ok": "✓ Alle tre Oppdrags-port-kriterier oppfylt. Lagring vil lagre beskrivelse og rolle; Oppdrags-porten vil leses som ferdig ved neste refresh.",
     "save_anyway": "Du kan likevel lagre beskrivelse + rolle nå. Oppdrags-porten vil bli ferdig når det manglende kriteriet over er oppfylt."
+  },
+  "portal": {
+    "sign_out": "Logg ut",
+    "welcome": "Hei {name}",
+    "welcome_sub": "Dette er prosjektene du har tilgang til. Klikk på et for å se oppdraget og status på arbeidet.",
+    "no_projects": "Du er ikke invitert til noen prosjekter ennå. Din designer hos Fablab vil invitere deg når prosjektets oppdrag er klart til å deles.",
+    "all_projects": "Alle prosjekter",
+    "your_designer": "Din designer",
+    "invited_on": "Invitert {date}",
+    "invited_accepted": "Logget på {date}",
+    "invited_pending": "Invitert {date}",
+    "brief_heading": "Oppdraget",
+    "brief_empty": "Din designer skriver fortsatt oppdraget. Kom tilbake snart.",
+    "intake_heading": "Hva vi fanget opp fra første samtale",
+    "intake_sub": "Dette er det din designer noterte under innhentingen. Hvis noe er feil eller mangler, vil du kunne kommentere det når den funksjonen er aktivert (kommer i neste utgivelse).",
+    "uploads_title": "Last opp referanser",
+    "uploads_body": "Stemnings-bilder, inspirasjon, eksisterende plantegninger, prøver — alt som hjelper designeren å se hva du mener.",
+    "comments_title": "Kommenter oppdraget",
+    "comments_body": "Legg til notater på hvilken som helst del av oppdraget. Korrigeringer, presiseringer, manglende kontekst — alt du vil ha registrert.",
+    "signoff_title": "Signer av oppdraget",
+    "signoff_body": "Når oppdraget reflekterer det du ønsker, signer av for å formelt bekrefte det. Dette blir det avtalte utgangspunktet.",
+    "coming_in_next_release": "Kommer i neste utgivelse."
   }
 }

@@ -3,6 +3,7 @@ import { Header } from '@/components/header';
 import { JourneyOverlay } from '@/components/journey-overlay';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { isStaffEmail } from '@/lib/auth-helpers';
 
 // Every authenticated route depends on the session cookie and queries the
 // database per request — they must never be statically prerendered. Setting
@@ -13,6 +14,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
+
+  // Customers (non-Workspace emails — they signed in via magic link) belong
+  // in the portal route group, not the staff app. Bounce them back so they
+  // can't accidentally browse staff routes by URL.
+  if (!isStaffEmail(user.email)) redirect('/portal');
 
   // Derive display name + initials from the auth user
   const name = (user.user_metadata?.full_name as string) ?? user.email ?? 'User';

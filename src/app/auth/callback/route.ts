@@ -2,10 +2,14 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { saveGoogleTokens } from '@/server/lib/google-tokens'
+import { isStaffEmail } from '@/lib/auth-helpers'
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const code = url.searchParams.get('code')
+  /** Optional ?next=… landing path — preserved across the magic-link round trip. */
+  const next = url.searchParams.get('next')
+  let sessionEmail: string | null = null
 
   if (code) {
     // Inline the supabase client (instead of using the shared @/lib/supabase/server)
@@ -30,6 +34,7 @@ export async function GET(request: Request) {
       }
     )
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    sessionEmail = data.session?.user?.email ?? null
 
     // Persist the Google provider tokens (gmail.send scope) for later
     // server-side use. Wrapped in try/catch so a missing/un-migrated
@@ -60,5 +65,16 @@ export async function GET(request: Request) {
     process.env.NEXT_PUBLIC_APP_URL
     ?? (forwardedHost ? `${forwardedProto}://${forwardedHost}` : url.origin)
 
-  return NextResponse.redirect(`${baseUrl}/dashboard`)
+  // Where to send the user after sign-in:
+  //   - explicit ?next= wins (used by magic-link invitations that point at
+  //     a specific /portal/projects/[id])
+  //   - else: staff → /dashboard, customer (non-Workspace email) → /portal
+  let landing = '/dashboard'
+  if (next && next.startsWith('/')) {
+    landing = next
+  } else if (sessionEmail && !isStaffEmail(sessionEmail)) {
+    landing = '/portal'
+  }
+
+  return NextResponse.redirect(`${baseUrl}${landing}`)
 }
