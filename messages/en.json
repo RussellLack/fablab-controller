@@ -1124,5 +1124,23 @@
     "row_resent": "Sent.",
     "row_revoke": "Revoke",
     "revoke_confirm": "Revoke this customer's access? They'll no longer be able to view the project. The audit row is kept."
+  },
+  "portal_uploads": {
+    "title": "References you've shared",
+    "help": "Upload mood boards, inspiration photos, existing plans, sample images — anything that helps your designer see what you mean. Up to 5 MB per file.",
+    "attach": "+ Add files",
+    "uploading": "Uploading…",
+    "empty": "Nothing uploaded yet.",
+    "delete": "Remove",
+    "confirm_delete": "Remove this file? Your designer will no longer see it.",
+    "delete_failed": "Couldn't remove the file. Try again or refresh the page.",
+    "download_failed": "Couldn't open the file. Try again in a moment.",
+    "too_large": "{name} is larger than {max}. Please reduce the file size and try again."
+  },
+  "customer_uploads_staff": {
+    "title": "Files from the customer",
+    "help": "References the customer has shared from the portal. Click a filename to download.",
+    "empty": "The customer hasn't uploaded anything yet.",
+    "download_failed": "Couldn't open the file."
   }
 }

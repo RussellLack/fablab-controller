@@ -1,17 +1,19 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { and, eq, isNull, sql } from 'drizzle-orm';
+import { and, desc, eq, isNull, sql } from 'drizzle-orm';
 import {
   db,
   projects,
   clients,
   leads,
   users,
-  projectCustomerInvitations
+  projectCustomerInvitations,
+  projectCustomerUploads
 } from '@/db';
 import { createClient } from '@/lib/supabase/server';
 import { formatDate, formatMoney } from '@/lib/utils';
+import { CustomerUploads, type CustomerUpload } from '@/components/portal/customer-uploads';
 
 /**
  * Customer's read-only view of the project brief.
@@ -88,6 +90,35 @@ export default async function PortalProjectBriefPage({
   const [intake] = p.leadId
     ? await db.select().from(leads).where(eq(leads.id, p.leadId)).limit(1)
     : [];
+
+  // Customer can see every upload on the project (staff + other customer
+  // collaborators), but can only delete files they uploaded themselves
+  // — the API enforces ownership on DELETE; the UI only renders the X
+  // on rows where uploadedBy === current user.
+  const uploadsRaw = await db
+    .select({
+      id: projectCustomerUploads.id,
+      filename: projectCustomerUploads.filename,
+      storagePath: projectCustomerUploads.storagePath,
+      mimeType: projectCustomerUploads.mimeType,
+      sizeBytes: projectCustomerUploads.sizeBytes,
+      uploadedBy: projectCustomerUploads.uploadedBy,
+      createdAt: projectCustomerUploads.createdAt
+    })
+    .from(projectCustomerUploads)
+    .where(eq(projectCustomerUploads.projectId, id))
+    .orderBy(desc(projectCustomerUploads.createdAt));
+
+  const uploads: CustomerUpload[] = uploadsRaw.map((u) => ({
+    id: u.id,
+    filename: u.filename,
+    storagePath: u.storagePath,
+    mimeType: u.mimeType,
+    sizeBytes: u.sizeBytes,
+    uploadedBy: u.uploadedBy,
+    createdAt: u.createdAt.toISOString(),
+    isMine: user?.id ? u.uploadedBy === user.id : false
+  }));
 
   const t = await getTranslations();
 
@@ -175,8 +206,9 @@ export default async function PortalProjectBriefPage({
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-3">
-        <SoonCard titleKey="portal.uploads_title" bodyKey="portal.uploads_body" />
+      <CustomerUploads projectId={id} initial={uploads} />
+
+      <div className="grid grid-cols-2 gap-3">
         <SoonCard titleKey="portal.comments_title" bodyKey="portal.comments_body" />
         <SoonCard titleKey="portal.signoff_title" bodyKey="portal.signoff_body" />
       </div>

@@ -1124,5 +1124,23 @@
     "row_resent": "Sendt.",
     "row_revoke": "Tilbakekall",
     "revoke_confirm": "Tilbakekalle denne kundens tilgang? De vil ikke lenger kunne se prosjektet. Loggraden beholdes."
+  },
+  "portal_uploads": {
+    "title": "Referanser du har delt",
+    "help": "Last opp stemnings-bilder, inspirasjon, eksisterende plantegninger, prøver — alt som hjelper designeren å se hva du mener. Maks 5 MB per fil.",
+    "attach": "+ Legg til filer",
+    "uploading": "Laster opp…",
+    "empty": "Ingenting lastet opp ennå.",
+    "delete": "Fjern",
+    "confirm_delete": "Fjerne denne filen? Designeren din vil ikke lenger se den.",
+    "delete_failed": "Kunne ikke fjerne filen. Prøv igjen eller oppdater siden.",
+    "download_failed": "Kunne ikke åpne filen. Prøv igjen om litt.",
+    "too_large": "{name} er større enn {max}. Reduser filstørrelsen og prøv igjen."
+  },
+  "customer_uploads_staff": {
+    "title": "Filer fra kunden",
+    "help": "Referanser kunden har delt fra portalen. Klikk på et filnavn for å laste ned.",
+    "empty": "Kunden har ikke lastet opp noe ennå.",
+    "download_failed": "Kunne ikke åpne filen."
   }
 }

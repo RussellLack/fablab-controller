@@ -8,6 +8,7 @@ import { getProjectGates } from '@/server/queries/project-gates';
 import { NextActionBanner } from '@/components/next-action-banner';
 import { BriefLauncher } from './brief-launcher';
 import { CustomerActivityCard } from './customer-activity-card';
+import { CustomerUploadsCard } from './customer-uploads-card';
 import type { IntakeContext } from '@/components/wizard/brief-wizard';
 
 type FablabRole =
@@ -102,6 +103,7 @@ export default async function ProjectBriefPage({ params }: { params: Promise<{ i
             <p className="text-[13px] leading-6 whitespace-pre-wrap">{p.description ?? '—'}</p>
           </div>
           <CustomerActivityCard projectId={id} />
+          <CustomerUploadsCard projectId={id} />
         </div>
         <div>
           <div className="card">
