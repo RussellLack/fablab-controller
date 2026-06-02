@@ -447,7 +447,11 @@ export async function sendRfqViaGmail(
       .replace(/\[supplier contact name\]/g, v.contactName ?? v.name)
       .replace(/\[your name\]/g, senderName)
       .replace(/\[your email\]/g, senderEmail)
-      .replace(/\[your role\]/g, ''); // role not in our user metadata yet
+      // Safety net for legacy RFQ drafts whose `rfqs.description` was
+      // generated when the template still emitted [your role]. New
+      // drafts no longer contain the placeholder; this strips it from
+      // any historic body so the signature renders cleanly.
+      .replace(/\[your role\]\n?/g, '');
 
     const result = await sendGmail({
       accessToken,
@@ -970,7 +974,9 @@ export async function issuePurchaseOrderAndSend(
     .replace(/\[supplier contact name\]/g, poRow.vendorContactName ?? poRow.vendorName ?? 'Supplier')
     .replace(/\[your name\]/g, senderName)
     .replace(/\[your email\]/g, senderEmail)
-    .replace(/\[your role\]/g, '');
+    // Safety net for historic PO bodies — the active template no
+    // longer emits this placeholder.
+    .replace(/, \[your role\]|\[your role\]\n?/g, '');
 
   // Fetch attachments
   const attRows = await db

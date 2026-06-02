@@ -11,8 +11,13 @@
  * variables that get substituted at send time:
  *   [supplier contact name]   — the vendor's primary contact
  *   [your name]               — the sender (RFQ author)
- *   [your role]               — the sender's role
  *   [your email]              — the sender's email (reply-to)
+ *
+ * `[your role]` was previously emitted in the signature but always
+ * resolved to an empty string (no per-user role/title field), leaving
+ * a stray empty line. Removed from the template; the substitution in
+ * `procurement.ts` is kept as a safety net for legacy RFQ drafts whose
+ * body already has the literal placeholder baked into `rfqs.description`.
  *
  * Project- and items-level variables are baked in at template-build time
  * (project ref, items table, delivery country, etc.) so the user sees
@@ -97,7 +102,6 @@ This document does not constitute an order, a commitment to purchase, or an auth
 Best regards,
 
 [your name]
-[your role]
 Fablab Design AS
 [your email]
 controller.fablabdesign.com`;

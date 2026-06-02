@@ -949,7 +949,7 @@
     "body_helper": "Et utkast er generert for deg fra Fablab-malen (per 20-doc-templates-best-practice.md, tilpasset for multi-leverandør-forespørsel). Rediger fritt — plassholderne i [klammer] erstattes per mottaker ved sending.",
     "body_edited": "redigert",
     "body_regenerate": "Generer på nytt fra mal",
-    "body_placeholders_note": "Plassholdere i [klammer] fylles inn per leverandør ved sending: [supplier contact name], [your name], [your role], [your email]."
+    "body_placeholders_note": "Plassholdere i [klammer] fylles inn per leverandør ved sending: [supplier contact name], [your name], [your email]."
   },
   "rfq_attachments": {
     "title": "Vedlegg",

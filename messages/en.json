@@ -949,7 +949,7 @@
     "body_helper": "A draft RFQ letter has been generated for you from the Fablab specimen (per 20-doc-templates-best-practice.md, adapted for multi-supplier RFQ). Edit freely — the placeholders in [square brackets] are substituted per recipient at send time.",
     "body_edited": "edited",
     "body_regenerate": "Regenerate from template",
-    "body_placeholders_note": "Placeholders in [brackets] are filled per vendor at send time: [supplier contact name], [your name], [your role], [your email]."
+    "body_placeholders_note": "Placeholders in [brackets] are filled per vendor at send time: [supplier contact name], [your name], [your email]."
   },
   "rfq_attachments": {
     "title": "Attachments",

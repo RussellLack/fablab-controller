@@ -10,8 +10,13 @@
  * Placeholders substituted at send time:
  *   [supplier contact name]   — vendor's primary contact
  *   [your name]               — sender (issuer)
- *   [your role]               — sender's role (empty for now)
  *   [your email]              — sender's email
+ *
+ * `[your role]` was previously emitted in the "Issued by" block but
+ * always resolved to an empty string (no per-user role/title field),
+ * producing "Name, " in the signature. Removed from the template; the
+ * substitution in `procurement.ts` is kept as a safety net should
+ * any historic PO body ever contain the literal placeholder.
  */
 
 export type PoBodyContext = {
@@ -143,7 +148,7 @@ Please confirm acceptance of this order in writing (email is sufficient) within 
 
 ### Issued by
 
-[your name], [your role]
+[your name]
 Fablab Design AS
 [your email]
 ${orgLine}
