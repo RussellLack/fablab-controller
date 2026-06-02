@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { and, desc, eq, isNull, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull, sql } from 'drizzle-orm';
 import {
   db,
   projects,
@@ -9,11 +9,13 @@ import {
   leads,
   users,
   projectCustomerInvitations,
-  projectCustomerUploads
+  projectCustomerUploads,
+  projectCustomerComments
 } from '@/db';
 import { createClient } from '@/lib/supabase/server';
 import { formatDate, formatMoney } from '@/lib/utils';
 import { CustomerUploads, type CustomerUpload } from '@/components/portal/customer-uploads';
+import { BriefComments, type BriefComment } from '@/components/portal/brief-comments';
 
 /**
  * Customer's read-only view of the project brief.
@@ -120,6 +122,32 @@ export default async function PortalProjectBriefPage({
     isMine: user?.id ? u.uploadedBy === user.id : false
   }));
 
+  const commentsRaw = await db
+    .select({
+      id: projectCustomerComments.id,
+      authorId: projectCustomerComments.authorId,
+      authorIsStaff: projectCustomerComments.authorIsStaff,
+      body: projectCustomerComments.body,
+      section: projectCustomerComments.section,
+      replyToId: projectCustomerComments.replyToId,
+      createdAt: projectCustomerComments.createdAt,
+      editedAt: projectCustomerComments.editedAt
+    })
+    .from(projectCustomerComments)
+    .where(eq(projectCustomerComments.projectId, id))
+    .orderBy(asc(projectCustomerComments.createdAt));
+
+  const comments: BriefComment[] = commentsRaw.map((c) => ({
+    id: c.id,
+    authorId: c.authorId,
+    authorIsStaff: c.authorIsStaff,
+    body: c.body,
+    section: c.section,
+    replyToId: c.replyToId,
+    createdAt: c.createdAt.toISOString(),
+    editedAt: c.editedAt ? c.editedAt.toISOString() : null
+  }));
+
   const t = await getTranslations();
 
   return (
@@ -208,8 +236,14 @@ export default async function PortalProjectBriefPage({
 
       <CustomerUploads projectId={id} initial={uploads} />
 
-      <div className="grid grid-cols-2 gap-3">
-        <SoonCard titleKey="portal.comments_title" bodyKey="portal.comments_body" />
+      <BriefComments
+        projectId={id}
+        initial={comments}
+        currentUserId={user?.id ?? ''}
+        canPost={true}
+      />
+
+      <div className="grid grid-cols-1 gap-3">
         <SoonCard titleKey="portal.signoff_title" bodyKey="portal.signoff_body" />
       </div>
 

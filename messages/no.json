@@ -1142,5 +1142,24 @@
     "help": "Referanser kunden har delt fra portalen. Klikk på et filnavn for å laste ned.",
     "empty": "Kunden har ikke lastet opp noe ennå.",
     "download_failed": "Kunne ikke åpne filen."
+  },
+  "brief_comments": {
+    "title": "Diskusjon om briefen",
+    "empty": "Ingen kommentarer ennå. Start samtalen.",
+    "new_placeholder": "Skriv en kommentar. Både Fablab og kunden ser denne tråden.",
+    "reply_placeholder": "Svar på denne kommentaren.",
+    "send": "Send kommentar",
+    "send_reply": "Send svar",
+    "posting": "Sender…",
+    "saving": "Lagrer…",
+    "save_edit": "Lagre endring",
+    "reply": "Svar",
+    "edit": "Rediger",
+    "delete": "Slett",
+    "edited": "redigert",
+    "author_staff": "Fablab",
+    "author_customer": "Kunde",
+    "confirm_delete": "Slette denne kommentaren? Dette kan ikke angres.",
+    "read_only": "Kommentarer er skrivebeskyttet for deg nå."
   }
 }

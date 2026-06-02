@@ -1142,5 +1142,24 @@
     "help": "References the customer has shared from the portal. Click a filename to download.",
     "empty": "The customer hasn't uploaded anything yet.",
     "download_failed": "Couldn't open the file."
+  },
+  "brief_comments": {
+    "title": "Brief discussion",
+    "empty": "No comments yet. Start the conversation.",
+    "new_placeholder": "Write a comment. Both Fablab and the customer can see this thread.",
+    "reply_placeholder": "Reply to this comment.",
+    "send": "Post comment",
+    "send_reply": "Send reply",
+    "posting": "Posting…",
+    "saving": "Saving…",
+    "save_edit": "Save edit",
+    "reply": "Reply",
+    "edit": "Edit",
+    "delete": "Delete",
+    "edited": "edited",
+    "author_staff": "Fablab",
+    "author_customer": "Customer",
+    "confirm_delete": "Delete this comment? This can't be undone.",
+    "read_only": "Comments are read-only for you right now."
   }
 }

@@ -9,6 +9,7 @@ import { NextActionBanner } from '@/components/next-action-banner';
 import { BriefLauncher } from './brief-launcher';
 import { CustomerActivityCard } from './customer-activity-card';
 import { CustomerUploadsCard } from './customer-uploads-card';
+import { BriefCommentsCard } from './brief-comments-card';
 import type { IntakeContext } from '@/components/wizard/brief-wizard';
 
 type FablabRole =
@@ -104,6 +105,7 @@ export default async function ProjectBriefPage({ params }: { params: Promise<{ i
           </div>
           <CustomerActivityCard projectId={id} />
           <CustomerUploadsCard projectId={id} />
+          <BriefCommentsCard projectId={id} />
         </div>
         <div>
           <div className="card">
