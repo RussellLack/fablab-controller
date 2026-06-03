@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, inArray, isNotNull, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
 import {
   db,
   leads,
@@ -278,6 +278,74 @@ export async function getTodayPosReadyToIssue(
     .limit(SECTION_LIMIT);
 
   return { rows, total: countRow?.value ?? 0 };
+}
+
+/* ─── Awaiting vendor confirmation — issued POs not yet confirmed ─── */
+
+export type TodayAwaitingConfirmationRow = {
+  id: string;
+  reference: string;
+  projectId: string;
+  projectReference: string;
+  projectTitle: string;
+  vendorName: string | null;
+  issuedAt: string | null;       // YYYY-MM-DD
+  daysSinceIssue: number | null;
+};
+
+export async function getTodayAwaitingConfirmation(
+  userId: string,
+  mineOnly: boolean
+): Promise<{ rows: TodayAwaitingConfirmationRow[]; total: number }> {
+  if (!process.env.DATABASE_URL) return { rows: [], total: 0 };
+
+  // Issued = BINDING but the vendor hasn't acknowledged in writing yet.
+  // The §2 PO template asks for confirmation within 5 business days;
+  // surfacing the wait time visualises which orders are overdue.
+  const baseWhere = and(
+    eq(purchaseOrders.status, 'issued'),
+    isNull(purchaseOrders.confirmedAt),
+    mineOnly ? eq(projects.currentOwnerId, userId) : undefined
+  );
+
+  const [countRow] = await db
+    .select({ value: count() })
+    .from(purchaseOrders)
+    .innerJoin(projects, eq(purchaseOrders.projectId, projects.id))
+    .where(baseWhere);
+
+  const rows = await db
+    .select({
+      id: purchaseOrders.id,
+      reference: purchaseOrders.reference,
+      projectId: projects.id,
+      projectReference: projects.reference,
+      projectTitle: projects.title,
+      vendorName: vendors.name,
+      issuedAt: purchaseOrders.issuedAt
+    })
+    .from(purchaseOrders)
+    .innerJoin(projects, eq(purchaseOrders.projectId, projects.id))
+    .leftJoin(vendors, eq(purchaseOrders.vendorId, vendors.id))
+    .where(baseWhere)
+    // Oldest issue date first — what's most overdue surfaces top.
+    .orderBy(asc(purchaseOrders.issuedAt))
+    .limit(SECTION_LIMIT);
+
+  const now = Date.now();
+  const enriched: TodayAwaitingConfirmationRow[] = rows.map((r) => ({
+    ...r,
+    daysSinceIssue: r.issuedAt
+      ? Math.max(
+          0,
+          Math.floor(
+            (now - new Date(r.issuedAt).getTime()) / (24 * 60 * 60 * 1000)
+          )
+        )
+      : null
+  }));
+
+  return { rows: enriched, total: countRow?.value ?? 0 };
 }
 
 /* ─── Change control — open change orders ─── */

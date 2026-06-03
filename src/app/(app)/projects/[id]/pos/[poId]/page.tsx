@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { db, purchaseOrders, purchaseOrderLines, items, vendors, approvals, poAttachments } from '@/db';
-import { eq, and, asc } from 'drizzle-orm';
+import { db, purchaseOrders, purchaseOrderLines, items, vendors, approvals, poAttachments, vendorCommunications } from '@/db';
+import { eq, and, asc, desc } from 'drizzle-orm';
 import { formatDate, formatMoney, cx } from '@/lib/utils';
 import { canIssuePurchaseOrder } from '@/server/actions/approvals';
 import { BindingBadge, poStatusToBinding } from '@/components/binding-badge';
 import { PoActions } from './actions-client';
 import { PoAttachments } from '@/components/po-attachments';
+import { PoConfirmationCard } from './confirmation-card';
 
 async function getPo(poId: string, projectId: string) {
   if (!process.env.DATABASE_URL) return null;
@@ -44,7 +45,31 @@ async function getPo(poId: string, projectId: string) {
       .where(eq(poAttachments.poId, poId))
       .orderBy(asc(poAttachments.createdAt));
 
-    return { ...row, lines, authorising, attachments: attachmentRows };
+    // Latest inbound po_confirmation comm — drives the "Confirmed via X"
+    // metadata in the confirmation card when the PO is in `confirmed`.
+    const [latestConfirmation] = await db
+      .select({
+        channel: vendorCommunications.channel,
+        body: vendorCommunications.body
+      })
+      .from(vendorCommunications)
+      .where(
+        and(
+          eq(vendorCommunications.purchaseOrderId, poId),
+          eq(vendorCommunications.stage, 'po_confirmation'),
+          eq(vendorCommunications.direction, 'inbound')
+        )
+      )
+      .orderBy(desc(vendorCommunications.occurredAt))
+      .limit(1);
+
+    return {
+      ...row,
+      lines,
+      authorising,
+      attachments: attachmentRows,
+      latestConfirmation: latestConfirmation ?? null
+    };
   } catch { return null; }
 }
 
@@ -179,6 +204,22 @@ export default async function PoDetailPage({ params }: { params: Promise<{ id: s
               {data.vendorTerms && <div className="text-ink-3 text-[12px] mt-1">{data.vendorTerms}</div>}
             </div>
           </div>
+
+          <PoConfirmationCard
+            poId={po.id}
+            projectId={id}
+            status={po.status}
+            confirmedAt={po.confirmedAt}
+            issuedAt={po.issuedAt}
+            latestConfirmationComm={
+              data.latestConfirmation
+                ? {
+                    channel: data.latestConfirmation.channel,
+                    body: data.latestConfirmation.body
+                  }
+                : null
+            }
+          />
 
           <div className="card">
             <h3 className="card-title mb-3">{t('po.authorising_approval')}</h3>

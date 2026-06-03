@@ -6,6 +6,7 @@ import { formatMoney } from '@/lib/utils';
 import {
   getTodayActiveProjects,
   getTodayApprovalsWaiting,
+  getTodayAwaitingConfirmation,
   getTodayIntake,
   getTodayOpenChangeOrders,
   getTodayPosReadyToIssue,
@@ -51,6 +52,7 @@ export default async function TodayPage({
     active,
     approvalsWaiting,
     posReady,
+    awaitingConfirmation,
     changeOpen,
     riskProjects,
     recent,
@@ -60,6 +62,7 @@ export default async function TodayPage({
     getTodayActiveProjects(user.id, mineOnly),
     getTodayApprovalsWaiting(user.id, mineOnly),
     getTodayPosReadyToIssue(user.id, mineOnly),
+    getTodayAwaitingConfirmation(user.id, mineOnly),
     getTodayOpenChangeOrders(user.id, mineOnly),
     getTodayRiskProjects(user.id, mineOnly),
     getTodayRecentActivity(user.id, mineOnly),
@@ -158,6 +161,31 @@ export default async function TodayPage({
             secondary={`${r.projectReference} · ${r.reference}`}
             meta={`${formatMoney(r.totalGross, r.currency)} · ${t('today.pos_not_binding')}`}
             tone="warn"
+          />
+        ))}
+      </Section>
+
+      <Section
+        titleKey="today.awaiting_confirmation_heading"
+        total={awaitingConfirmation.total}
+        emptyKey="today.awaiting_confirmation_empty"
+      >
+        {awaitingConfirmation.rows.map((r) => (
+          <Row
+            key={r.id}
+            href={`/projects/${r.projectId}/pos/${r.id}`}
+            primary={r.vendorName ?? '—'}
+            secondary={`${r.projectReference} · ${r.reference}`}
+            meta={
+              r.daysSinceIssue !== null
+                ? t('today.awaiting_confirmation_days', { n: r.daysSinceIssue })
+                : ''
+            }
+            tone={
+              r.daysSinceIssue !== null && r.daysSinceIssue >= 7
+                ? 'danger'
+                : 'warn'
+            }
           />
         ))}
       </Section>

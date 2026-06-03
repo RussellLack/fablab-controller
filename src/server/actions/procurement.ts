@@ -924,6 +924,170 @@ export async function resendPurchaseOrderEmail(
   };
 }
 
+/* ────────────────────── PO confirmation tracking ────────────────────── */
+
+const PO_CONFIRMATION_CHANNELS = [
+  'email',
+  'portal',
+  'phone',
+  'in_person',
+  'letter',
+  'other'
+] as const;
+type PoConfirmationChannel = (typeof PO_CONFIRMATION_CHANNELS)[number];
+
+/**
+ * Record that the vendor has confirmed acceptance of the BINDING PO.
+ *
+ * Per the PO body template (§20- §2 specimen), the supplier is asked
+ * to confirm in writing within 5 business days of receipt. This action
+ * captures that confirmation — moves the PO from `issued` to
+ * `confirmed`, stamps `confirmedAt`, and logs the inbound communication
+ * to `vendorCommunications` with stage = `po_confirmation` so the
+ * audit trail records *how* the confirmation arrived (email reply,
+ * signed PDF, phone callback, etc.).
+ *
+ * Only the BINDING-state PO can be confirmed. Draft / ready-for-review
+ * POs need to go through Issue first; cancelled / fulfilled POs are
+ * past the confirmation window.
+ */
+export async function recordPoConfirmation(
+  poId: string,
+  projectId: string,
+  formData: FormData
+): Promise<ActionResult> {
+  const userId = await currentUserId();
+  if (!userId) return { ok: false, error: 'Not authenticated' };
+
+  const [po] = await db
+    .select({
+      id: purchaseOrders.id,
+      status: purchaseOrders.status,
+      vendorId: purchaseOrders.vendorId,
+      reference: purchaseOrders.reference
+    })
+    .from(purchaseOrders)
+    .where(eq(purchaseOrders.id, poId))
+    .limit(1);
+  if (!po) return { ok: false, error: 'PO not found' };
+  if (po.status !== 'issued') {
+    return {
+      ok: false,
+      error: `Only an issued PO can be confirmed. This one is ${po.status}.`
+    };
+  }
+
+  // Parse + validate the form.
+  const dateRaw = (formData.get('confirmedAt')?.toString() ?? '').trim();
+  const channelRaw = (formData.get('channel')?.toString() ?? 'email').trim();
+  const notes = formData.get('notes')?.toString().trim() || null;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const confirmedAt = dateRaw || today;
+  // YYYY-MM-DD regex
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(confirmedAt)) {
+    return { ok: false, error: 'Confirmation date must be YYYY-MM-DD' };
+  }
+  if (confirmedAt > today) {
+    return {
+      ok: false,
+      error: 'Confirmation date cannot be in the future.'
+    };
+  }
+  const channel: PoConfirmationChannel = PO_CONFIRMATION_CHANNELS.includes(
+    channelRaw as PoConfirmationChannel
+  )
+    ? (channelRaw as PoConfirmationChannel)
+    : 'email';
+
+  try {
+    await db
+      .update(purchaseOrders)
+      .set({
+        status: 'confirmed',
+        confirmedAt,
+        updatedAt: new Date()
+      })
+      .where(eq(purchaseOrders.id, poId));
+
+    await db.insert(vendorCommunications).values({
+      vendorId: po.vendorId,
+      projectId,
+      purchaseOrderId: poId,
+      direction: 'inbound',
+      channel,
+      stage: 'po_confirmation',
+      subject: `PO ${po.reference} — vendor confirmation`,
+      body:
+        notes ??
+        `Vendor confirmed acceptance of PO ${po.reference} via ${channel}.`,
+      // occurredAt = the date the vendor confirmed. Default to midnight UTC
+      // of the confirmation date so the timeline orders correctly.
+      occurredAt: new Date(`${confirmedAt}T00:00:00Z`),
+      recordedBy: userId
+    });
+
+    revalidatePath(`/projects/${projectId}/pos/${poId}`);
+    revalidatePath(`/dashboard`);
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error:
+        err instanceof Error
+          ? err.message
+          : 'Unknown error recording confirmation'
+    };
+  }
+}
+
+/**
+ * Undo a confirmation logged in error — moves the PO back to `issued`,
+ * clears `confirmedAt`. Does NOT delete the `vendorCommunications`
+ * audit row: the record of "we previously believed this was confirmed"
+ * stays, and the user can log a corrected inbound row separately.
+ */
+export async function clearPoConfirmation(
+  poId: string,
+  projectId: string
+): Promise<ActionResult> {
+  const userId = await currentUserId();
+  if (!userId) return { ok: false, error: 'Not authenticated' };
+
+  const [po] = await db
+    .select({ status: purchaseOrders.status })
+    .from(purchaseOrders)
+    .where(eq(purchaseOrders.id, poId))
+    .limit(1);
+  if (!po) return { ok: false, error: 'PO not found' };
+  if (po.status !== 'confirmed') {
+    return {
+      ok: false,
+      error: `Only a confirmed PO can have its confirmation undone. This one is ${po.status}.`
+    };
+  }
+
+  try {
+    await db
+      .update(purchaseOrders)
+      .set({
+        status: 'issued',
+        confirmedAt: null,
+        updatedAt: new Date()
+      })
+      .where(eq(purchaseOrders.id, poId));
+    revalidatePath(`/projects/${projectId}/pos/${poId}`);
+    revalidatePath(`/dashboard`);
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error:
+        err instanceof Error ? err.message : 'Unknown error clearing confirmation'
+    };
+  }
+}
+
 /**
  * Internal: build + send the BINDING PO email for an already-issued PO.
  * Shared by `issuePurchaseOrderAndSend` (called immediately after the
