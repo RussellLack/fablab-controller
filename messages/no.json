@@ -101,6 +101,33 @@
     "budget_committed": "Budsjett forpliktet",
     "budget_meta": "Av aktive prosjektbudsjetter"
   },
+  "today": {
+    "greeting_morning": "God morgen, {name}",
+    "greeting_afternoon": "God ettermiddag, {name}",
+    "greeting_evening": "God kveld, {name}",
+    "show": "Vis:",
+    "show_mine": "Mine",
+    "show_all": "Alle",
+    "intake_heading": "Intake — leads klare eller stoppet opp",
+    "intake_empty": "Ingen åpne leads. Nye henvendelser dukker opp her.",
+    "intake_fields": "felt",
+    "active_projects_heading": "Dine aktive prosjekter",
+    "active_projects_empty_mine": "Ingen aktive prosjekter tildelt deg. Bruk Vis: Alle for å se hele teamets.",
+    "active_projects_empty_all": "Ingen aktive prosjekter pågår.",
+    "approvals_heading": "Godkjenningsdisiplin — avventer kundens signering",
+    "approvals_empty": "Ingen godkjenninger venter på kunden.",
+    "approvals_sent_ago": "sendt {ago}",
+    "pos_ready_heading": "Kommersiell beskyttelse — bestillinger klare til utstedelse",
+    "pos_ready_empty": "Ingen bestillinger venter på utstedelse — hver forpliktelse er enten under prising eller allerede bindende.",
+    "pos_not_binding": "IKKE BINDENDE ENNÅ",
+    "change_control_heading": "Endringskontroll — åpne endringsordrer",
+    "change_control_empty": "Ingen åpne endringsordrer.",
+    "risk_heading": "Risiko — prosjekter på vent eller i tvist",
+    "risk_empty": "Ingen prosjekter på vent eller i tvist.",
+    "recent_heading": "Nylig aktivitet (siste 7 dager)",
+    "recent_empty": "Ingenting har skjedd de siste 7 dagene.",
+    "stats_heading": "Statistikk"
+  },
   "projects": {
     "title": "Prosjekter"
   },
