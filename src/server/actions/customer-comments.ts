@@ -5,10 +5,12 @@ import { and, eq, isNull, sql } from 'drizzle-orm';
 import {
   db,
   projectCustomerComments,
-  projectCustomerInvitations
+  projectCustomerInvitations,
+  users
 } from '@/db';
 import { createClient as supabaseServer } from '@/lib/supabase/server';
 import { isStaffEmail } from '@/lib/auth-helpers';
+import { notifyCommentRecipients } from '@/server/lib/comment-notifications';
 
 /**
  * Comment workflow for the brief discussion thread (B4).
@@ -117,6 +119,16 @@ export async function postBriefComment(
       .returning({ id: projectCustomerComments.id });
 
     bothRevalidations(projectId);
+
+    // Fire-and-forget transactional email — comments must succeed
+    // even if email is misconfigured or transiently failing.
+    void dispatchCommentNotifications({
+      projectId,
+      authorId: auth.userId,
+      authorIsStaff: auth.isStaff,
+      body
+    });
+
     return { ok: true, commentId: row?.id };
   } catch (err) {
     return {
@@ -199,4 +211,58 @@ export async function deleteBriefComment(
 
   bothRevalidations(existing.projectId);
   return { ok: true };
+}
+
+/**
+ * Internal — resolve the author's display name + email from auth, then
+ * hand off to the notification dispatcher. Wrapped in try/catch so a
+ * failure here can never propagate to the surrounding action.
+ */
+async function dispatchCommentNotifications(args: {
+  projectId: string;
+  authorId: string;
+  authorIsStaff: boolean;
+  body: string;
+}): Promise<void> {
+  try {
+    const supabase = await supabaseServer();
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+    // For staff authors we prefer the users-table display name (more
+    // reliable than user_metadata.full_name). For customers we fall
+    // back to the local-part of the email so the notification line
+    // reads like a name.
+    let displayName: string;
+    let email: string | null = user?.email ?? null;
+    if (args.authorIsStaff) {
+      const [u] = await db
+        .select({ name: users.name, email: users.email })
+        .from(users)
+        .where(eq(users.id, args.authorId))
+        .limit(1);
+      displayName =
+        u?.name ??
+        (user?.user_metadata?.full_name as string | undefined) ??
+        (u?.email ?? email ?? 'a Fablab designer');
+      email = u?.email ?? email;
+    } else {
+      const local = (email ?? '').split('@')[0] || 'your client';
+      // Prettify "marit.solem" → "Marit Solem" for the email body.
+      displayName = local
+        .split(/[._-]+/)
+        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+        .join(' ');
+    }
+    await notifyCommentRecipients({
+      projectId: args.projectId,
+      authorId: args.authorId,
+      authorIsStaff: args.authorIsStaff,
+      authorDisplayName: displayName,
+      authorEmail: email,
+      body: args.body
+    });
+  } catch {
+    // Best-effort — comments must always succeed.
+  }
 }
