@@ -176,6 +176,56 @@
     "finance": "Finance",
     "change_control": "Change control"
   },
+  "delivery": {
+    "subtitle": "Items move ordered → in production → ready → shipped → received → installed. Exceptions (on hold / backorder / damaged / substituted / cancelled) are first-class so nothing's invisible.",
+    "empty_doctrine": "No items in the delivery pipeline yet. Items appear here once their PO is issued and they leave the design phase. Status begins at 'ordered' and progresses to 'installed' before the Handover module takes over.",
+    "advance_title": "Advance this item to the next state",
+    "exception_title": "Mark an exception (on hold, damaged, backorder etc.)",
+    "exception_cta": "Exception",
+    "exception_note_placeholder": "Short note for audit — what happened, what's blocking?",
+    "exception_submit": "Mark",
+    "resume_cta": "Resume",
+    "resume_note_placeholder": "Optional note — what unblocked it?",
+    "resume_submit": "Resume",
+    "section": {
+      "ordered": "Ordered",
+      "in_production": "In production",
+      "ready": "Ready",
+      "shipped": "Shipped",
+      "received": "Received",
+      "installed": "Installed",
+      "exceptions": "Exceptions"
+    },
+    "section_sub": {
+      "ordered": "PO issued, vendor working on it",
+      "in_production": "On the line",
+      "ready": "Vendor done — awaiting collection / pickup",
+      "shipped": "On the way",
+      "received": "Arrived at site",
+      "installed": "Placed and ready for client sign-off (Handover)",
+      "exceptions": "Stuck — needs attention"
+    },
+    "advance_to": {
+      "ordered": "Move to in production",
+      "in_production": "Mark ready",
+      "ready": "Mark shipped",
+      "shipped": "Mark received",
+      "received": "Mark installed"
+    },
+    "exception": {
+      "on_hold": "On hold",
+      "backorder": "Backorder",
+      "damaged": "Damaged",
+      "substituted": "Substituted",
+      "cancelled": "Cancelled"
+    },
+    "resume_to": {
+      "ordered": "Ordered",
+      "in_production": "In production",
+      "ready": "Ready",
+      "shipped": "Shipped"
+    }
+  },
   "change_order": {
     "subtitle": "Every change after Brief sign-off must be recorded, priced, and approved before it's implemented. This is where that audit lives.",
     "new_cta": "+ New change order",

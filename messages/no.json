@@ -176,6 +176,56 @@
     "finance": "Økonomi",
     "change_control": "Endringskontroll"
   },
+  "delivery": {
+    "subtitle": "Varer går bestilt → i produksjon → klar → sendt → mottatt → installert. Avvik (på vent / restordre / skadet / erstattet / kansellert) er førsteklasses så ingenting er usynlig.",
+    "empty_doctrine": "Ingen varer i leveringspipeline ennå. Varer dukker opp her når bestillingen er utstedt og de er ute av designfasen. Statusen starter på 'bestilt' og går til 'installert' før Overlevering-modulen overtar.",
+    "advance_title": "Flytt denne varen til neste tilstand",
+    "exception_title": "Marker et avvik (på vent, skadet, restordre osv.)",
+    "exception_cta": "Avvik",
+    "exception_note_placeholder": "Kort notat for revisjon — hva skjedde, hva blokkerer?",
+    "exception_submit": "Marker",
+    "resume_cta": "Gjenoppta",
+    "resume_note_placeholder": "Valgfritt notat — hva løste opp i det?",
+    "resume_submit": "Gjenoppta",
+    "section": {
+      "ordered": "Bestilt",
+      "in_production": "I produksjon",
+      "ready": "Klar",
+      "shipped": "Sendt",
+      "received": "Mottatt",
+      "installed": "Installert",
+      "exceptions": "Avvik"
+    },
+    "section_sub": {
+      "ordered": "Bestilling utstedt, leverandør jobber",
+      "in_production": "På samlebåndet",
+      "ready": "Leverandør ferdig — avventer henting",
+      "shipped": "På vei",
+      "received": "Ankommet stedet",
+      "installed": "På plass og klar for kundesignering (Overlevering)",
+      "exceptions": "Stoppet — trenger oppmerksomhet"
+    },
+    "advance_to": {
+      "ordered": "Flytt til i produksjon",
+      "in_production": "Marker klar",
+      "ready": "Marker sendt",
+      "shipped": "Marker mottatt",
+      "received": "Marker installert"
+    },
+    "exception": {
+      "on_hold": "På vent",
+      "backorder": "Restordre",
+      "damaged": "Skadet",
+      "substituted": "Erstattet",
+      "cancelled": "Kansellert"
+    },
+    "resume_to": {
+      "ordered": "Bestilt",
+      "in_production": "I produksjon",
+      "ready": "Klar",
+      "shipped": "Sendt"
+    }
+  },
   "change_order": {
     "subtitle": "Enhver endring etter at briefen er signert må registreres, prises og godkjennes før den implementeres. Det er her sporet ligger.",
     "new_cta": "+ Ny endringsordre",
