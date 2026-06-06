@@ -47,17 +47,13 @@ export default async function TodayPage({
 
   const t = await getTranslations();
 
-  const [
-    intake,
-    active,
-    approvalsWaiting,
-    posReady,
-    awaitingConfirmation,
-    changeOpen,
-    riskProjects,
-    recent,
-    stats
-  ] = await Promise.all([
+  // Promise.allSettled — defensive fallback so a single slow / failing
+  // section doesn't take down the whole dashboard. If the inner section
+  // query throws (e.g. transient DB hiccup, slow query, cold-start
+  // serial timing) the page still renders with that section empty
+  // rather than 500ing the whole route.
+  type SettledShape<T> = T;
+  const settled = await Promise.allSettled([
     getTodayIntake(user.id, mineOnly),
     getTodayActiveProjects(user.id, mineOnly),
     getTodayApprovalsWaiting(user.id, mineOnly),
@@ -68,6 +64,26 @@ export default async function TodayPage({
     getTodayRecentActivity(user.id, mineOnly),
     getTodayStats()
   ]);
+  function unwrap<T>(
+    r: PromiseSettledResult<SettledShape<T>>,
+    fallback: SettledShape<T>
+  ): SettledShape<T> {
+    return r.status === 'fulfilled' ? r.value : fallback;
+  }
+  const intake = unwrap(settled[0], { rows: [], total: 0 });
+  const active = unwrap(settled[1], { rows: [], total: 0 });
+  const approvalsWaiting = unwrap(settled[2], { rows: [], total: 0 });
+  const posReady = unwrap(settled[3], { rows: [], total: 0 });
+  const awaitingConfirmation = unwrap(settled[4], { rows: [], total: 0 });
+  const changeOpen = unwrap(settled[5], { rows: [], total: 0 });
+  const riskProjects = unwrap(settled[6], { rows: [], total: 0 });
+  const recent = unwrap(settled[7], [] as Awaited<ReturnType<typeof getTodayRecentActivity>>);
+  const stats = unwrap(settled[8], {
+    liveProjects: '—',
+    itemsInFlight: '—',
+    drawingsForReview: '—',
+    budgetCommitted: '—'
+  } as Awaited<ReturnType<typeof getTodayStats>>);
 
   const now = new Date();
   const greeting = greetingFor(now);
