@@ -176,6 +176,105 @@
     "finance": "Finance",
     "change_control": "Change control"
   },
+  "risk": {
+    "subtitle": "Open risks first, sorted by score. Naming and owning a risk is half the mitigation.",
+    "empty_doctrine": "No risks logged yet. The register stays open across the project lifecycle — log anything that could cost time, money, scope, or reputation if it materialised.",
+    "new_cta": "+ New risk",
+    "new_panel_title": "Log a new risk",
+    "create_submit": "Create risk",
+    "creating": "Creating…",
+    "crumb": "Risk register",
+    "col_ref": "Ref",
+    "col_title": "Title",
+    "col_category": "Category",
+    "col_li": "L × I",
+    "col_score": "Score",
+    "col_status": "Status",
+    "col_owner": "Owner",
+    "field_title": "Short title",
+    "field_title_placeholder": "E.g. \"Supplier may miss the H&M deadline\"",
+    "field_category": "Category",
+    "field_likelihood": "Likelihood",
+    "field_impact": "Impact",
+    "field_description": "Description",
+    "field_description_placeholder": "What could happen, what triggers it.",
+    "field_mitigation_action": "Mitigation action",
+    "field_mitigation_action_placeholder": "How will we reduce the likelihood or impact?",
+    "field_mitigation_due": "Mitigation due date",
+    "score_preview": "Score",
+    "section": {
+      "open": "Open",
+      "resolved": "Resolved",
+      "description": "Description",
+      "mitigation": "Mitigation plan",
+      "score": "Score",
+      "timeline": "Timeline"
+    },
+    "section_sub": {
+      "open": "Active risks needing attention"
+    },
+    "mitigation_due": "Due",
+    "mitigation_empty": "No mitigation plan yet. Add one to move this risk into mitigation_planned.",
+    "residual_heading": "Residual (post-mitigation)",
+    "residual_intro": "Score the risk's residual likelihood and impact after the mitigation lands.",
+    "residual_preview": "Residual score",
+    "accept_intro": "Accepting a risk records that we chose not to mitigate it — usually because cost of mitigation exceeds the expected exposure. The reason is required for audit.",
+    "accept_note_placeholder": "Reason for accepting — what we considered vs the cost of mitigation.",
+    "identified": "Identified",
+    "updated": "Updated",
+    "category": {
+      "scope_risk": "Scope",
+      "budget_risk": "Budget",
+      "supplier_risk": "Supplier",
+      "freight_risk": "Freight",
+      "customs_risk": "Customs",
+      "site_readiness_risk": "Site readiness",
+      "client_approval_risk": "Client approval",
+      "payment_risk": "Payment",
+      "installation_risk": "Installation",
+      "quality_risk": "Quality",
+      "legal_contract_risk": "Legal / contract",
+      "margin_risk": "Margin",
+      "reputation_risk": "Reputation"
+    },
+    "status": {
+      "identified": "Identified",
+      "assessed": "Assessed",
+      "mitigation_planned": "Mitigation planned",
+      "mitigation_in_progress": "Mitigation in progress",
+      "mitigated": "Mitigated",
+      "accepted": "Accepted",
+      "realised": "Realised",
+      "closed": "Closed"
+    },
+    "band": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "likelihood": {
+      "1": "Remote",
+      "2": "Unlikely",
+      "3": "Possible",
+      "4": "Likely",
+      "5": "Almost certain"
+    },
+    "impact": {
+      "1": "Negligible",
+      "2": "Minor",
+      "3": "Moderate",
+      "4": "Major",
+      "5": "Catastrophic"
+    },
+    "action": {
+      "start_mitigation": "Start mitigation",
+      "mark_mitigated": "Mark mitigated",
+      "accept": "Accept",
+      "close": "Close",
+      "reopen": "Reopen"
+    }
+  },
   "handover": {
     "subtitle": "Sign off each installed item with the client. Per 00- §22, written sign-off is the load-bearing artefact at this stage — when every item carries it, the project is ready to advance to Handover.",
     "empty_doctrine": "No items at handover yet. Items appear here once they reach 'installed' in the Delivery view. Sign each one off with the client to close the project.",

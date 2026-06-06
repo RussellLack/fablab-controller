@@ -176,6 +176,105 @@
     "finance": "Økonomi",
     "change_control": "Endringskontroll"
   },
+  "risk": {
+    "subtitle": "Åpne risikoer først, sortert etter score. Å navngi og eie en risiko er halve mitigeringen.",
+    "empty_doctrine": "Ingen risikoer logget ennå. Registeret er åpent gjennom hele prosjektets levetid — logg alt som kan koste tid, penger, omfang eller omdømme hvis det inntreffer.",
+    "new_cta": "+ Ny risiko",
+    "new_panel_title": "Logg en ny risiko",
+    "create_submit": "Opprett risiko",
+    "creating": "Oppretter…",
+    "crumb": "Risikoregister",
+    "col_ref": "Ref",
+    "col_title": "Tittel",
+    "col_category": "Kategori",
+    "col_li": "S × K",
+    "col_score": "Score",
+    "col_status": "Status",
+    "col_owner": "Eier",
+    "field_title": "Kort tittel",
+    "field_title_placeholder": "F.eks. \"Leverandør kan miste frist i H&M\"",
+    "field_category": "Kategori",
+    "field_likelihood": "Sannsynlighet",
+    "field_impact": "Konsekvens",
+    "field_description": "Beskrivelse",
+    "field_description_placeholder": "Hva som kan skje, hva som utløser det.",
+    "field_mitigation_action": "Tiltak",
+    "field_mitigation_action_placeholder": "Hvordan vil vi redusere sannsynlighet eller konsekvens?",
+    "field_mitigation_due": "Frist for tiltak",
+    "score_preview": "Score",
+    "section": {
+      "open": "Åpne",
+      "resolved": "Lukket",
+      "description": "Beskrivelse",
+      "mitigation": "Tiltaksplan",
+      "score": "Score",
+      "timeline": "Tidslinje"
+    },
+    "section_sub": {
+      "open": "Aktive risikoer som trenger oppmerksomhet"
+    },
+    "mitigation_due": "Frist",
+    "mitigation_empty": "Ingen tiltaksplan ennå. Legg til en for å flytte risikoen til mitigation_planned.",
+    "residual_heading": "Restrisiko (etter tiltak)",
+    "residual_intro": "Score risikoens gjenværende sannsynlighet og konsekvens etter at tiltaket er gjennomført.",
+    "residual_preview": "Restscore",
+    "accept_intro": "Å akseptere en risiko registrerer at vi valgte å ikke mitigere den — vanligvis fordi kostnaden ved tiltaket overstiger eksponeringen. Begrunnelse er påkrevd for revisjon.",
+    "accept_note_placeholder": "Begrunnelse for aksept — hva vi vurderte mot kostnaden ved tiltak.",
+    "identified": "Identifisert",
+    "updated": "Oppdatert",
+    "category": {
+      "scope_risk": "Omfang",
+      "budget_risk": "Budsjett",
+      "supplier_risk": "Leverandør",
+      "freight_risk": "Frakt",
+      "customs_risk": "Toll",
+      "site_readiness_risk": "Stedsklarhet",
+      "client_approval_risk": "Kundegodkjenning",
+      "payment_risk": "Betaling",
+      "installation_risk": "Installasjon",
+      "quality_risk": "Kvalitet",
+      "legal_contract_risk": "Juridisk / kontrakt",
+      "margin_risk": "Margin",
+      "reputation_risk": "Omdømme"
+    },
+    "status": {
+      "identified": "Identifisert",
+      "assessed": "Vurdert",
+      "mitigation_planned": "Tiltak planlagt",
+      "mitigation_in_progress": "Tiltak pågår",
+      "mitigated": "Mitigert",
+      "accepted": "Akseptert",
+      "realised": "Inntruffet",
+      "closed": "Lukket"
+    },
+    "band": {
+      "low": "Lav",
+      "medium": "Middels",
+      "high": "Høy",
+      "critical": "Kritisk"
+    },
+    "likelihood": {
+      "1": "Fjernt",
+      "2": "Usannsynlig",
+      "3": "Mulig",
+      "4": "Sannsynlig",
+      "5": "Nesten sikkert"
+    },
+    "impact": {
+      "1": "Ubetydelig",
+      "2": "Mindre",
+      "3": "Moderat",
+      "4": "Stor",
+      "5": "Katastrofal"
+    },
+    "action": {
+      "start_mitigation": "Start tiltak",
+      "mark_mitigated": "Marker mitigert",
+      "accept": "Aksepter",
+      "close": "Lukk",
+      "reopen": "Åpne på nytt"
+    }
+  },
   "handover": {
     "subtitle": "Signer av hver installert vare med kunden. I henhold til 00- §22 er skriftlig signering det bærende artefaktet i denne fasen — når alle varer er signert er prosjektet klart til å gå videre til Overlevering.",
     "empty_doctrine": "Ingen varer i overlevering ennå. Varer dukker opp her når de når 'installert' i Leveringen. Signer hver av dem med kunden for å lukke prosjektet.",
