@@ -176,6 +176,38 @@
     "finance": "Finance",
     "change_control": "Change control"
   },
+  "reporting": {
+    "title": "Reporting",
+    "subtitle": "Portfolio-level view across every active project. The per-project reporting view lives on each project's Element List tab.",
+    "tile": {
+      "live_projects": "Live projects",
+      "items_in_flight": "Items in flight",
+      "binding_po_total": "Committed (binding POs)",
+      "open_risks": "Open risks",
+      "open_change_orders": "Open change orders",
+      "awaiting_approval": "Approvals out for sign-off"
+    },
+    "section": {
+      "projects_by_stage": "Projects by stage",
+      "items_by_status": "Items by status",
+      "open_risks_by_band": "Open risks by band",
+      "open_change_orders": "Open change orders by status",
+      "deep_dive": "Deep dives"
+    },
+    "section_empty": {
+      "projects": "No projects yet.",
+      "items": "No items yet.",
+      "risks": "No open risks across the portfolio.",
+      "change_orders": "No open change orders across the portfolio."
+    },
+    "deep_dive_intro": "For row-level detail per project, jump into the entity pages.",
+    "link": {
+      "projects": "All projects",
+      "leads": "Lead pipeline",
+      "finance": "Finance",
+      "vendors": "Vendors"
+    }
+  },
   "risk": {
     "subtitle": "Open risks first, sorted by score. Naming and owning a risk is half the mitigation.",
     "empty_doctrine": "No risks logged yet. The register stays open across the project lifecycle — log anything that could cost time, money, scope, or reputation if it materialised.",

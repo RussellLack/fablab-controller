@@ -176,6 +176,38 @@
     "finance": "Økonomi",
     "change_control": "Endringskontroll"
   },
+  "reporting": {
+    "title": "Rapportering",
+    "subtitle": "Porteføljevisning på tvers av alle aktive prosjekter. Per-prosjekt rapportering ligger på Elementliste-fanen for hvert prosjekt.",
+    "tile": {
+      "live_projects": "Aktive prosjekter",
+      "items_in_flight": "Varer i bevegelse",
+      "binding_po_total": "Forpliktet (bindende bestillinger)",
+      "open_risks": "Åpne risikoer",
+      "open_change_orders": "Åpne endringsordrer",
+      "awaiting_approval": "Godkjenninger til signering"
+    },
+    "section": {
+      "projects_by_stage": "Prosjekter etter fase",
+      "items_by_status": "Varer etter status",
+      "open_risks_by_band": "Åpne risikoer etter nivå",
+      "open_change_orders": "Åpne endringsordrer etter status",
+      "deep_dive": "Detaljvisninger"
+    },
+    "section_empty": {
+      "projects": "Ingen prosjekter ennå.",
+      "items": "Ingen varer ennå.",
+      "risks": "Ingen åpne risikoer i porteføljen.",
+      "change_orders": "Ingen åpne endringsordrer i porteføljen."
+    },
+    "deep_dive_intro": "For radnivå-detaljer per prosjekt, hopp inn i entitetssidene.",
+    "link": {
+      "projects": "Alle prosjekter",
+      "leads": "Lead-pipeline",
+      "finance": "Økonomi",
+      "vendors": "Leverandører"
+    }
+  },
   "risk": {
     "subtitle": "Åpne risikoer først, sortert etter score. Å navngi og eie en risiko er halve mitigeringen.",
     "empty_doctrine": "Ingen risikoer logget ennå. Registeret er åpent gjennom hele prosjektets levetid — logg alt som kan koste tid, penger, omfang eller omdømme hvis det inntreffer.",
