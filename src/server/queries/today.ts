@@ -1,4 +1,7 @@
-import { and, asc, count, desc, eq, gte, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
+// `gte` and `isNotNull` were dropped when the Recent Activity query was
+// merged into a single UNION ALL — those predicates now live inline in
+// the raw SQL of getTodayRecentActivity.
 import {
   db,
   leads,
@@ -455,106 +458,143 @@ export async function getTodayRecentActivity(
   if (!process.env.DATABASE_URL) return [];
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const sevenDaysAgoIso = sevenDaysAgo.toISOString();
+  const totalLimit = SECTION_LIMIT * 2;
 
-  // Approvals: responded in the last 7 days (approved / rejected / conditions).
-  const approvalRows = await db
-    .select({
-      id: approvals.id,
-      reference: approvals.reference,
-      status: approvals.status,
-      subject: approvals.subject,
-      respondedAt: approvals.respondedAt,
-      projectId: projects.id,
-      projectReference: projects.reference
-    })
-    .from(approvals)
-    .innerJoin(projects, eq(approvals.projectId, projects.id))
-    .where(
-      and(
-        isNotNull(approvals.respondedAt),
-        gte(approvals.respondedAt, sevenDaysAgo),
-        mineOnly ? eq(projects.currentOwnerId, userId) : undefined
-      )
-    )
-    .orderBy(desc(approvals.respondedAt))
-    .limit(SECTION_LIMIT * 2);
+  // Single UNION ALL across the three activity sources — approvals
+  // responded, POs issued, RFQs sent in the last 7 days. Each branch
+  // projects into the same column shape so Postgres can ORDER + LIMIT
+  // the combined result and return only the top N rows in one
+  // round-trip. The previous fan-out fetched up to 30 rows (10 per
+  // branch) then sorted-and-trimmed in JS; this returns at most 10.
+  //
+  // Owner-filter SQL fragment is reused across all three branches when
+  // mineOnly is on — the project ownership join sits on each subquery
+  // so we don't have to re-join after the UNION.
+  //
+  // Column shape used by both branches:
+  //   kind             text          — discriminant for the JS formatter
+  //   when_ts          timestamptz   — when the activity happened
+  //   project_id       uuid
+  //   project_ref      text
+  //   entity_id        uuid
+  //   entity_ref       text
+  //   entity_status    text | null   — approval status for approvals
+  //   entity_subject   text | null   — approval subject for approvals
+  //   entity_title     text | null   — RFQ title for rfqs
+  //   vendor_name      text | null   — vendor name for POs
+  //
+  // PO.issued_at is a `date` column; casting to timestamptz at UTC
+  // midnight keeps it comparable to the timestamp columns.
+  const ownerFilter = mineOnly
+    ? sql`AND p.current_owner_id = ${userId}::uuid`
+    : sql``;
 
-  // POs issued in the last 7 days (the BINDING moment).
-  const poRows = await db
-    .select({
-      id: purchaseOrders.id,
-      reference: purchaseOrders.reference,
-      issuedAt: purchaseOrders.issuedAt,
-      vendorName: vendors.name,
-      projectId: projects.id,
-      projectReference: projects.reference
-    })
-    .from(purchaseOrders)
-    .innerJoin(projects, eq(purchaseOrders.projectId, projects.id))
-    .leftJoin(vendors, eq(purchaseOrders.vendorId, vendors.id))
-    .where(
-      and(
-        eq(purchaseOrders.status, 'issued'),
-        isNotNull(purchaseOrders.issuedAt),
-        gte(purchaseOrders.updatedAt, sevenDaysAgo),
-        mineOnly ? eq(projects.currentOwnerId, userId) : undefined
-      )
-    )
-    .orderBy(desc(purchaseOrders.updatedAt))
-    .limit(SECTION_LIMIT * 2);
+  type ActivityQueryRow = {
+    kind: 'approval' | 'po' | 'rfq';
+    when_ts: Date | string;
+    project_id: string;
+    project_ref: string;
+    entity_id: string;
+    entity_ref: string;
+    entity_status: string | null;
+    entity_subject: string | null;
+    entity_title: string | null;
+    vendor_name: string | null;
+  };
 
-  // RFQs sent in the last 7 days.
-  const rfqRows = await db
-    .select({
-      id: rfqs.id,
-      reference: rfqs.reference,
-      title: rfqs.title,
-      sentAt: rfqs.sentAt,
-      projectId: projects.id,
-      projectReference: projects.reference
-    })
-    .from(rfqs)
-    .innerJoin(projects, eq(rfqs.projectId, projects.id))
-    .where(
-      and(
-        isNotNull(rfqs.sentAt),
-        gte(rfqs.sentAt, sevenDaysAgo),
-        mineOnly ? eq(projects.currentOwnerId, userId) : undefined
-      )
-    )
-    .orderBy(desc(rfqs.sentAt))
-    .limit(SECTION_LIMIT * 2);
+  const rows = (await db.execute<ActivityQueryRow>(sql`
+    SELECT * FROM (
+      SELECT
+        'approval'::text  AS kind,
+        a.responded_at    AS when_ts,
+        p.id              AS project_id,
+        p.reference       AS project_ref,
+        a.id              AS entity_id,
+        a.reference       AS entity_ref,
+        a.status::text    AS entity_status,
+        a.subject         AS entity_subject,
+        NULL::text        AS entity_title,
+        NULL::text        AS vendor_name
+      FROM approvals a
+      INNER JOIN projects p ON a.project_id = p.id
+      WHERE a.responded_at IS NOT NULL
+        AND a.responded_at >= ${sevenDaysAgoIso}::timestamptz
+        ${ownerFilter}
 
-  const combined: TodayActivityRow[] = [
-    ...approvalRows
-      .filter((r) => r.respondedAt)
-      .map((r) => ({
-        kind: 'approval' as const,
-        when: r.respondedAt!,
-        description: `${r.projectReference} — Approval ${r.reference} ${r.status.replace(/_/g, ' ')} (${r.subject})`,
-        href: `/projects/${r.projectId}/approvals`
-      })),
-    ...poRows
-      .filter((r) => r.issuedAt)
-      .map((r) => ({
-        kind: 'po' as const,
-        // PO.issuedAt is a date column → string at runtime; coerce.
-        when: new Date(r.issuedAt as unknown as string),
-        description: `${r.projectReference} — PO ${r.reference} issued to ${r.vendorName ?? '—'}`,
-        href: `/projects/${r.projectId}/pos/${r.id}`
-      })),
-    ...rfqRows
-      .filter((r) => r.sentAt)
-      .map((r) => ({
-        kind: 'rfq' as const,
-        when: r.sentAt!,
-        description: `${r.projectReference} — RFQ ${r.reference} sent (${r.title})`,
-        href: `/projects/${r.projectId}/rfqs/${r.id}`
-      }))
-  ];
+      UNION ALL
 
-  combined.sort((a, b) => b.when.getTime() - a.when.getTime());
-  return combined.slice(0, SECTION_LIMIT * 2);
+      SELECT
+        'po'::text,
+        po.issued_at::timestamptz,
+        p.id,
+        p.reference,
+        po.id,
+        po.reference,
+        NULL::text,
+        NULL::text,
+        NULL::text,
+        v.name
+      FROM purchase_orders po
+      INNER JOIN projects p ON po.project_id = p.id
+      LEFT JOIN vendors v ON po.vendor_id = v.id
+      WHERE po.status = 'issued'
+        AND po.issued_at IS NOT NULL
+        AND po.updated_at >= ${sevenDaysAgoIso}::timestamptz
+        ${ownerFilter}
+
+      UNION ALL
+
+      SELECT
+        'rfq'::text,
+        r.sent_at,
+        p.id,
+        p.reference,
+        r.id,
+        r.reference,
+        NULL::text,
+        NULL::text,
+        r.title,
+        NULL::text
+      FROM rfqs r
+      INNER JOIN projects p ON r.project_id = p.id
+      WHERE r.sent_at IS NOT NULL
+        AND r.sent_at >= ${sevenDaysAgoIso}::timestamptz
+        ${ownerFilter}
+    ) activity
+    ORDER BY when_ts DESC
+    LIMIT ${totalLimit}
+  `)) as unknown as ActivityQueryRow[];
+
+  // Format per-row in JS — keeps the description copy logic in one
+  // language and out of SQL. Same shape as the prior implementation
+  // produced.
+  return rows.map<TodayActivityRow>((r) => {
+    const when = r.when_ts instanceof Date ? r.when_ts : new Date(r.when_ts);
+    if (r.kind === 'approval') {
+      const status = (r.entity_status ?? '').replace(/_/g, ' ');
+      return {
+        kind: 'approval',
+        when,
+        description: `${r.project_ref} — Approval ${r.entity_ref} ${status} (${r.entity_subject ?? ''})`,
+        href: `/projects/${r.project_id}/approvals`
+      };
+    }
+    if (r.kind === 'po') {
+      return {
+        kind: 'po',
+        when,
+        description: `${r.project_ref} — PO ${r.entity_ref} issued to ${r.vendor_name ?? '—'}`,
+        href: `/projects/${r.project_id}/pos/${r.entity_id}`
+      };
+    }
+    return {
+      kind: 'rfq',
+      when,
+      description: `${r.project_ref} — RFQ ${r.entity_ref} sent (${r.entity_title ?? ''})`,
+      href: `/projects/${r.project_id}/rfqs/${r.entity_id}`
+    };
+  });
 }
 
 /* ─── STATS footer (demoted Dashboard tiles) ─── */
