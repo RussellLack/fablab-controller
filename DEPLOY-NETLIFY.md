@@ -128,6 +128,15 @@ Walk the demo path from QUICKSTART section 6. If something's off, the Netlify fu
 
 End-to-end in ~15 minutes + DNS propagation wait. The apex `fablabdesign.com` is untouched — only the `controller.` subdomain is wired.
 
+> **Standing rule — never put Netlify at the apex while Webflow runs the marketing site.**
+>
+> Every Netlify-hosted property on `fablabdesign.com` must be on its own subdomain via **CNAME or subdomain delegation** (the pattern below).
+> Do not add Netlify apex A records to `fablabdesign.com`, do not point an
+> `ALIAS`/`ANAME` at Netlify, and do not redirect the apex through Netlify
+> while the marketing site is live at `www.fablabdesign.com`. This applies to
+> every future Netlify subdomain — pick a new label (`portal-staging`,
+> `docs`, whatever) and use the CNAME pattern from §8.2.
+
 ### 8.1. Add the domain in Netlify
 
 1. **Site configuration → Domain management → Add a domain**
