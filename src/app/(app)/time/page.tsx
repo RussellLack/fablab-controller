@@ -3,6 +3,8 @@ import { and, desc, eq, gte } from 'drizzle-orm';
 import { createClient } from '@/lib/supabase/server';
 import { db, timeEntries, projects } from '@/db';
 import { TimeEntryListClient } from './list-client';
+import { CoachCard } from '@/components/coach-card';
+import { getTimeReportingHealth } from '@/server/queries/coach-health';
 
 /**
  * Time entries page — Project Coaching MVP-A.
@@ -96,6 +98,12 @@ export default async function TimePage({
     )
     .orderBy(desc(timeEntries.workDate), desc(timeEntries.enteredAt));
 
+  // Coach prompts surface only when a project filter is active —
+  // a cross-project /time list is too wide to nudge per-project rules.
+  const coachItems = projectFilter
+    ? await getTimeReportingHealth(projectFilter)
+    : [];
+
   return (
     <div className="space-y-6">
       <div className="flex items-end justify-between gap-4">
@@ -106,6 +114,8 @@ export default async function TimePage({
           <p className="text-ink-2 text-[13px] mt-1">{t('time.subtitle')}</p>
         </div>
       </div>
+
+      {projectFilter && <CoachCard items={coachItems} />}
 
       {allProjects.length === 0 ? (
         <div className="card">

@@ -176,6 +176,77 @@
     "finance": "Økonomi",
     "change_control": "Endringskontroll"
   },
+  "coach_card": {
+    "title": "Coach",
+    "subtitle": "{count, plural, =1 {1 ting verdt oppmerksomhet} other {# ting verdt oppmerksomhet}}"
+  },
+  "coach_rule": {
+    "brief_no_signoff": {
+      "observation": "Kunden har ikke signert briefen ennå.",
+      "why": "Uten signering kan ikke omfangsavvik forsvares senere — briefen er kontrakten.",
+      "action": "Åpne briefen"
+    },
+    "brief_signoff_drifted": {
+      "observation": "Briefen er endret siden kunden signerte.",
+      "why": "Samtykket deres samsvarer ikke lenger med den live briefen. Be dem signere på nytt før innkjøp fortsetter på revidert omfang.",
+      "action": "Åpne briefen"
+    },
+    "brief_unreplied_comments": {
+      "observation": "{count, plural, =1 {1 kundekommentar} other {# kundekommentarer}} siste 7 dager uten Fablab-svar.",
+      "why": "Ubesvarte kommentarer blir til \"Fablab svarte ikke\" senere — hold tråden i bevegelse så loggen leses rent.",
+      "action": "Åpne diskusjonen"
+    },
+    "scope_no_approval": {
+      "observation": "Ingen godkjent omfangsbasis registrert.",
+      "why": "Omfangsbasis er den kommersielle referansen for fakturerbar vs endring. Uten den blir hver senere \"var dette inkludert?\"-spørsmål vanskeligere.",
+      "action": "Åpne omfang"
+    },
+    "approvals_stalled": {
+      "observation": "{count, plural, =1 {1 godkjenning} other {# godkjenninger}} sendt for over 7 dager siden, ingen respons.",
+      "why": "Stoppede godkjenninger blokkerer innkjøp og uthuler kundens momentum.",
+      "action": "Åpne godkjenninger"
+    },
+    "items_r3_violation": {
+      "observation": "{count, plural, =1 {1 vare bestilt} other {# varer bestilt}} uten godkjent Approval (R3-brudd).",
+      "why": "Per 00- §22 er en godkjent Approval det bindende beviset bak en bestilling. Varer forbi `bestilt` uten en eksponerer margin og undergraver loggen.",
+      "action": "Åpne pakker"
+    },
+    "change_open": {
+      "observation": "{count, plural, =1 {1 åpen endringsordre} other {# åpne endringsordrer}} venter på neste steg.",
+      "why": "Endringsordrer fast i pipelinen er kommersiell risiko — hver dag i `forespurt` eller `priset` er arbeid gjort med usikker fakturerbarhet.",
+      "action": "Åpne endringskontroll"
+    },
+    "delivery_stuck": {
+      "observation": "{count, plural, =1 {1 vare i avvikstilstand} other {# varer i avvikstilstander}} (restordre / skadet / på vent).",
+      "why": "Stoppede varer blir stille til problemer med kundeforventningsstyring. Hver av dem trenger en løsningssti eller et kundenotat.",
+      "action": "Åpne levering"
+    },
+    "handover_awaiting": {
+      "observation": "{count, plural, =1 {1 vare installert} other {# varer installert}} avventer kundens signering.",
+      "why": "Per 00- §22 er skriftlig signering det bærende artefaktet i denne fasen. Lukk dem ut for å føre prosjektet videre.",
+      "action": "Åpne overlevering"
+    },
+    "risk_supplier_open": {
+      "observation": "{count, plural, =1 {1 leverandørrisiko} other {# leverandørrisikoer}} åpen i registeret.",
+      "why": "Leverandørrisikoer hører hjemme i neste Work Evidence-sammendrag så kunden ser hva Fablab aktivt håndterer.",
+      "action": "Åpne risikoregister"
+    },
+    "time_missing_reason": {
+      "observation": "{count, plural, =1 {1 timeoppføring} other {# timeoppføringer}} rapporterbar men mangler kommersiell begrunnelse.",
+      "why": "Uten begrunnelsen er timen skjult i neste Work Evidence-sammendrag — kunden ser et tall uten kontekst.",
+      "action": "Åpne timer"
+    },
+    "time_chargeable_unreported": {
+      "observation": "{hours} fakturerbare timer ({count, plural, =1 {1 oppføring} other {# oppføringer}}) ennå ikke inkludert i en kunderapport.",
+      "why": "Fakturerbare timer glemt før rapportering = tapt fakturering. Generer neste Work Evidence-sammendrag for å samle dem.",
+      "action": "Åpne rapportering"
+    },
+    "time_goodwill": {
+      "observation": "{hours} timer goodwill registrert siste 14 dager.",
+      "why": "Goodwill er en historie å fortelle, ikke en kostnad å skjule. Sørg for at kundesammendraget nevner hva som ble gjort på vår regning.",
+      "action": "Åpne rapportering"
+    }
+  },
   "coach": {
     "launcher_cta": "Coach",
     "launcher_title": "Åpne Project Coach-skuffen",

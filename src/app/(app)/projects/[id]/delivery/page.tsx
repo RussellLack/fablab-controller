@@ -5,6 +5,8 @@ import { db, items, packages } from '@/db';
 import { NextActionBanner } from '@/components/next-action-banner';
 import { formatDate } from '@/lib/utils';
 import { DeliveryRowActions } from './row-actions';
+import { CoachCard } from '@/components/coach-card';
+import { getDeliveryHealth } from '@/server/queries/coach-health';
 
 /**
  * Per-project Delivery list — real implementation of the Phase-2 stub.
@@ -100,10 +102,13 @@ export default async function ProjectDeliveryPage({
   const exceptionItems = EXCEPTION_STATES.flatMap(
     (s) => byStatus[s] ?? []
   );
+  const coachItems = await getDeliveryHealth(id);
 
   return (
     <>
       <NextActionBanner projectId={id} gate="delivery" />
+
+      <CoachCard items={coachItems} />
 
       <p className="text-ink-2 text-[13px] mb-4">{t('delivery.subtitle')}</p>
 

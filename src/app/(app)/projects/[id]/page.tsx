@@ -11,6 +11,8 @@ import { CustomerActivityCard } from './customer-activity-card';
 import { CustomerUploadsCard } from './customer-uploads-card';
 import { BriefCommentsCard } from './brief-comments-card';
 import { BriefSignoffCard } from './brief-signoff-card';
+import { CoachCard } from '@/components/coach-card';
+import { getBriefHealth } from '@/server/queries/coach-health';
 import type { IntakeContext } from '@/components/wizard/brief-wizard';
 
 type FablabRole =
@@ -70,7 +72,11 @@ export default async function ProjectBriefPage({ params }: { params: Promise<{ i
   if (!p) notFound();
   const t = await getTranslations();
 
-  const [intake, gates] = await Promise.all([getLeadIntake(id), getProjectGates(id)]);
+  const [intake, gates, coachItems] = await Promise.all([
+    getLeadIntake(id),
+    getProjectGates(id),
+    getBriefHealth(id)
+  ]);
 
   // The third Brief gate criterion is "at least one approved scope-target Approval".
   // The Brief gate computation already encodes this in its state — Brief is "done"
@@ -86,6 +92,8 @@ export default async function ProjectBriefPage({ params }: { params: Promise<{ i
   return (
     <>
       <NextActionBanner projectId={id} gate="brief" />
+
+      <CoachCard items={coachItems} />
 
       <div className="flex items-end justify-between mb-4 gap-4">
         <p className="text-ink-2 text-[13px]">{t('brief.subtitle')}</p>

@@ -5,6 +5,8 @@ import { eq, desc } from 'drizzle-orm';
 import { formatDate, cx } from '@/lib/utils';
 import { NextActionBanner } from '@/components/next-action-banner';
 import { ScopeLauncher } from './scope-launcher';
+import { CoachCard } from '@/components/coach-card';
+import { getScopeHealth } from '@/server/queries/coach-health';
 
 async function getScopeVersions(projectId: string) {
   if (!process.env.DATABASE_URL) return [];
@@ -46,12 +48,16 @@ export default async function ProjectScopePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const versions = await getScopeVersions(id);
+  const [versions, coachItems] = await Promise.all([
+    getScopeVersions(id),
+    getScopeHealth(id)
+  ]);
   const t = await getTranslations();
 
   return (
     <>
       <NextActionBanner projectId={id} gate="scope" />
+      <CoachCard items={coachItems} />
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tighter">{t('tab.scope')}</h1>

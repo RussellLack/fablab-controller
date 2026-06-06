@@ -4,6 +4,8 @@ import { desc, eq } from 'drizzle-orm';
 import { db, changeOrders } from '@/db';
 import { formatDate, formatMoney } from '@/lib/utils';
 import { ChangeOrderLauncher } from './change-order-launcher';
+import { CoachCard } from '@/components/coach-card';
+import { getChangeControlHealth } from '@/server/queries/coach-health';
 
 /**
  * Per-project change-control list. Real implementation of what was a
@@ -40,8 +42,12 @@ export default async function ProjectChangeControlPage({
     .where(eq(changeOrders.projectId, id))
     .orderBy(desc(changeOrders.updatedAt));
 
+  const coachItems = await getChangeControlHealth(id);
+
   return (
     <>
+      <CoachCard items={coachItems} />
+
       <div className="flex items-end justify-between mb-4 gap-4">
         <p className="text-ink-2 text-[13px]">{t('change_order.subtitle')}</p>
         <ChangeOrderLauncher projectId={id} />

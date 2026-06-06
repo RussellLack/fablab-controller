@@ -5,6 +5,8 @@ import { db, items, packages } from '@/db';
 import { NextActionBanner } from '@/components/next-action-banner';
 import { formatDate } from '@/lib/utils';
 import { HandoverRowActions } from './row-actions';
+import { CoachCard } from '@/components/coach-card';
+import { getHandoverHealth } from '@/server/queries/coach-health';
 
 /**
  * Per-project Handover view — real implementation of the Phase-2 stub.
@@ -69,9 +71,13 @@ export default async function ProjectHandoverPage({
     ? Math.round((signedOff.length / totalEligible) * 100)
     : 0;
 
+  const coachItems = await getHandoverHealth(id);
+
   return (
     <>
       <NextActionBanner projectId={id} gate="handover" />
+
+      <CoachCard items={coachItems} />
 
       <p className="text-ink-2 text-[13px] mb-4">{t('handover.subtitle')}</p>
 

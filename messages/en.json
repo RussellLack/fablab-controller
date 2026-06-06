@@ -176,6 +176,77 @@
     "finance": "Finance",
     "change_control": "Change control"
   },
+  "coach_card": {
+    "title": "Coach",
+    "subtitle": "{count, plural, =1 {1 thing worth your attention} other {# things worth your attention}}"
+  },
+  "coach_rule": {
+    "brief_no_signoff": {
+      "observation": "The customer hasn't signed off the brief yet.",
+      "why": "Without sign-off, scope drift can't be defended later — the brief is the contract.",
+      "action": "Open the brief"
+    },
+    "brief_signoff_drifted": {
+      "observation": "The brief has been edited since the customer signed off.",
+      "why": "Their consent no longer matches the live brief. Ask them to re-sign before procurement moves on revised scope.",
+      "action": "Open the brief"
+    },
+    "brief_unreplied_comments": {
+      "observation": "{count, plural, =1 {1 customer comment} other {# customer comments}} in the last 7 days without a Fablab reply.",
+      "why": "Unanswered comments become \"Fablab didn't respond\" later — keep the thread moving so the audit reads clean.",
+      "action": "Open the discussion"
+    },
+    "scope_no_approval": {
+      "observation": "No approved scope baseline on record.",
+      "why": "Scope baseline is the commercial reference for chargeable vs change. Without it, every later question about \"was this included?\" gets harder.",
+      "action": "Open scope"
+    },
+    "approvals_stalled": {
+      "observation": "{count, plural, =1 {1 approval} other {# approvals}} sent over 7 days ago, no response yet.",
+      "why": "Stalled approvals block procurement and erode customer momentum.",
+      "action": "Open approvals"
+    },
+    "items_r3_violation": {
+      "observation": "{count, plural, =1 {1 item ordered} other {# items ordered}} without an approved Approval (R3 gate violation).",
+      "why": "Per 00- §22, an approved Approval is the binding evidence behind a PO. Items past `ordered` without one expose margin and undermine the audit trail.",
+      "action": "Open packages"
+    },
+    "change_open": {
+      "observation": "{count, plural, =1 {1 open change order} other {# open change orders}} awaiting next step.",
+      "why": "Change orders stuck in the pipeline are commercial risk — every day in `requested` or `priced` is work being done at uncertain chargeability.",
+      "action": "Open change control"
+    },
+    "delivery_stuck": {
+      "observation": "{count, plural, =1 {1 item in an exception state} other {# items in exception states}} (backorder / damaged / on hold).",
+      "why": "Stuck items quietly become customer expectation-management problems. Each one needs a resolution path or a customer note.",
+      "action": "Open delivery"
+    },
+    "handover_awaiting": {
+      "observation": "{count, plural, =1 {1 item installed} other {# items installed}} awaiting client sign-off.",
+      "why": "Per 00- §22, written sign-off is the load-bearing artefact at this stage. Close them out to advance the project.",
+      "action": "Open handover"
+    },
+    "risk_supplier_open": {
+      "observation": "{count, plural, =1 {1 supplier risk} other {# supplier risks}} open in the register.",
+      "why": "Supplier risks belong in the next Work Evidence Summary so the customer sees what Fablab is actively managing.",
+      "action": "Open risk register"
+    },
+    "time_missing_reason": {
+      "observation": "{count, plural, =1 {1 time entry} other {# time entries}} reportable but missing a commercial reason.",
+      "why": "Without the reason, the hour is hidden in the next Work Evidence Summary — the customer sees a number without context.",
+      "action": "Open time entries"
+    },
+    "time_chargeable_unreported": {
+      "observation": "{hours} chargeable hours ({count, plural, =1 {1 entry} other {# entries}}) not yet included in a customer report.",
+      "why": "Chargeable hours forgotten before reporting = lost billing. Generate the next Work Evidence Summary to roll them up.",
+      "action": "Open reporting"
+    },
+    "time_goodwill": {
+      "observation": "{hours} hours of goodwill recorded in the last 14 days.",
+      "why": "Goodwill is a story to tell, not a cost to hide. Make sure your customer summary mentions what was done at our cost.",
+      "action": "Open reporting"
+    }
+  },
   "coach": {
     "launcher_cta": "Coach",
     "launcher_title": "Open the Project Coach drawer",
