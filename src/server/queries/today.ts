@@ -8,8 +8,7 @@ import {
   purchaseOrders,
   vendors,
   changeOrders,
-  rfqs,
-  items
+  rfqs
 } from '@/db';
 
 /**
@@ -577,59 +576,74 @@ export async function getTodayStats(): Promise<TodayStats> {
     };
   }
   try {
-    // Run all four aggregations in parallel — each is one cheap COUNT/SUM.
+    // Three aggregates over three tables, fetched in ONE round-trip.
     //
-    // - liveProjects:      projects in an active stage (excludes archived,
-    //                      cancelled, handover, on_hold, in_dispute).
-    // - itemsInFlight:     items between ordered and installed inclusive —
-    //                      the procurement → delivery → install window.
-    // - drawingsForReview: deliberately kept as '—'. The drawings table
-    //                      exists (Wave 5 schema) but the review-workflow
-    //                      UI isn't yet shipped; surfacing a misleading
-    //                      number here is worse than the em-dash.
-    // - budgetCommitted:   sum of totalGross across POs in a binding state
-    //                      (issued / confirmed / partially_fulfilled /
-    //                       fulfilled). The aggregate flattens currencies
-    //                      to a raw number — fine for a tile glance,
-    //                      not for a real finance report.
-    const [liveCount, itemsCount, budgetSum] = await Promise.all([
-      db
-        .select({ value: count() })
-        .from(projects)
-        .where(
-          sql`current_stage NOT IN ('archived', 'cancelled', 'handover', 'on_hold', 'in_dispute')`
-        ),
-      db
-        .select({ value: count() })
-        .from(items)
-        .where(
-          inArray(items.status, [
-            'ordered',
-            'in_production',
-            'ready',
-            'shipped',
-            'received',
-            'installed'
-          ])
-        ),
-      db
-        .select({ value: sql<string>`COALESCE(SUM(${purchaseOrders.totalGross}), 0)` })
-        .from(purchaseOrders)
-        .where(
-          inArray(purchaseOrders.status, [
-            'issued',
-            'confirmed',
-            'partially_fulfilled',
-            'fulfilled'
-          ])
-        )
-    ]);
+    // Postgres lets a top-level SELECT reference scalar sub-selects as
+    // expressions, so we can union the three independent aggregates
+    // into a single one-row result. That replaces the previous fan-out
+    // (3 parallel queries) with a single network hop — meaningful when
+    // the surrounding Promise.all is already stacking ~11 queries on
+    // the dashboard.
+    //
+    // - live_projects:    projects in an active stage (excludes
+    //                     archived / cancelled / handover / on_hold /
+    //                     in_dispute).
+    // - items_in_flight:  items between ordered and installed inclusive
+    //                     — the procurement → delivery → install window.
+    // - budget_committed: sum of total_gross across POs in a binding
+    //                     state. The aggregate flattens currencies to
+    //                     a raw number — fine for a tile glance, not
+    //                     for a real finance report.
+    // - drawings_for_review: deliberately kept as '—'. The drawings
+    //                     table exists but the review-workflow UI
+    //                     isn't shipped; a misleading number is worse
+    //                     than the em-dash.
+    //
+    // Counts return as bigint from Postgres → string in postgres-js;
+    // we coerce per-field.
+    type StatsRow = {
+      live_projects: string | number;
+      items_in_flight: string | number;
+      budget_committed: string | number;
+    };
+    const rows = (await db.execute<StatsRow>(sql`
+      SELECT
+        (
+          SELECT COUNT(*)
+          FROM projects
+          WHERE current_stage NOT IN (
+            'archived', 'cancelled', 'handover', 'on_hold', 'in_dispute'
+          )
+        ) AS live_projects,
+        (
+          SELECT COUNT(*)
+          FROM items
+          WHERE status IN (
+            'ordered', 'in_production', 'ready', 'shipped', 'received', 'installed'
+          )
+        ) AS items_in_flight,
+        (
+          SELECT COALESCE(SUM(total_gross), 0)
+          FROM purchase_orders
+          WHERE status IN (
+            'issued', 'confirmed', 'partially_fulfilled', 'fulfilled'
+          )
+        ) AS budget_committed
+    `)) as unknown as StatsRow[];
+    const row = rows[0];
+    if (!row) {
+      return {
+        liveProjects: 0,
+        itemsInFlight: 0,
+        drawingsForReview: '—',
+        budgetCommitted: '—'
+      };
+    }
 
-    const budgetNumeric = Number(budgetSum[0]?.value ?? 0);
-
+    const budgetNumeric = Number(row.budget_committed ?? 0);
     return {
-      liveProjects: liveCount[0]?.value ?? 0,
-      itemsInFlight: itemsCount[0]?.value ?? 0,
+      liveProjects: Number(row.live_projects ?? 0),
+      itemsInFlight: Number(row.items_in_flight ?? 0),
       drawingsForReview: '—',
       budgetCommitted: Number.isFinite(budgetNumeric)
         ? formatBudget(budgetNumeric)
