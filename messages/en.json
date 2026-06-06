@@ -180,6 +180,27 @@
     "title": "Coach",
     "subtitle": "{count, plural, =1 {1 thing worth your attention} other {# things worth your attention}}"
   },
+  "coach_dashboard": {
+    "title": "Project Coach",
+    "subtitle_quiet": "Nothing worth nudging right now. The Coach checks the project's evidence health continuously and will surface findings here when they appear.",
+    "subtitle_active": "{count, plural, =1 {1 open finding} other {# open findings}} — acknowledge what you've seen, resolve what's done, dismiss what doesn't apply.",
+    "empty_doctrine": "All clear. The Coach has nothing to flag — keep doing what you're doing.",
+    "acknowledged_tag": "Acknowledged",
+    "severity": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "action": {
+      "ack": "Ack",
+      "ack_title": "Acknowledge — you've seen this. Stays in the dashboard until resolved.",
+      "resolve": "Resolved",
+      "resolve_title": "Mark this resolved manually (the Coach auto-resolves when the underlying condition clears).",
+      "dismiss": "Dismiss",
+      "dismiss_title": "Hide this — it doesn't apply to this project. Won't re-fire even if the rule matches again."
+    }
+  },
   "coach_rule": {
     "brief_no_signoff": {
       "observation": "The customer hasn't signed off the brief yet.",

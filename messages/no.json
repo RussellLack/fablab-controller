@@ -180,6 +180,27 @@
     "title": "Coach",
     "subtitle": "{count, plural, =1 {1 ting verdt oppmerksomhet} other {# ting verdt oppmerksomhet}}"
   },
+  "coach_dashboard": {
+    "title": "Project Coach",
+    "subtitle_quiet": "Ingenting verdt å påpeke akkurat nå. Coachen sjekker prosjektets evidens-helse kontinuerlig og overflater funn her når de dukker opp.",
+    "subtitle_active": "{count, plural, =1 {1 åpent funn} other {# åpne funn}} — bekreft det du har sett, løs det som er gjort, avvis det som ikke gjelder.",
+    "empty_doctrine": "Alt klart. Coachen har ingenting å flagge — fortsett som du gjør.",
+    "acknowledged_tag": "Bekreftet",
+    "severity": {
+      "critical": "Kritisk",
+      "high": "Høy",
+      "medium": "Middels",
+      "low": "Lav"
+    },
+    "action": {
+      "ack": "Bekreft",
+      "ack_title": "Bekreft — du har sett dette. Blir stående i dashboardet til det løses.",
+      "resolve": "Løst",
+      "resolve_title": "Marker dette løst manuelt (Coachen auto-løser når underliggende tilstand klareres).",
+      "dismiss": "Avvis",
+      "dismiss_title": "Skjul dette — gjelder ikke for dette prosjektet. Vil ikke dukke opp igjen selv om regelen treffer."
+    }
+  },
   "coach_rule": {
     "brief_no_signoff": {
       "observation": "Kunden har ikke signert briefen ennå.",

@@ -277,6 +277,20 @@ export const evidenceCategoryEnum = pgEnum('evidence_category', [
   'handover'
 ]);
 
+export const coachRecommendationStatusEnum = pgEnum('coach_recommendation_status', [
+  'open',
+  'acknowledged',
+  'resolved',
+  'dismissed'
+]);
+
+export const coachRecommendationSeverityEnum = pgEnum('coach_recommendation_severity', [
+  'critical',
+  'high',
+  'medium',
+  'low'
+]);
+
 export const chargeabilityStatusEnum = pgEnum('time_entry_chargeability', [
   'included',                       // covered by the agreed scope baseline
   'chargeable',                     // additional billable project work
@@ -1842,4 +1856,72 @@ export const projectEvidenceNotes = pgTable('project_evidence_notes', {
 export const projectEvidenceNotesRelations = relations(projectEvidenceNotes, ({ one }) => ({
   project: one(projects, { fields: [projectEvidenceNotes.projectId], references: [projects.id] }),
   author: one(users, { fields: [projectEvidenceNotes.createdBy], references: [users.id] })
+}));
+
+/* ─────────────────────────── PROJECT COACH RECOMMENDATIONS ─────────────────────────── */
+
+/**
+ * Project Coaching MVP-D — see `28-project-coaching-layer.md` §7.2.
+ *
+ * The persistence layer behind the Project Coach dashboard. The rules
+ * engine in `coach-health.ts` produces in-memory `Recommendation`s
+ * keyed by a stable `recommendation_key` (e.g.
+ * `brief.no_signoff.<projectId>`). The dashboard's sync step upserts
+ * each into this table:
+ *
+ *   - New key → INSERT with status='open'
+ *   - Existing key in any non-terminal status → no-op (preserve
+ *     user state — acknowledged / dismissed stays as the user set it)
+ *   - Existing key in `open` or `acknowledged` whose rule no longer
+ *     fires this run → marked `resolved` (the condition cleared)
+ *   - Stale `dismissed` rows survive — the user explicitly silenced
+ *     them; we don't auto-resurrect
+ *
+ * `recommendation_key` is the stable identity across runs. Unique per
+ * (project, key) so the upsert is straightforward.
+ *
+ * `severity` and `module` are denormalised from the rules engine so
+ * the dashboard can sort + group without re-running the rules.
+ *
+ * `observation_key` + `observation_params` are stored so the dashboard
+ * can render the translated observation line; the rules engine doesn't
+ * persist already-translated strings (i18n stays at render time).
+ */
+export const projectCoachRecommendations = pgTable('project_coach_recommendations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+
+  /** Stable identity from the rules engine, e.g. `brief.no_signoff.<projectId>`. */
+  recommendationKey: varchar('recommendation_key', { length: 200 }).notNull(),
+  /** The rule's i18n key root (e.g. `coach_rule.brief_no_signoff`). */
+  ruleKey: varchar('rule_key', { length: 120 }).notNull(),
+  module: varchar('module', { length: 40 }).notNull(),
+  severity: coachRecommendationSeverityEnum('severity').notNull(),
+
+  observationKey: varchar('observation_key', { length: 200 }).notNull(),
+  observationParams: jsonb('observation_params'),
+  actionLabelKey: varchar('action_label_key', { length: 200 }).notNull(),
+  actionHref: text('action_href').notNull(),
+
+  status: coachRecommendationStatusEnum('status').notNull().default('open'),
+  acknowledgedAt: timestamp('acknowledged_at', { withTimezone: true }),
+  acknowledgedBy: uuid('acknowledged_by').references(() => users.id),
+  resolvedAt: timestamp('resolved_at', { withTimezone: true }),
+  resolvedBy: uuid('resolved_by').references(() => users.id),
+  dismissedAt: timestamp('dismissed_at', { withTimezone: true }),
+  dismissedBy: uuid('dismissed_by').references(() => users.id),
+
+  firstSeenAt: timestamp('first_seen_at', { withTimezone: true }).notNull().defaultNow(),
+  lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+}, t => ({
+  projectKeyIdx: uniqueIndex('pcr_project_key_idx').on(t.projectId, t.recommendationKey),
+  // Fast lookup for the dashboard page: open / acknowledged per project.
+  openIdx: index('pcr_open_idx').on(t.projectId, t.severity)
+    .where(sql`status IN ('open', 'acknowledged')`)
+}));
+
+export const projectCoachRecommendationsRelations = relations(projectCoachRecommendations, ({ one }) => ({
+  project: one(projects, { fields: [projectCoachRecommendations.projectId], references: [projects.id] })
 }));
