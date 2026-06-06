@@ -78,6 +78,11 @@ export default async function ElementListInternalPage({ params }: { params: Prom
                 <Td>
                   <div className="w-10 h-10 rounded bg-bg grid place-items-center overflow-hidden">
                     {row.thumbUrl ? (
+                      // 40x40 table thumbnail from a Supabase signed URL.
+                      // next/image would need a remote-pattern config + would
+                      // cache-invalidate every time the URL signature rotates;
+                      // the LCP gain on a 40-px image isn't worth the round-trip.
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={row.thumbUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-ink-3">·</span>

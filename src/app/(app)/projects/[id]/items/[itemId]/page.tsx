@@ -155,6 +155,10 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
               <div className="card mb-3">
                 <h3 className="card-title mb-3">Product image</h3>
                 <div className="grid place-items-center bg-bg rounded p-3">
+                  {/* Signed-URL product image; the URL signature rotates with
+                      every request, so next/image's URL-keyed cache provides
+                      no real benefit here. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={data.primaryImage.processedBlobUri ?? data.primaryImage.originalBlobUri}
                     alt={item.name}

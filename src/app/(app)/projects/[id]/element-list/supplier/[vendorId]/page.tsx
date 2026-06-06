@@ -65,6 +65,9 @@ export default async function ElementListSupplierVendorPage({
                 <Td>
                   <div className="w-10 h-10 rounded bg-bg grid place-items-center overflow-hidden">
                     {it.thumbUrl ? (
+                      // 40x40 table thumbnail from a Supabase signed URL —
+                      // see the internal element-list page for the rationale.
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={it.thumbUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-ink-3">·</span>

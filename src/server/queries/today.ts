@@ -8,7 +8,8 @@ import {
   purchaseOrders,
   vendors,
   changeOrders,
-  rfqs
+  rfqs,
+  items
 } from '@/db';
 
 /**
@@ -576,17 +577,63 @@ export async function getTodayStats(): Promise<TodayStats> {
     };
   }
   try {
-    const [liveCount] = await db
-      .select({ value: count() })
-      .from(projects)
-      .where(
-        sql`current_stage NOT IN ('archived', 'cancelled', 'handover', 'on_hold', 'in_dispute')`
-      );
+    // Run all four aggregations in parallel — each is one cheap COUNT/SUM.
+    //
+    // - liveProjects:      projects in an active stage (excludes archived,
+    //                      cancelled, handover, on_hold, in_dispute).
+    // - itemsInFlight:     items between ordered and installed inclusive —
+    //                      the procurement → delivery → install window.
+    // - drawingsForReview: deliberately kept as '—'. The drawings table
+    //                      exists (Wave 5 schema) but the review-workflow
+    //                      UI isn't yet shipped; surfacing a misleading
+    //                      number here is worse than the em-dash.
+    // - budgetCommitted:   sum of totalGross across POs in a binding state
+    //                      (issued / confirmed / partially_fulfilled /
+    //                       fulfilled). The aggregate flattens currencies
+    //                      to a raw number — fine for a tile glance,
+    //                      not for a real finance report.
+    const [liveCount, itemsCount, budgetSum] = await Promise.all([
+      db
+        .select({ value: count() })
+        .from(projects)
+        .where(
+          sql`current_stage NOT IN ('archived', 'cancelled', 'handover', 'on_hold', 'in_dispute')`
+        ),
+      db
+        .select({ value: count() })
+        .from(items)
+        .where(
+          inArray(items.status, [
+            'ordered',
+            'in_production',
+            'ready',
+            'shipped',
+            'received',
+            'installed'
+          ])
+        ),
+      db
+        .select({ value: sql<string>`COALESCE(SUM(${purchaseOrders.totalGross}), 0)` })
+        .from(purchaseOrders)
+        .where(
+          inArray(purchaseOrders.status, [
+            'issued',
+            'confirmed',
+            'partially_fulfilled',
+            'fulfilled'
+          ])
+        )
+    ]);
+
+    const budgetNumeric = Number(budgetSum[0]?.value ?? 0);
+
     return {
-      liveProjects: liveCount?.value ?? 0,
-      itemsInFlight: '—',
+      liveProjects: liveCount[0]?.value ?? 0,
+      itemsInFlight: itemsCount[0]?.value ?? 0,
       drawingsForReview: '—',
-      budgetCommitted: '—'
+      budgetCommitted: Number.isFinite(budgetNumeric)
+        ? formatBudget(budgetNumeric)
+        : '—'
     };
   } catch {
     return {
@@ -596,6 +643,17 @@ export async function getTodayStats(): Promise<TodayStats> {
       budgetCommitted: '—'
     };
   }
+}
+
+/**
+ * Format the budget total for the tile — compact, no currency
+ * (Fablab works in NOK by default; multi-currency totals are
+ * inherently lossy as one number).
+ */
+function formatBudget(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}k`;
+  return String(Math.round(n));
 }
 
 /* ─── Aside helpers ─── */
