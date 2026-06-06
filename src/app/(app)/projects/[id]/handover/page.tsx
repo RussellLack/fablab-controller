@@ -38,26 +38,28 @@ export default async function ProjectHandoverPage({
   const { id } = await params;
   const t = await getTranslations();
 
-  // Items relevant to handover are anything that's reached installed
-  // or beyond, plus anything currently sitting at damaged (snags).
-  const rows = await db
-    .select({
-      id: items.id,
-      name: items.name,
-      manufacturer: items.manufacturer,
-      sku: items.sku,
-      status: items.status,
-      installedAt: items.installedAt,
-      signedOffAt: items.signedOffAt,
-      packageName: packages.name
-    })
-    .from(items)
-    .innerJoin(packages, eq(items.packageId, packages.id))
-    .where(
-      eq(packages.projectId, id)
-      // Filter at SQL level for the three relevant states.
-    )
-    .orderBy(asc(items.installedAt));
+  // Items + Coach in parallel — independent queries.
+  const [rows, coachItems] = await Promise.all([
+    db
+      .select({
+        id: items.id,
+        name: items.name,
+        manufacturer: items.manufacturer,
+        sku: items.sku,
+        status: items.status,
+        installedAt: items.installedAt,
+        signedOffAt: items.signedOffAt,
+        packageName: packages.name
+      })
+      .from(items)
+      .innerJoin(packages, eq(items.packageId, packages.id))
+      .where(
+        eq(packages.projectId, id)
+        // Filter at SQL level for the three relevant states.
+      )
+      .orderBy(asc(items.installedAt)),
+    getHandoverHealth(id)
+  ]);
 
   const relevant = rows.filter((r) =>
     ['installed', 'signed_off', 'damaged'].includes(r.status)
@@ -70,8 +72,6 @@ export default async function ProjectHandoverPage({
   const pct = totalEligible > 0
     ? Math.round((signedOff.length / totalEligible) * 100)
     : 0;
-
-  const coachItems = await getHandoverHealth(id);
 
   return (
     <>

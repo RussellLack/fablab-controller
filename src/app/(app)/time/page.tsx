@@ -49,60 +49,59 @@ export default async function TimePage({
 
   const projectFilter = sp.project ?? null;
 
-  // Project picker source — every project, ordered by recently-updated.
-  // We deliberately include archived/cancelled projects too because
-  // staff sometimes need to back-fill time on a closed engagement.
-  const allProjects = await db
-    .select({
-      id: projects.id,
-      reference: projects.reference,
-      title: projects.title,
-      currentStage: projects.currentStage
-    })
-    .from(projects)
-    .orderBy(desc(projects.updatedAt));
-
-  // Entries for the signed-in user — last 90 days by default. Older
-  // entries are accessible via search later; MVP-A keeps it simple.
+  // All three queries are independent — run them in parallel.
+  // The Coach prompts surface only when a project filter is active
+  // (a cross-project /time list is too wide for per-project rules),
+  // so we skip that query when no filter is set.
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
     .toISOString()
     .slice(0, 10);
-  const rows = await db
-    .select({
-      id: timeEntries.id,
-      projectId: timeEntries.projectId,
-      projectRef: projects.reference,
-      projectTitle: projects.title,
-      currentStage: projects.currentStage,
-      stage: timeEntries.stage,
-      category: timeEntries.category,
-      workDate: timeEntries.workDate,
-      hours: timeEntries.hours,
-      note: timeEntries.note,
-      commercialReason: timeEntries.commercialReason,
-      customerVisibleSummary: timeEntries.customerVisibleSummary,
-      chargeabilityStatus: timeEntries.chargeabilityStatus,
-      nonChargeableReason: timeEntries.nonChargeableReason,
-      linkedObjectType: timeEntries.linkedObjectType,
-      linkedObjectId: timeEntries.linkedObjectId,
-      reportable: timeEntries.reportable
-    })
-    .from(timeEntries)
-    .innerJoin(projects, eq(timeEntries.projectId, projects.id))
-    .where(
-      and(
-        eq(timeEntries.userId, user.id),
-        gte(timeEntries.workDate, ninetyDaysAgo),
-        projectFilter ? eq(timeEntries.projectId, projectFilter) : undefined
+  const [allProjects, rows, coachItems] = await Promise.all([
+    // Project picker source — every project, ordered by recently-updated.
+    // Archived / cancelled are included too because staff occasionally
+    // back-fill time on a closed engagement.
+    db
+      .select({
+        id: projects.id,
+        reference: projects.reference,
+        title: projects.title,
+        currentStage: projects.currentStage
+      })
+      .from(projects)
+      .orderBy(desc(projects.updatedAt)),
+    // Entries for the signed-in user — last 90 days by default.
+    db
+      .select({
+        id: timeEntries.id,
+        projectId: timeEntries.projectId,
+        projectRef: projects.reference,
+        projectTitle: projects.title,
+        currentStage: projects.currentStage,
+        stage: timeEntries.stage,
+        category: timeEntries.category,
+        workDate: timeEntries.workDate,
+        hours: timeEntries.hours,
+        note: timeEntries.note,
+        commercialReason: timeEntries.commercialReason,
+        customerVisibleSummary: timeEntries.customerVisibleSummary,
+        chargeabilityStatus: timeEntries.chargeabilityStatus,
+        nonChargeableReason: timeEntries.nonChargeableReason,
+        linkedObjectType: timeEntries.linkedObjectType,
+        linkedObjectId: timeEntries.linkedObjectId,
+        reportable: timeEntries.reportable
+      })
+      .from(timeEntries)
+      .innerJoin(projects, eq(timeEntries.projectId, projects.id))
+      .where(
+        and(
+          eq(timeEntries.userId, user.id),
+          gte(timeEntries.workDate, ninetyDaysAgo),
+          projectFilter ? eq(timeEntries.projectId, projectFilter) : undefined
+        )
       )
-    )
-    .orderBy(desc(timeEntries.workDate), desc(timeEntries.enteredAt));
-
-  // Coach prompts surface only when a project filter is active —
-  // a cross-project /time list is too wide to nudge per-project rules.
-  const coachItems = projectFilter
-    ? await getTimeReportingHealth(projectFilter)
-    : [];
+      .orderBy(desc(timeEntries.workDate), desc(timeEntries.enteredAt)),
+    projectFilter ? getTimeReportingHealth(projectFilter) : Promise.resolve([])
+  ]);
 
   return (
     <div className="space-y-6">

@@ -63,7 +63,11 @@ export default async function ProjectDeliveryPage({
   const { id } = await params;
   const t = await getTranslations();
 
-  const rows: DeliveryRow[] = await db
+  // Run the items list + Coach rules in parallel — they're independent
+  // queries and the page renders both side by side. Sequential await
+  // here was costing ~1 round-trip on every page load.
+  const [rows, coachItems]: [DeliveryRow[], Awaited<ReturnType<typeof getDeliveryHealth>>] = await Promise.all([
+    db
     .select({
       id: items.id,
       name: items.name,
@@ -83,7 +87,9 @@ export default async function ProjectDeliveryPage({
       // items (specified / quoted) are filtered out below.
       eq(packages.projectId, id)
     )
-    .orderBy(asc(items.orderedAt));
+    .orderBy(asc(items.orderedAt)),
+    getDeliveryHealth(id)
+  ]);
 
   // Filter & bucket in JS — small N per project; cheaper than two extra
   // round-trips for separate group queries.
@@ -102,7 +108,6 @@ export default async function ProjectDeliveryPage({
   const exceptionItems = EXCEPTION_STATES.flatMap(
     (s) => byStatus[s] ?? []
   );
-  const coachItems = await getDeliveryHealth(id);
 
   return (
     <>

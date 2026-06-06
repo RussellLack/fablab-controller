@@ -24,25 +24,26 @@ export default async function ProjectChangeControlPage({
   const { id } = await params;
   const t = await getTranslations();
 
-  const rows = await db
-    .select({
-      id: changeOrders.id,
-      reference: changeOrders.reference,
-      title: changeOrders.title,
-      requestedBy: changeOrders.requestedBy,
-      requestedByExternal: changeOrders.requestedByExternal,
-      dateRequested: changeOrders.dateRequested,
-      status: changeOrders.status,
-      costImpactAmount: changeOrders.costImpactAmount,
-      costImpactCurrency: changeOrders.costImpactCurrency,
-      timeImpactDays: changeOrders.timeImpactDays,
-      updatedAt: changeOrders.updatedAt
-    })
-    .from(changeOrders)
-    .where(eq(changeOrders.projectId, id))
-    .orderBy(desc(changeOrders.updatedAt));
-
-  const coachItems = await getChangeControlHealth(id);
+  const [rows, coachItems] = await Promise.all([
+    db
+      .select({
+        id: changeOrders.id,
+        reference: changeOrders.reference,
+        title: changeOrders.title,
+        requestedBy: changeOrders.requestedBy,
+        requestedByExternal: changeOrders.requestedByExternal,
+        dateRequested: changeOrders.dateRequested,
+        status: changeOrders.status,
+        costImpactAmount: changeOrders.costImpactAmount,
+        costImpactCurrency: changeOrders.costImpactCurrency,
+        timeImpactDays: changeOrders.timeImpactDays,
+        updatedAt: changeOrders.updatedAt
+      })
+      .from(changeOrders)
+      .where(eq(changeOrders.projectId, id))
+      .orderBy(desc(changeOrders.updatedAt)),
+    getChangeControlHealth(id)
+  ]);
 
   return (
     <>
