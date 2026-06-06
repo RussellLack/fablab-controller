@@ -262,6 +262,23 @@ export const stageTransitionDecisionEnum = pgEnum('stage_transition_decision', [
   'resume', 'dispute', 'archive', 'pass', 'fail'
 ]);
 
+/* Project Coaching MVP-A — see 28-project-coaching-layer.md §7.1.
+ * Note: we deliberately REUSE the existing `timeCategoryEnum` for work
+ * type (it covers the same conceptual space). The new addition is the
+ * commercial classification — `chargeability_status` — which drives the
+ * Work Evidence Summary narrative and the Project Coach dashboard. */
+export const chargeabilityStatusEnum = pgEnum('time_entry_chargeability', [
+  'included',                       // covered by the agreed scope baseline
+  'chargeable',                     // additional billable project work
+  'change',                         // change-order territory; billable via CO
+  'out_of_scope_approval_needed',   // unclear classification; needs CO or scope update
+  'goodwill',                       // non-billable, "included at our cost"
+  'internal_admin',                 // internal work, never customer-facing
+  'rework_fablab',                  // rework caused by us
+  'rework_customer',                // rework caused by customer-change
+  'rework_supplier'                 // rework caused by supplier issue
+]);
+
 /* ─────────────────────────── USERS & AUTH ─────────────────────────── */
 
 /**
@@ -1378,6 +1395,29 @@ export const documentTemplates = pgTable('document_templates', {
 
 /* ─────────────────────────── TIME ENTRIES ─────────────────────────── */
 
+/**
+ * Time entries — extended for the Project Coaching layer (MVP-A;
+ * see `28-project-coaching-layer.md` §7.1). Pre-existing columns
+ * (stage / category / workDate / hours / note / chargeable /
+ * nonChargeableReason / chargeableToChangeOrderId / enteredAt)
+ * stay as-is for backward compat.
+ *
+ * The Coaching uplift adds parallel framing on the same hour:
+ *   - `commercialReason` + `customerVisibleSummary` — internal vs
+ *     external phrasing. The Work Evidence Summary report reads
+ *     `customerVisibleSummary` for its narrative.
+ *   - `chargeabilityStatus` — the richer 9-state classification.
+ *     The legacy `chargeable` boolean is now a derived view of
+ *     this; the time-entries server action keeps both in sync.
+ *
+ * `linkedObjectType` + `linkedObjectId` are polymorphic — they
+ * connect this hour to the entity the work was about (brief,
+ * scope, item, approval, RFQ, quote, PO, change order, etc.).
+ *
+ * Partial index `time_unreportable_idx` is the fast lookup for the
+ * Project Coach dashboard rule "time entries missing commercial
+ * reason".
+ */
 export const timeEntries = pgTable('time_entries', {
   id: uuid('id').primaryKey().defaultRandom(),
   projectId: uuid('project_id').notNull().references(() => projects.id),
@@ -1390,10 +1430,23 @@ export const timeEntries = pgTable('time_entries', {
   chargeable: boolean('chargeable').notNull().default(true),
   nonChargeableReason: text('non_chargeable_reason'),
   chargeableToChangeOrderId: uuid('chargeable_to_change_order_id').references(() => changeOrders.id),
-  enteredAt: timestamp('entered_at', { withTimezone: true }).notNull().defaultNow()
+  enteredAt: timestamp('entered_at', { withTimezone: true }).notNull().defaultNow(),
+
+  // Coaching MVP-A uplift
+  commercialReason: text('commercial_reason'),
+  customerVisibleSummary: text('customer_visible_summary'),
+  chargeabilityStatus: chargeabilityStatusEnum('chargeability_status'),
+  linkedObjectType: varchar('linked_object_type', { length: 40 }),
+  linkedObjectId: uuid('linked_object_id'),
+  reportable: boolean('reportable').notNull().default(true),
+  includedInReportAt: timestamp('included_in_report_at', { withTimezone: true }),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 }, t => ({
   projectCategoryIdx: index('te_project_category_idx').on(t.projectId, t.category, t.workDate),
-  userIdx: index('te_user_idx').on(t.userId, t.chargeable, t.workDate)
+  userIdx: index('te_user_idx').on(t.userId, t.chargeable, t.workDate),
+  // Coaching MVP-A: drives the dashboard "missing commercial reason" check.
+  unreportableIdx: index('te_unreportable_idx').on(t.projectId)
+    .where(sql`commercial_reason IS NULL AND reportable = true`)
 }));
 
 /* ─────────────────────────── EQUIPMENT & BOOKINGS ─────────────────────────── */
@@ -1719,4 +1772,12 @@ export const elementListShareLinksRelations = relations(elementListShareLinks, (
 export const dropboxExportsRelations = relations(dropboxExports, ({ one }) => ({
   project: one(projects, { fields: [dropboxExports.projectId], references: [projects.id] }),
   exportedByUser: one(users, { fields: [dropboxExports.exportedBy], references: [users.id] })
+}));
+
+/* Relations for the time-entries table (declaration above in the
+ * existing schema block — extended in-place for the Coaching MVP-A
+ * uplift). */
+export const timeEntriesRelations = relations(timeEntries, ({ one }) => ({
+  project: one(projects, { fields: [timeEntries.projectId], references: [projects.id] }),
+  user: one(users, { fields: [timeEntries.userId], references: [users.id] })
 }));
