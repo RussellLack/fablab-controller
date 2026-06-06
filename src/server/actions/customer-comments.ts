@@ -21,7 +21,7 @@ import { notifyCommentRecipients } from '@/server/lib/comment-notifications';
  * without joining against auth.users.
  *
  * Authorisation per call:
- *   - Staff: any signed-in fablab.no / fablabdesign.com user can post.
+ *   - Staff: any signed-in @fablabdesign.com Workspace user can post.
  *   - Customer: must be signed in AND have an active (non-revoked)
  *     invitation for the project.
  *

@@ -6,7 +6,7 @@
  * Both conditions must be true. Production deploys will 403 here.
  *
  * Usage from a test:
- *   POST /api/test/login { "email": "seed@fablab.no" }
+ *   POST /api/test/login { "email": "seed@fablabdesign.com" }
  *   → sets cookies, returns 200, redirects expected
  */
 

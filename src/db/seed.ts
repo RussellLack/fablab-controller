@@ -49,7 +49,7 @@ async function main() {
   // create a placeholder you can re-link to your real auth.users.id later.
   const [user] = await db.insert(users).values({
     id: '00000000-0000-0000-0000-000000000001',
-    email: 'seed@fablab.no',
+    email: 'seed@fablabdesign.com',
     name: 'Russell L.',
     roles: ['project_lead', 'admin', 'approver'],
     languagePref: 'no'
