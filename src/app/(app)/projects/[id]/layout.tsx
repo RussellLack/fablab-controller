@@ -1,11 +1,16 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
+import { and, count, eq, inArray } from 'drizzle-orm';
 import { getProject } from './queries';
 import { StageFlow } from '@/components/stage-flow';
 import { RoleBanner } from '@/components/role-banner';
 import { ProjectStepper } from '@/components/project-stepper';
+import { ProjectNextStepStrip } from '@/components/project-next-step-strip';
+import { ProjectBreadcrumb } from '@/components/project-breadcrumb';
+import { ProjectModuleBar } from '@/components/project-module-bar';
 import { getProjectGates } from '@/server/queries/project-gates';
+import { db, projectCoachRecommendations } from '@/db';
 
 const ACTIVE_STAGES = [
   'brief',
@@ -17,6 +22,34 @@ const ACTIVE_STAGES = [
   'handover'
 ] as const;
 
+/**
+ * Per-project layout. Stacks four navigation layers (per Russell's
+ * brief on clearer wayfinding):
+ *
+ *   A — Coach next-step strip   (only when there's an open critical/high rec)
+ *   B — Breadcrumb path         (always; starts with ↩ Dashboard)
+ *   C — Module pill bar         (always; current module highlighted)
+ *   D — Project header + stepper (existing)
+ */
+async function getOpenCoachCount(projectId: string): Promise<number> {
+  if (!process.env.DATABASE_URL) return 0;
+  try {
+    const [row] = await db
+      .select({ value: count() })
+      .from(projectCoachRecommendations)
+      .where(
+        and(
+          eq(projectCoachRecommendations.projectId, projectId),
+          inArray(projectCoachRecommendations.status, ['open', 'acknowledged'])
+        )
+      );
+    return row?.value ?? 0;
+  } catch {
+    // Migration may not be run yet — fail silently.
+    return 0;
+  }
+}
+
 export default async function ProjectLayout({
   params,
   children
@@ -25,18 +58,32 @@ export default async function ProjectLayout({
   children: React.ReactNode;
 }) {
   const { id } = await params;
-  const p = await getProject(id);
-  if (!p) notFound();
   const t = await getTranslations();
-  const gates = await getProjectGates(id);
+
+  // Fan out — project, gates, coach count all parallel.
+  const [p, gates, openCoachCount] = await Promise.all([
+    getProject(id),
+    getProjectGates(id),
+    getOpenCoachCount(id)
+  ]);
+  if (!p) notFound();
 
   return (
     <>
-      <div className="text-xs text-ink-3 mb-1.5">
-        <Link href="/projects" className="hover:text-ink">{t('crumbs.projects')}</Link>{' / '}
-        {p.reference}
-      </div>
+      {/* Layer A — Coach next-step strip (renders nothing when nothing to nudge) */}
+      <ProjectNextStepStrip projectId={p.id} />
 
+      {/* Layer B — Breadcrumb path with ↩ Dashboard home link */}
+      <ProjectBreadcrumb
+        projectId={p.id}
+        projectRef={p.reference}
+        projectTitle={p.title}
+      />
+
+      {/* Layer C — Project module bar */}
+      <ProjectModuleBar projectId={p.id} openCoachCount={openCoachCount} />
+
+      {/* Layer D — Existing project header + stepper */}
       <div className="flex items-end justify-between mb-6 gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -68,6 +115,11 @@ export default async function ProjectLayout({
             >
               <span className="text-brand">◐</span>
               {t('coach.launcher_cta')}
+              {openCoachCount > 0 && (
+                <span className="ml-0.5 text-[10px] px-1 rounded bg-brand-soft text-brand">
+                  {openCoachCount}
+                </span>
+              )}
             </Link>
           )}
           <button className="btn">{t('action.hold')}</button>

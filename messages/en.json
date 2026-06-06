@@ -167,14 +167,28 @@
     "handover": "Handover"
   },
   "crumbs": {
+    "dashboard": "Dashboard",
     "projects": "Projects",
     "leads": "Leads",
+    "brief": "Brief",
+    "scope": "Scope",
+    "items": "Items",
     "approvals": "Approvals",
     "packages": "Packages",
     "rfqs": "RFQs",
     "pos": "Purchase orders",
     "finance": "Finance",
-    "change_control": "Change control"
+    "delivery": "Delivery",
+    "handover": "Handover",
+    "risk": "Risk",
+    "reporting": "Reporting",
+    "coach": "Coach",
+    "change_control": "Change control",
+    "element_list": "Element list",
+    "detail": "Detail"
+  },
+  "next_step": {
+    "label": "Next"
   },
   "coach_card": {
     "title": "Coach",

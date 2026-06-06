@@ -1,49 +1,41 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import type { Recommendation, Severity } from '@/server/queries/coach-health';
+import type { Recommendation } from '@/server/queries/coach-health';
 
 /**
- * Shared inline Coach card — server component.
+ * Inline Coach card — server component, designed to feel like a
+ * marginalia note rather than an alert.
  *
- * Renders a project's open findings on the surface where they're
- * actionable (Brief / Scope / PO / Delivery / etc.). Empty `items`
- * → renders nothing (the parent surface stays quiet when there's
- * nothing to nudge).
+ * Visual doctrine:
+ *   - Container is a soft cream fill (`brand-soft` at low opacity) —
+ *     no hard border, no severity colour.
+ *   - Header reads "COACH" in small uppercase — like a magazine
+ *     sidebar label.
+ *   - Each rec is one calm sentence + action link inline, with the
+ *     "why it matters" line always visible directly below (Russell's
+ *     preference: keep the doctrine framing front-and-centre).
+ *   - Severity drives ordering only — the rules engine has already
+ *     returned them sorted; the card doesn't shout it.
+ *   - Empty input → renders nothing.
  *
- * Doctrine:
- *   - Title channels `00-` §22-style framing ("Coach: ...").
- *   - Each row is observation + why-it-matters + one-click action.
- *   - Severity drives the pill colour, never the prose tone — the
- *     copy stays calm regardless. The card itself stays small;
- *     it's prompting, not blocking.
+ * The card is the *quiet* surface. The Project Coach dashboard
+ * (/projects/[id]/coach) is the loud surface where ack/dismiss
+ * lifecycle lives.
  */
 export async function CoachCard({
-  items,
-  variant = 'inline'
+  items
 }: {
   items: Recommendation[];
-  /** `inline` is for embedding on a module page; `compact` for tight
-   *  surfaces like the PO detail sidebar. */
-  variant?: 'inline' | 'compact';
 }) {
   if (items.length === 0) return null;
   const t = await getTranslations();
 
   return (
-    <div
-      className={`card border-l-2 border-brand ${
-        variant === 'compact' ? 'py-3' : ''
-      }`}
-    >
-      <div className="flex items-baseline justify-between mb-3 gap-2">
-        <h3 className="card-title text-brand">
-          ◐ {t('coach_card.title')}
-        </h3>
-        <span className="text-[11px] text-ink-3">
-          {t('coach_card.subtitle', { count: items.length })}
-        </span>
+    <div className="bg-brand-soft/30 rounded-md p-5 mb-4">
+      <div className="text-[10px] uppercase tracking-wider text-ink-3 mb-3">
+        {t('coach_card.title')}
       </div>
-      <ul className="space-y-3">
+      <ul className="space-y-4">
         {items.map((r) => (
           <li key={r.id}>
             <CoachRow rec={r} />
@@ -57,39 +49,22 @@ export async function CoachCard({
 async function CoachRow({ rec }: { rec: Recommendation }) {
   const t = await getTranslations();
   return (
-    <div className="flex items-start gap-3">
-      <SeverityDot severity={rec.severity} />
-      <div className="min-w-0 flex-1">
-        <div className="text-[13px] leading-snug">
+    <div className="text-[13px] leading-snug">
+      <div>
+        <span className="text-ink">
           {t(rec.observationKey, rec.observationParams as never)}
-        </div>
-        <div className="text-[11px] text-ink-3 mt-0.5 leading-snug">
-          {t(`${rec.ruleKey}.why`)}
-        </div>
+        </span>
+        {' '}
+        <Link
+          href={rec.actionHref}
+          className="text-brand hover:underline whitespace-nowrap"
+        >
+          {t(rec.actionLabelKey)} →
+        </Link>
       </div>
-      <Link
-        href={rec.actionHref}
-        className="btn btn-ghost text-[11px] shrink-0 self-center py-1 px-2 whitespace-nowrap"
-      >
-        {t(rec.actionLabelKey)} →
-      </Link>
+      <div className="text-[11px] text-ink-3 mt-0.5 leading-snug">
+        {t(`${rec.ruleKey}.why`)}
+      </div>
     </div>
-  );
-}
-
-function SeverityDot({ severity }: { severity: Severity }) {
-  const colour =
-    severity === 'critical'
-      ? 'bg-danger'
-      : severity === 'high'
-        ? 'bg-warn'
-        : severity === 'medium'
-          ? 'bg-info'
-          : 'bg-ok';
-  return (
-    <span
-      className={`inline-block w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${colour}`}
-      aria-label={severity}
-    />
   );
 }

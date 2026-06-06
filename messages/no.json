@@ -167,14 +167,28 @@
     "handover": "Overlevering"
   },
   "crumbs": {
+    "dashboard": "Dashbord",
     "projects": "Prosjekter",
     "leads": "Forespørsler",
+    "brief": "Brief",
+    "scope": "Omfang",
+    "items": "Varer",
     "approvals": "Godkjenninger",
     "packages": "Pakker",
     "rfqs": "Pristilbud",
     "pos": "Innkjøpsordrer",
     "finance": "Økonomi",
-    "change_control": "Endringskontroll"
+    "delivery": "Levering",
+    "handover": "Overlevering",
+    "risk": "Risiko",
+    "reporting": "Rapportering",
+    "coach": "Coach",
+    "change_control": "Endringskontroll",
+    "element_list": "Elementliste",
+    "detail": "Detalj"
+  },
+  "next_step": {
+    "label": "Neste"
   },
   "coach_card": {
     "title": "Coach",
