@@ -176,6 +176,32 @@
     "finance": "Økonomi",
     "change_control": "Endringskontroll"
   },
+  "handover": {
+    "subtitle": "Signer av hver installert vare med kunden. I henhold til 00- §22 er skriftlig signering det bærende artefaktet i denne fasen — når alle varer er signert er prosjektet klart til å gå videre til Overlevering.",
+    "empty_doctrine": "Ingen varer i overlevering ennå. Varer dukker opp her når de når 'installert' i Leveringen. Signer hver av dem med kunden for å lukke prosjektet.",
+    "progress": "Signeringsfremdrift",
+    "progress_meta": "{pct}% av installerte varer er signert.",
+    "progress_complete": "Hver installert vare er signert — dette prosjektet er klart for Overlevering-fasen.",
+    "signoff_cta": "Signer av",
+    "signoff_note_placeholder": "Valgfritt — vitne, kundenavn, tilstandsnotater.",
+    "signoff_submit": "Signer av",
+    "snag_cta": "Avvik",
+    "snag_note_placeholder": "Påkrevd — hva er galt, hva er løsningen?",
+    "snag_submit": "Meld avvik",
+    "unsign_cta": "Angre",
+    "unsign_title": "Angre denne signeringen (revisjonsvennlig)",
+    "unsign_confirm": "Angre signeringen på denne varen? Varen går tilbake til 'installert'. signed_off_at-datoen fjernes, men loggnotater beholdes.",
+    "section": {
+      "awaiting": "Avventer signering",
+      "signed_off": "Signert",
+      "snags": "Avvik meldt"
+    },
+    "section_sub": {
+      "awaiting": "Installert men ikke signert av kunden ennå",
+      "signed_off": "Lukket — kunde bekreftet akseptabel",
+      "snags": "Problemer meldt ved overlevering — havner i Leverings-avvik"
+    }
+  },
   "delivery": {
     "subtitle": "Varer går bestilt → i produksjon → klar → sendt → mottatt → installert. Avvik (på vent / restordre / skadet / erstattet / kansellert) er førsteklasses så ingenting er usynlig.",
     "empty_doctrine": "Ingen varer i leveringspipeline ennå. Varer dukker opp her når bestillingen er utstedt og de er ute av designfasen. Statusen starter på 'bestilt' og går til 'installert' før Overlevering-modulen overtar.",

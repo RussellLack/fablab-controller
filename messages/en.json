@@ -176,6 +176,32 @@
     "finance": "Finance",
     "change_control": "Change control"
   },
+  "handover": {
+    "subtitle": "Sign off each installed item with the client. Per 00- §22, written sign-off is the load-bearing artefact at this stage — when every item carries it, the project is ready to advance to Handover.",
+    "empty_doctrine": "No items at handover yet. Items appear here once they reach 'installed' in the Delivery view. Sign each one off with the client to close the project.",
+    "progress": "Sign-off progress",
+    "progress_meta": "{pct}% of installed items signed off.",
+    "progress_complete": "Every installed item has been signed off — this project is ready for the Handover stage advancement.",
+    "signoff_cta": "Sign off",
+    "signoff_note_placeholder": "Optional — witness, client name, condition notes.",
+    "signoff_submit": "Sign off",
+    "snag_cta": "Snag",
+    "snag_note_placeholder": "Required — what's wrong, what's the remedy?",
+    "snag_submit": "Raise snag",
+    "unsign_cta": "Unsign",
+    "unsign_title": "Undo this sign-off (audit-friendly)",
+    "unsign_confirm": "Undo the sign-off on this item? Item goes back to 'installed'. The signed_off_at date is cleared but the audit notes stay.",
+    "section": {
+      "awaiting": "Awaiting sign-off",
+      "signed_off": "Signed off",
+      "snags": "Snags raised"
+    },
+    "section_sub": {
+      "awaiting": "Installed but not yet signed off by the client",
+      "signed_off": "Closed — client confirmed acceptable",
+      "snags": "Issues raised at handover — drop back into Delivery exceptions"
+    }
+  },
   "delivery": {
     "subtitle": "Items move ordered → in production → ready → shipped → received → installed. Exceptions (on hold / backorder / damaged / substituted / cancelled) are first-class so nothing's invisible.",
     "empty_doctrine": "No items in the delivery pipeline yet. Items appear here once their PO is issued and they leave the design phase. Status begins at 'ordered' and progresses to 'installed' before the Handover module takes over.",
