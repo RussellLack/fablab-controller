@@ -145,7 +145,7 @@ export function JourneyOverlay() {
         aria-label="Open journey overlay"
         aria-expanded={open}
       >
-        <span className="text-accent">●</span>
+        <span className="text-brand">●</span>
         Journey
         {currentRoute && (
           <span className="text-ink-3">· {currentRoute.label}</span>

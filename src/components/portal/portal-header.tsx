@@ -27,7 +27,7 @@ export function PortalHeader({ email }: { email: string }) {
     <header className="border-b border-line bg-surface">
       <div className="max-w-3xl mx-auto px-8 py-3 flex items-center justify-between">
         <Link href="/portal" className="flex items-center gap-2 text-[14px] font-semibold">
-          <span className="text-accent">●</span>
+          <span className="text-brand">●</span>
           {t('brand')}
         </Link>
         <div className="flex items-center gap-3 text-[12px] text-ink-3">

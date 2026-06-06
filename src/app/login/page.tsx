@@ -69,7 +69,7 @@ export default function LoginPage() {
       <div className="absolute top-6 right-6"><LangToggle /></div>
       <div className="bg-surface border border-line rounded-xl p-10 w-[380px] text-center">
         <div className="font-semibold text-[18px] mb-2">
-          <span className="text-accent">●</span> {t('brand')}
+          <span className="text-brand">●</span> {t('brand')}
         </div>
         <div className="text-ink-2 text-[13px] mb-7">{t('login.sub')}</div>
 

@@ -161,13 +161,13 @@ function renderHtml(args: {
   // Tone deliberately mirrors `25-supabase-email-templates.md` so the
   // portal magic-link email and the comment notifications feel like
   // the same product.
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f6f5f1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;">
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#efe8df;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a1a;">
   <tr>
     <td align="center" style="padding:32px 16px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="480" style="max-width:480px;background:#ffffff;border:1px solid #e2e0d8;border-radius:12px;padding:32px;">
         <tr>
           <td style="font-size:16px;font-weight:600;color:#1a1a1a;padding-bottom:8px;">
-            <span style="color:#c44a3f;">●</span>&nbsp;Fablab Design Controller
+            <span style="color:#391b10;">●</span>&nbsp;Fablab Design Controller
           </td>
         </tr>
         <tr>
@@ -181,7 +181,7 @@ function renderHtml(args: {
           </td>
         </tr>
         <tr>
-          <td style="font-size:13px;line-height:1.5;color:#1a1a1a;background:#f6f5f1;border-radius:8px;padding:14px 16px;white-space:pre-wrap;">
+          <td style="font-size:13px;line-height:1.5;color:#1a1a1a;background:#efe8df;border-radius:8px;padding:14px 16px;white-space:pre-wrap;">
             ${escapeHtml(args.excerpt)}
           </td>
         </tr>
