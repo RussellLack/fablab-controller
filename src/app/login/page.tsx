@@ -25,7 +25,10 @@ export default function LoginPage() {
         scopes:
           'openid email profile https://www.googleapis.com/auth/gmail.send',
         queryParams: {
-          hd: 'fablab.no',
+          // Restrict to the Fablab Design Workspace. The Workspace domain
+          // is `fablabdesign.com` (the website domain) — *not* `fablab.no`
+          // which was an early incorrect value carried over from a draft.
+          hd: 'fablabdesign.com',
           // Required so Google returns a refresh_token we can persist for
           // server-side Gmail API calls outside the browser session.
           access_type: 'offline',

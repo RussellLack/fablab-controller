@@ -76,5 +76,23 @@ export async function GET(request: Request) {
     landing = '/portal'
   }
 
-  return NextResponse.redirect(`${baseUrl}${landing}`)
+  // Build a clean redirect URL with NO query string.
+  //
+  // Why not `NextResponse.redirect(`${baseUrl}${landing}`)`: on Netlify
+  // (via @netlify/plugin-nextjs) the original request's query string
+  // leaks through into the Location header even when we hand it a clean
+  // string. With `?code=…` in the request that produced a redirect to
+  // `/dashboard?code=…`, which the middleware rescue then bounced back
+  // to `/auth/callback?code=…` — infinite loop.
+  //
+  // Constructing the URL explicitly and emitting a manual Response with
+  // a 303 (See Other) bypasses that behaviour. 303 also matches the
+  // semantic of "post-auth completion, see this resource" better than
+  // the default 307.
+  const redirectTarget = new URL(landing, baseUrl)
+  redirectTarget.search = ''
+  return new Response(null, {
+    status: 303,
+    headers: { Location: redirectTarget.toString() }
+  })
 }
