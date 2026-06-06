@@ -6,6 +6,26 @@ import { StageFlow } from '@/components/stage-flow';
 import { RoleBanner } from '@/components/role-banner';
 import { ProjectStepper } from '@/components/project-stepper';
 import { getProjectGates } from '@/server/queries/project-gates';
+import { CoachLauncher } from './coach-launcher';
+
+type ProjectStage =
+  | 'brief'
+  | 'concept'
+  | 'design_development'
+  | 'specification'
+  | 'procurement_production'
+  | 'installation'
+  | 'handover';
+
+const ACTIVE_STAGES = [
+  'brief',
+  'concept',
+  'design_development',
+  'specification',
+  'procurement_production',
+  'installation',
+  'handover'
+] as const;
 
 export default async function ProjectLayout({
   params,
@@ -49,7 +69,13 @@ export default async function ProjectLayout({
               .join(' · ') || '—'}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {(ACTIVE_STAGES as readonly string[]).includes(p.currentStage) && (
+            <CoachLauncher
+              projectId={p.id}
+              projectStage={p.currentStage as ProjectStage}
+            />
+          )}
           <button className="btn">{t('action.hold')}</button>
           <button className="btn btn-primary">{t('action.advance')}</button>
         </div>

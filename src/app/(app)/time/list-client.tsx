@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { TimeEntryForm, type TimeEntryDraft } from './time-entry-form';
+import { CoachWizard } from '@/components/wizard/coach-wizard';
 
 type Entry = TimeEntryDraft & {
   id: string;
@@ -38,6 +39,7 @@ export function TimeEntryListClient({
   const searchParams = useSearchParams();
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [coachingEntry, setCoachingEntry] = useState<Entry | null>(null);
 
   // Group entries by ISO week-key "YYYY-Wnn".
   const weeks = useMemo(() => groupByWeek(entries), [entries]);
@@ -144,6 +146,11 @@ export function TimeEntryListClient({
                           setEditingId(e.id);
                           setCreating(false);
                         }}
+                        onCoach={() => {
+                          setCoachingEntry(e);
+                          setEditingId(null);
+                          setCreating(false);
+                        }}
                       />
                     )}
                   </li>
@@ -153,11 +160,38 @@ export function TimeEntryListClient({
           ))}
         </div>
       )}
+
+      <CoachWizard
+        open={coachingEntry !== null}
+        onClose={() => setCoachingEntry(null)}
+        projectId={coachingEntry?.projectId ?? ''}
+        projectStage={
+          (coachingEntry?.currentStage ?? 'concept') as
+            | 'brief'
+            | 'concept'
+            | 'design_development'
+            | 'specification'
+            | 'procurement_production'
+            | 'installation'
+            | 'handover'
+        }
+        initialModule="general"
+        initialLinkedObjectType="time_entry"
+        initialSourceId={coachingEntry?.id}
+      />
     </div>
   );
 }
 
-function EntryRow({ e, onEdit }: { e: Entry; onEdit: () => void }) {
+function EntryRow({
+  e,
+  onEdit,
+  onCoach
+}: {
+  e: Entry;
+  onEdit: () => void;
+  onCoach: () => void;
+}) {
   const t = useTranslations();
   const missingReason = e.note.length > 0 && e.commercialReason.length === 0;
   return (
@@ -212,6 +246,17 @@ function EntryRow({ e, onEdit }: { e: Entry; onEdit: () => void }) {
           </div>
         )}
       </div>
+      <button
+        type="button"
+        onClick={(ev) => {
+          ev.stopPropagation();
+          onCoach();
+        }}
+        className="text-[10px] text-brand hover:underline shrink-0 self-center px-2 py-1"
+        title={t('coach.row_cta_title')}
+      >
+        ◐ {t('coach.row_cta')}
+      </button>
     </div>
   );
 }

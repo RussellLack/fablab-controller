@@ -267,6 +267,16 @@ export const stageTransitionDecisionEnum = pgEnum('stage_transition_decision', [
  * type (it covers the same conceptual space). The new addition is the
  * commercial classification — `chargeability_status` — which drives the
  * Work Evidence Summary narrative and the Project Coach dashboard. */
+export const evidenceCategoryEnum = pgEnum('evidence_category', [
+  'design_progress',
+  'project_coordination',
+  'decisions_and_approvals',
+  'budget_and_scope_control',
+  'risks_and_issues',
+  'customer_actions_needed',
+  'handover'
+]);
+
 export const chargeabilityStatusEnum = pgEnum('time_entry_chargeability', [
   'included',                       // covered by the agreed scope baseline
   'chargeable',                     // additional billable project work
@@ -1780,4 +1790,56 @@ export const dropboxExportsRelations = relations(dropboxExports, ({ one }) => ({
 export const timeEntriesRelations = relations(timeEntries, ({ one }) => ({
   project: one(projects, { fields: [timeEntries.projectId], references: [projects.id] }),
   user: one(users, { fields: [timeEntries.userId], references: [users.id] })
+}));
+
+/* ─────────────────────────── PROJECT EVIDENCE NOTES ─────────────────────────── */
+
+/**
+ * Project Coaching MVP-B — see `28-project-coaching-layer.md` §7.3.
+ *
+ * The structured output of the Coach drawer wizard. Each note carries
+ * an internal phrasing (staff-facing) and an optional customer-visible
+ * summary (which the Work Evidence Summary report uses verbatim).
+ *
+ * `sourceType` + `sourceId` are polymorphic — they connect the note to
+ * the entity the wizard was launched from (a time entry, an approval,
+ * a comment, etc.) or `coach_wizard` when it's a free-standing note.
+ *
+ * Notes are scoped to a reporting period (typically a week, per
+ * resolved decision #2 in doc 28). The Work Evidence Summary
+ * generator (MVP-E) pulls notes whose period intersects the
+ * requested summary period, grouped by `evidenceCategory`.
+ */
+export const projectEvidenceNotes = pgTable('project_evidence_notes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+
+  // Polymorphic provenance — where this note came from.
+  sourceType: varchar('source_type', { length: 40 }).notNull(),
+  // Values: time_entry | approval | change_order | customer_comment |
+  //         coach_wizard | scope_update | procurement_event |
+  //         delivery_event | handover_event | manual
+  sourceId: uuid('source_id'),
+
+  evidenceCategory: evidenceCategoryEnum('evidence_category').notNull(),
+
+  internalNote: text('internal_note').notNull(),
+  customerSummary: text('customer_summary'),
+
+  // Reporting period the note belongs to (weekly per decision #2).
+  reportingPeriodStart: date('reporting_period_start').notNull(),
+  reportingPeriodEnd: date('reporting_period_end').notNull(),
+  includeInReport: boolean('include_in_report').notNull().default(true),
+
+  createdBy: uuid('created_by').notNull().references(() => users.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+}, t => ({
+  projectIdx: index('pen_project_period_idx').on(t.projectId, t.reportingPeriodEnd),
+  reportIdx: index('pen_for_report_idx').on(t.projectId, t.includeInReport)
+}));
+
+export const projectEvidenceNotesRelations = relations(projectEvidenceNotes, ({ one }) => ({
+  project: one(projects, { fields: [projectEvidenceNotes.projectId], references: [projects.id] }),
+  author: one(users, { fields: [projectEvidenceNotes.createdBy], references: [users.id] })
 }));
