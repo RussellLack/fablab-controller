@@ -62,7 +62,7 @@ const GLOBAL_GROUPS: Group[] = [
     items: [
       { href: '/vendors', key: 'nav.vendors', icon: '▩' },
       { href: '/finance', key: 'nav.finance', icon: '◈' },
-      { href: '/risk', key: 'nav.risk', icon: '⚠', soon: true },
+      { href: '/risk', key: 'nav.risk', icon: '⚠' },
       { href: '/reporting', key: 'nav.reporting', icon: '▦' }
     ]
   },

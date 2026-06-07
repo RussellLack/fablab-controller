@@ -1993,6 +1993,23 @@
       "high": "High"
     }
   },
+  "risk_register": {
+    "title": "Risk register",
+    "subtitle": "Open risks across every active project, grouped by score band. Critical bubbles to the top; overdue mitigation dates are flagged in red. Click a risk to act on it from its own project context.",
+    "empty": "No risks match the current filter. Open the register on an individual project to log one.",
+    "kpi_critical": "Open critical",
+    "kpi_high": "Open high",
+    "kpi_medium": "Open medium",
+    "kpi_low": "Open low",
+    "kpi_overdue": "Mitigation overdue",
+    "view_open": "Open",
+    "view_resolved": "Resolved",
+    "view_all": "All",
+    "band_all": "All bands",
+    "col_project": "Project",
+    "col_due": "Mitigation due",
+    "overdue_tag": "overdue"
+  },
   "audit": {
     "title": "Change history",
     "count": "{n, plural, =0 {no changes recorded} =1 {1 change recorded} other {# changes recorded}}",

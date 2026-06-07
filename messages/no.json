@@ -1993,6 +1993,23 @@
       "high": "Høy"
     }
   },
+  "risk_register": {
+    "title": "Risikoregister",
+    "subtitle": "Åpne risikoer på tvers av alle aktive prosjekter, gruppert etter score-bånd. Kritisk øverst; forsinkede tiltaksfrister markeres i rødt. Klikk en risiko for å handle på den fra prosjektets egen kontekst.",
+    "empty": "Ingen risikoer treffer dette filteret. Åpne registeret på et enkelt prosjekt for å logge en.",
+    "kpi_critical": "Åpne kritiske",
+    "kpi_high": "Åpne høye",
+    "kpi_medium": "Åpne middels",
+    "kpi_low": "Åpne lave",
+    "kpi_overdue": "Forsinkede tiltak",
+    "view_open": "Åpne",
+    "view_resolved": "Lukket",
+    "view_all": "Alle",
+    "band_all": "Alle bånd",
+    "col_project": "Prosjekt",
+    "col_due": "Tiltak innen",
+    "overdue_tag": "forsinket"
+  },
   "audit": {
     "title": "Endringslogg",
     "count": "{n, plural, =0 {ingen endringer registrert} =1 {1 endring registrert} other {# endringer registrert}}",
