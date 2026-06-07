@@ -17,7 +17,8 @@
     "email_error": "Couldn't send the link — try again or contact your designer.",
     "email_sent_title": "Check your email",
     "email_sent_body": "We sent a one-click sign-in link to {email}. Open it on this device to view your project.",
-    "email_sent_reset": "Use a different email"
+    "email_sent_reset": "Use a different email",
+    "auth_failed": "Sign-in didn't complete. This usually means the link expired or was opened in a different browser than the one that started it. Try signing in again."
   },
   "nav": {
     "work": "Work",
@@ -1854,5 +1855,71 @@
     "author_customer": "Customer",
     "confirm_delete": "Delete this comment? This can't be undone.",
     "read_only": "Comments are read-only for you right now."
+  },
+  "client_kind": {
+    "individual": "Individual",
+    "business": "Business",
+    "public_sector": "Public sector",
+    "cultural_institution": "Cultural institution",
+    "hospitality_group": "Hospitality group"
+  },
+  "clients_page": {
+    "count": "{n, plural, =0 {No clients} =1 {1 client} other {# clients}}",
+    "empty": "No clients yet. They're captured when a lead is created.",
+    "col_name": "Name",
+    "col_kind": "Kind",
+    "col_contact": "Primary contact",
+    "col_org": "Org no.",
+    "col_terms": "Payment",
+    "col_active": "Active projects",
+    "days_suffix": "d"
+  },
+  "templates_page": {
+    "count": "{n, plural, =0 {No templates} =1 {1 template} other {# templates}}",
+    "empty": "No document templates registered yet.",
+    "col_slug": "Slug",
+    "col_locale": "Locale",
+    "col_version": "Version",
+    "col_status": "Status",
+    "col_subject": "Subject template",
+    "col_updated": "Updated"
+  },
+  "template_status": {
+    "draft": "Draft",
+    "for_review": "For review",
+    "active": "Active",
+    "archived": "Archived"
+  },
+  "translations_page": {
+    "count": "Showing {n} of {all}",
+    "missing_no": "{n} missing Norwegian",
+    "filter_all": "All",
+    "empty": "No translation rows match.",
+    "col_key": "Key",
+    "col_en": "English",
+    "col_no": "Norwegian",
+    "col_status": "Status",
+    "missing_short": "missing"
+  },
+  "translation_status": {
+    "mt_only": "Machine only",
+    "human_reviewed": "Human reviewed",
+    "verified": "Verified"
+  },
+  "workshop_page": {
+    "subtitle": "In-house fabrication shops and their live jobs.",
+    "add_shop": "Add workshop",
+    "empty_title": "No internal workshop registered yet.",
+    "empty_body": "Add a vendor of kind ‘Internal workshop’ to track in-house fabrication. Once registered it can receive purchase orders like any other vendor.",
+    "inactive": "Inactive",
+    "lead": "Lead",
+    "active_jobs": "Active jobs",
+    "no_active_jobs": "No jobs currently in flight at the workshop.",
+    "col_po": "PO",
+    "col_project": "Project",
+    "col_status": "Status",
+    "col_deadline": "Deadline",
+    "scope_note_title": "Planned scope",
+    "scope_note_body": "Capacity planning, shop-floor scheduling, and per-job throughput live in this module's future iteration. Today the page surfaces what the rest of the system already knows: which vendor rows represent in-house workshops, and which POs are routed to them."
   }
 }

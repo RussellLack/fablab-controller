@@ -17,7 +17,8 @@
     "email_error": "Kunne ikke sende lenken — prøv igjen eller kontakt designeren din.",
     "email_sent_title": "Sjekk e-posten din",
     "email_sent_body": "Vi sendte en innloggings-lenke til {email}. Åpne den på denne enheten for å se prosjektet ditt.",
-    "email_sent_reset": "Bruk en annen e-post"
+    "email_sent_reset": "Bruk en annen e-post",
+    "auth_failed": "Innloggingen ble ikke fullført. Som regel betyr det at lenken utløp eller ble åpnet i en annen nettleser enn den som startet innloggingen. Prøv å logge inn på nytt."
   },
   "nav": {
     "work": "Arbeid",
@@ -1854,5 +1855,71 @@
     "author_customer": "Kunde",
     "confirm_delete": "Slette denne kommentaren? Dette kan ikke angres.",
     "read_only": "Kommentarer er skrivebeskyttet for deg nå."
+  },
+  "client_kind": {
+    "individual": "Privatperson",
+    "business": "Bedrift",
+    "public_sector": "Offentlig sektor",
+    "cultural_institution": "Kulturinstitusjon",
+    "hospitality_group": "Hotell / serveringsgruppe"
+  },
+  "clients_page": {
+    "count": "{n, plural, =0 {Ingen kunder} =1 {1 kunde} other {# kunder}}",
+    "empty": "Ingen kunder ennå. De opprettes når et lead registreres.",
+    "col_name": "Navn",
+    "col_kind": "Type",
+    "col_contact": "Hovedkontakt",
+    "col_org": "Org.nr.",
+    "col_terms": "Betaling",
+    "col_active": "Aktive prosjekter",
+    "days_suffix": "d"
+  },
+  "templates_page": {
+    "count": "{n, plural, =0 {Ingen maler} =1 {1 mal} other {# maler}}",
+    "empty": "Ingen dokumentmaler registrert ennå.",
+    "col_slug": "Slug",
+    "col_locale": "Språk",
+    "col_version": "Versjon",
+    "col_status": "Status",
+    "col_subject": "Emnemal",
+    "col_updated": "Oppdatert"
+  },
+  "template_status": {
+    "draft": "Utkast",
+    "for_review": "Til gjennomgang",
+    "active": "Aktiv",
+    "archived": "Arkivert"
+  },
+  "translations_page": {
+    "count": "Viser {n} av {all}",
+    "missing_no": "{n} mangler norsk",
+    "filter_all": "Alle",
+    "empty": "Ingen oversettelsesrader treffer.",
+    "col_key": "Nøkkel",
+    "col_en": "Engelsk",
+    "col_no": "Norsk",
+    "col_status": "Status",
+    "missing_short": "mangler"
+  },
+  "translation_status": {
+    "mt_only": "Kun maskin",
+    "human_reviewed": "Gjennomgått",
+    "verified": "Verifisert"
+  },
+  "workshop_page": {
+    "subtitle": "Interne verksteder og pågående jobber.",
+    "add_shop": "Legg til verksted",
+    "empty_title": "Ingen interne verksteder registrert.",
+    "empty_body": "Legg til en leverandør av typen «Internt verksted» for å spore intern produksjon. Når det er registrert kan det motta innkjøpsordrer som enhver annen leverandør.",
+    "inactive": "Inaktiv",
+    "lead": "Ledetid",
+    "active_jobs": "Aktive jobber",
+    "no_active_jobs": "Ingen jobber pågår i verkstedet nå.",
+    "col_po": "PO",
+    "col_project": "Prosjekt",
+    "col_status": "Status",
+    "col_deadline": "Frist",
+    "scope_note_title": "Planlagt omfang",
+    "scope_note_body": "Kapasitetsplanlegging, verkstedsplanlegging og gjennomstrømning per jobb hører til en senere iterasjon av denne modulen. I dag viser siden det systemet allerede vet: hvilke leverandører som representerer interne verksteder, og hvilke innkjøpsordrer som er rutet til dem."
   }
 }

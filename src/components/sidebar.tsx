@@ -70,11 +70,11 @@ const GLOBAL_GROUPS: Group[] = [
     titleKey: 'sidebar.group_reference',
     collapsible: true,
     items: [
-      { href: '/clients', key: 'nav.clients', soon: true },
-      { href: '/templates', key: 'nav.templates', soon: true },
-      { href: '/translations', key: 'nav.translation', soon: true },
-      { href: '/time', key: 'nav.time', soon: true },
-      { href: '/workshop', key: 'nav.workshop', soon: true }
+      { href: '/clients', key: 'nav.clients' },
+      { href: '/templates', key: 'nav.templates' },
+      { href: '/translations', key: 'nav.translation' },
+      { href: '/time', key: 'nav.time' },
+      { href: '/workshop', key: 'nav.workshop' }
     ]
   }
 ];
@@ -104,7 +104,7 @@ function projectGroups(id: string): Group[] {
       items: [
         { href: `${base}/approvals`, key: 'tab.approvals', icon: '⌽' },
         { href: `${base}/change-control`, key: 'tab.change_control', icon: '⇄', soon: true },
-        { href: `${base}/risk`, key: 'tab.risk', icon: '⚠', soon: true },
+        { href: `${base}/risk`, key: 'tab.risk', icon: '⚠' },
         { href: `${base}/finance`, key: 'tab.finance', icon: '◈' },
         // Element list is the existing route; doc treats it as the Reporting
         // module's first surface. Renamed in nav, route unchanged.
@@ -120,9 +120,9 @@ function NavLink({ item, pathname }: { item: Item; pathname: string }) {
   const t = useTranslations();
   const active = !item.soon && pathname === item.href;
   const className = cx(
-    'flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px]',
+    'flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-colors duration-75 select-none',
     active && 'bg-ink text-surface',
-    !active && !item.soon && 'text-ink-2 hover:bg-bg hover:text-ink',
+    !active && !item.soon && 'text-ink-2 hover:bg-bg hover:text-ink active:bg-line',
     item.soon && 'text-ink-3 cursor-default'
   );
   const inner = (
@@ -190,7 +190,7 @@ function NavGroupBlock({
       {group.collapsible ? (
         <button
           onClick={() => setOpen(!open)}
-          className="w-full flex items-center justify-between text-[11px] uppercase tracking-wider text-ink-3 px-3 pt-3 pb-1.5 hover:text-ink cursor-pointer"
+          className="w-full flex items-center justify-between text-[11px] uppercase tracking-wider text-ink-3 px-3 pt-3 pb-1.5 hover:text-ink active:text-ink/70 cursor-pointer select-none transition-colors duration-75"
           aria-expanded={open}
         >
           <span>{t(group.titleKey)}</span>
