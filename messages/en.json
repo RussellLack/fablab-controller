@@ -1932,6 +1932,20 @@
     "project": "Project",
     "dual_role_title": "This counterparty plays two roles — separate records on each side cover its customer relationship and its supplier relationship."
   },
+  "explorer": {
+    "search_placeholder_clients": "Search clients by name, contact, email or org no.",
+    "search_placeholder_vendors": "Search vendors by name, contact, country or category",
+    "search_placeholder_projects": "Search projects by reference, title or client",
+    "filter_all": "All",
+    "dual_role": "Dual-role",
+    "showing_n_of": "Showing {n} of {all}",
+    "no_results": "No matches. Try a different search or clear the filter.",
+    "sort_by": "Sort",
+    "sort_name": "Name",
+    "sort_country": "Country",
+    "sort_leadTime": "Lead time",
+    "sort_rating": "Rating"
+  },
   "entity_detail": {
     "back_to_clients": "All clients",
     "back_to_vendors": "All vendors",

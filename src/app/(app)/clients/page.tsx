@@ -1,21 +1,15 @@
-import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
 import { asc, sql } from 'drizzle-orm';
 import { db, clients, projects, vendors } from '@/db';
-import { ClickableRow } from '@/components/clickable-row';
+import { ClientsExplorer, type ClientRow } from './explorer';
 
 /**
- * Clients — REFERENCE list view.
+ * Clients list — server fetches all rows once, the client-side
+ * <ClientsExplorer> handles search / sort / filter UI.
  *
- * One row per client with kind, primary contact, payment terms, and an
- * active-project count. Read-only for now; creation flows live inside
- * the Lead → Project pipeline (a client is captured during /leads/new).
- *
- * This page deliberately stays minimal: it's the lookup-table surface
- * for clients, not the CRM. The aspirational fuller surface (invoices,
- * receivables per client, repeat-business signals) lives at /finance.
+ * Read-only; creation flows still live in /leads/new. Click any row
+ * to open /clients/[id].
  */
-async function getClients() {
+async function getClients(): Promise<ClientRow[]> {
   if (!process.env.DATABASE_URL) return [];
   try {
     const rows = await db
@@ -33,16 +27,8 @@ async function getClients() {
           where ${projects.clientId} = ${clients.id}
             and ${projects.currentStage} not in ('cancelled', 'archived')
         )`,
-        // Dual-role flag: this client also exists as a vendor (matched by
-        // case-insensitive name OR Norwegian org no. — the latter compares
-        // against the "Org.nr.: <N>" marker the vendor importer stashes in
-        // notes, so a different display name like "Kinnarps AS" /
-        // "Kinnarps AS Fakturamottak" still matches when the org no. lines up.
-        //
-        // NOTE: we have to write the outer-table references as literal SQL
-        // (clients.name, clients.org_number) rather than ${clients.name} etc.,
-        // because drizzle renders unqualified column names that get shadowed
-        // by the inner subquery's column scope and silently match every row.
+        // Dual-role detection — qualified literals inside the subquery
+        // (see /clients/[id] for the drizzle-shadowing explanation).
         isAlsoVendor: sql<boolean>`EXISTS (
           SELECT 1 FROM ${vendors} v
           WHERE lower(v.name) = lower(clients.name)
@@ -52,8 +38,8 @@ async function getClients() {
       })
       .from(clients)
       .orderBy(asc(clients.name))
-      .limit(500);
-    return rows;
+      .limit(1000);
+    return rows as ClientRow[];
   } catch {
     return [];
   }
@@ -61,97 +47,5 @@ async function getClients() {
 
 export default async function ClientsPage() {
   const rows = await getClients();
-  const t = await getTranslations();
-
-  return (
-    <>
-      <div className="flex items-end justify-between mb-6">
-        <div>
-          <h1 className="text-[22px] font-semibold tracking-tighter">
-            {t('nav.clients')}
-          </h1>
-          <p className="text-ink-2 text-[13px] mt-1">
-            {t('clients_page.count', { n: rows.length })}
-          </p>
-        </div>
-      </div>
-
-      {rows.length === 0 ? (
-        <div className="card text-ink-2 text-[13px]">
-          {t('clients_page.empty')}
-        </div>
-      ) : (
-        <div className="card p-0 overflow-hidden">
-          <table className="w-full text-[13px]">
-            <thead className="text-[11px] uppercase tracking-wider text-ink-3 bg-bg">
-              <tr>
-                <th className="text-left px-4 py-2.5">{t('clients_page.col_name')}</th>
-                <th className="text-left px-4 py-2.5">{t('clients_page.col_kind')}</th>
-                <th className="text-left px-4 py-2.5">{t('clients_page.col_contact')}</th>
-                <th className="text-left px-4 py-2.5">{t('clients_page.col_org')}</th>
-                <th className="text-right px-4 py-2.5">{t('clients_page.col_terms')}</th>
-                <th className="text-right px-4 py-2.5">{t('clients_page.col_active')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((c) => (
-                <ClickableRow key={c.id} href={`/clients/${c.id}`}>
-                  <td className="px-4 py-2.5 font-medium">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <div className="flex items-center gap-1">
-                        <span className="pill pill-type pill-customer">
-                          {t('entity_type.customer')}
-                        </span>
-                        {c.isAlsoVendor && (
-                          <span
-                            className="pill pill-type pill-supplier"
-                            title={t('entity_type.dual_role_title')}
-                          >
-                            {t('entity_type.supplier')}
-                          </span>
-                        )}
-                      </div>
-                      <Link href={`/clients/${c.id}`} className="hover:underline">
-                        {c.name}
-                      </Link>
-                    </div>
-                  </td>
-                  <td className="px-4 py-2.5 text-ink-2">
-                    {t(`client_kind.${c.kind}`)}
-                  </td>
-                  <td className="px-4 py-2.5 text-ink-2">
-                    {c.primaryContactName ? (
-                      <>
-                        {c.primaryContactName}
-                        {c.primaryContactEmail && (
-                          <span className="text-ink-3"> · {c.primaryContactEmail}</span>
-                        )}
-                      </>
-                    ) : (
-                      <span className="text-ink-3">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-2.5 text-ink-2 font-mono text-[12px]">
-                    {c.orgNumber ?? <span className="text-ink-3">—</span>}
-                  </td>
-                  <td className="px-4 py-2.5 text-right text-ink-2">
-                    {c.paymentTermsDays}{t('clients_page.days_suffix')}
-                  </td>
-                  <td className="px-4 py-2.5 text-right">
-                    {c.activeProjects > 0 ? (
-                      <span className="inline-block bg-accent-soft text-accent text-[11px] font-semibold px-1.5 py-0.5 rounded-full">
-                        {c.activeProjects}
-                      </span>
-                    ) : (
-                      <span className="text-ink-3">0</span>
-                    )}
-                  </td>
-                </ClickableRow>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </>
-  );
+  return <ClientsExplorer rows={rows} />;
 }
