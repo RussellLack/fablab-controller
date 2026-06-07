@@ -1,6 +1,6 @@
 import { asc, eq } from 'drizzle-orm';
 import { db, projectCustomerComments } from '@/db';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/server';
 import {
   BriefComments,
   type BriefComment
@@ -16,10 +16,7 @@ import {
  * current user id so own-author edit/delete affordances appear.
  */
 export async function BriefCommentsCard({ projectId }: { projectId: string }) {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   const rows = await db
     .select({

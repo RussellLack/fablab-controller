@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { isStaffEmail } from '@/lib/auth-helpers';
 import { PortalHeader } from '@/components/portal/portal-header';
@@ -24,10 +24,7 @@ export default async function PortalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) redirect('/login');
   if (isStaffEmail(user.email)) redirect('/dashboard');

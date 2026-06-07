@@ -71,10 +71,10 @@ export function ProjectModuleBar({
             <li key={m.slug || 'brief'}>
               <Link
                 href={href}
-                className={`inline-flex items-baseline gap-1 px-3 py-1.5 text-[12px] whitespace-nowrap border-b-2 transition-colors ${
+                className={`inline-flex items-baseline gap-1 px-3 py-1.5 text-[12px] whitespace-nowrap border-b-2 transition-colors duration-75 select-none ${
                   isActive
                     ? 'border-brand text-ink font-semibold'
-                    : 'border-transparent text-ink-2 hover:text-ink hover:bg-bg/40'
+                    : 'border-transparent text-ink-2 hover:text-ink hover:bg-bg/40 active:bg-line/60'
                 }`}
               >
                 {isCoach && <span className="text-brand">◐</span>}

@@ -13,7 +13,7 @@ import {
   projectCustomerComments,
   projectBriefSignoffs
 } from '@/db';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/server';
 import { formatDate, formatMoney } from '@/lib/utils';
 import { CustomerUploads, type CustomerUpload } from '@/components/portal/customer-uploads';
 import { BriefComments, type BriefComment } from '@/components/portal/brief-comments';
@@ -49,10 +49,7 @@ export default async function PortalProjectBriefPage({
 }) {
   const { id } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   const email = user?.email ?? '';
 
   // 1. Authorise: invitation row exists for this email × project, not revoked.

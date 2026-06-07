@@ -39,8 +39,8 @@ export function LangToggle() {
           onClick={() => setLocale(l)}
           disabled={pending}
           className={cx(
-            'px-3.5 py-1 text-[12px] font-semibold tracking-wider rounded-full transition-colors',
-            locale === l ? 'bg-ink text-surface' : 'text-ink-2 hover:text-ink'
+            'px-3.5 py-1 text-[12px] font-semibold tracking-wider rounded-full transition-colors duration-75 select-none disabled:opacity-50',
+            locale === l ? 'bg-ink text-surface' : 'text-ink-2 hover:text-ink active:bg-line'
           )}
         >
           {l.toUpperCase()}

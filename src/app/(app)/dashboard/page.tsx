@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/server';
 import { formatMoney } from '@/lib/utils';
 import {
   getTodayActiveProjects,
@@ -39,10 +39,7 @@ export default async function TodayPage({
   const sp = await searchParams;
   const mineOnly = sp.show !== 'all';
 
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user?.id) redirect('/login');
 
   const t = await getTranslations();

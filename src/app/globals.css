@@ -8,9 +8,9 @@
 }
 
 @layer components {
-  .btn { @apply inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md text-[13px] font-medium border border-line bg-surface text-ink hover:bg-bg cursor-pointer transition-colors; }
-  .btn-primary { @apply bg-ink text-surface border-ink hover:bg-[#333]; }
-  .btn-ghost { @apply border-transparent bg-transparent hover:bg-bg; }
+  .btn { @apply inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md text-[13px] font-medium border border-line bg-surface text-ink hover:bg-bg active:bg-line active:scale-[0.98] cursor-pointer transition-colors duration-75 select-none; }
+  .btn-primary { @apply bg-ink text-surface border-ink hover:bg-[#333] active:bg-[#222]; }
+  .btn-ghost { @apply border-transparent bg-transparent hover:bg-bg active:bg-line; }
 
   .ref { @apply font-mono text-xs text-ink-2; }
   .muted { @apply text-ink-3; }

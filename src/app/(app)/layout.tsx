@@ -1,7 +1,7 @@
 import { Sidebar } from '@/components/sidebar';
 import { Header } from '@/components/header';
 import { JourneyOverlay } from '@/components/journey-overlay';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { isStaffEmail } from '@/lib/auth-helpers';
 
@@ -11,8 +11,7 @@ import { isStaffEmail } from '@/lib/auth-helpers';
 export const dynamic = 'force-dynamic';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect('/login');
 
   // Customers (non-Workspace emails — they signed in via magic link) belong

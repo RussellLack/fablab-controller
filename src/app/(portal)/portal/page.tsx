@@ -8,7 +8,7 @@ import {
   projectCustomerInvitations,
   projectBriefSignoffs
 } from '@/db';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/server';
 
 /**
  * Customer portal landing — lists every project the signed-in email
@@ -62,10 +62,7 @@ function snapshotMatches(
 }
 
 export default async function PortalIndexPage() {
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   // Layout's auth contract guarantees `user` is set and is a customer.
   const email = user?.email ?? '';
   const userId = user?.id ?? '';

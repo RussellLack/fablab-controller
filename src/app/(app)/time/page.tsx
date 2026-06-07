@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { and, desc, eq, gte } from 'drizzle-orm';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/supabase/server';
 import { db, timeEntries, projects } from '@/db';
 import { TimeEntryListClient } from './list-client';
 import { CoachCard } from '@/components/coach-card';
@@ -35,10 +35,7 @@ export default async function TimePage({
   const sp = await searchParams;
   const t = await getTranslations();
 
-  const supabase = await createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user?.id) {
     return (
       <div className="card text-[13px] text-ink-2">
