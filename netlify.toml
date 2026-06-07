@@ -27,9 +27,31 @@
   # Bundle the postgres client and drizzle in functions so they work cold
   external_node_modules = ["postgres"]
 
+# ── REDIRECTS ───────────────────────────────────────────
+# www.controller.fablabdesign.com → controller.fablabdesign.com (301)
+#
+# Note: this rule only fires once the www subdomain actually resolves
+# to Netlify. To complete the wiring:
+#   1. Netlify dashboard → Domain management → Add domain alias
+#      `www.controller.fablabdesign.com`.
+#   2. At your DNS provider, add a CNAME record:
+#        Name:  www
+#        Type:  CNAME
+#        Value: <your-site>.netlify.app
+#   3. Wait for Let's Encrypt to provision the www cert (a few minutes).
+# After those, https://www.controller.fablabdesign.com/foo will 301 to
+# https://controller.fablabdesign.com/foo via this rule.
+[[redirects]]
+  from = "https://www.controller.fablabdesign.com/*"
+  to = "https://controller.fablabdesign.com/:splat"
+  status = 301
+  force = true
+
 # ── HEADERS ─────────────────────────────────────────────
-# Tighten security defaults. The Next plugin adds its own headers too;
-# these are additional.
+# These reach static assets under /_next/static/* but NOT the Next.js
+# function responses (HTML pages). Those headers are set in
+# next.config.mjs's headers() — see the comment there. We keep both
+# layers as belt-and-braces; duplicate headers are harmless.
 [[headers]]
   for = "/*"
   [headers.values]

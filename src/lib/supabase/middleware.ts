@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/auth/callback'];
+const PUBLIC_PATHS = ['/login', '/auth/callback', '/api/health'];
 
 // Hard ceiling on the Supabase auth round-trip from the edge. Netlify Edge
 // cold-starts can already eat 1-3s of Deno boot before our code runs; if
@@ -31,11 +31,12 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isPublic = PUBLIC_PATHS.some(p => path.startsWith(p));
 
-  // Fast path: /auth/callback handles its own cookie exchange, so middleware
-  // doesn't need to fetch the user there. Skipping the Supabase round-trip
-  // on the OAuth landing removes the most painful cold-start landmine —
-  // that's the page users hit immediately after clicking "Sign in".
-  if (path.startsWith('/auth/callback')) {
+  // Fast path: skip the Supabase round-trip entirely for routes that don't
+  // need to know who the user is.
+  //   - /auth/callback handles its own cookie exchange.
+  //   - /api/health is an unauthenticated probe; we want it to respond as
+  //     fast as possible for monitoring services.
+  if (path.startsWith('/auth/callback') || path.startsWith('/api/health')) {
     return NextResponse.next({ request });
   }
 
