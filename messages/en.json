@@ -165,7 +165,11 @@
     "client": "Client",
     "stage": "Stage",
     "budget": "Budget",
-    "handover": "Handover"
+    "handover": "Handover",
+    "amount": "Amount",
+    "deadline": "Deadline",
+    "project": "Project",
+    "status": "Status"
   },
   "crumbs": {
     "dashboard": "Dashboard",
@@ -1927,5 +1931,30 @@
     "supplier": "Supplier",
     "project": "Project",
     "dual_role_title": "This counterparty plays two roles — separate records on each side cover its customer relationship and its supplier relationship."
+  },
+  "entity_detail": {
+    "back_to_clients": "All clients",
+    "back_to_vendors": "All vendors",
+    "inactive": "Inactive",
+    "contact_section": "Contact",
+    "commercial_section": "Commercial",
+    "address_section": "Address",
+    "notes_section": "Notes",
+    "contact_name": "Name",
+    "contact_email": "Email",
+    "contact_phone": "Phone",
+    "org_number": "Org. no.",
+    "payment_terms": "Payment terms",
+    "payment_terms_supplier": "Terms",
+    "bank_account": "Bank account",
+    "currency": "Currency",
+    "lead_time": "Lead time",
+    "days": "days",
+    "related_projects": "Projects",
+    "related_pos": "Purchase orders",
+    "related_rfqs": "RFQs",
+    "no_projects": "No projects yet for this client.",
+    "no_pos": "No purchase orders routed to this vendor.",
+    "no_rfqs": "This vendor hasn't been invited to any RFQ yet."
   }
 }

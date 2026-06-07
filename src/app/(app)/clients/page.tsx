@@ -1,6 +1,8 @@
+import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { asc, sql } from 'drizzle-orm';
 import { db, clients, projects, vendors } from '@/db';
+import { ClickableRow } from '@/components/clickable-row';
 
 /**
  * Clients — REFERENCE list view.
@@ -93,7 +95,7 @@ export default async function ClientsPage() {
             </thead>
             <tbody>
               {rows.map((c) => (
-                <tr key={c.id} className="border-t border-line">
+                <ClickableRow key={c.id} href={`/clients/${c.id}`}>
                   <td className="px-4 py-2.5 font-medium">
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-1">
@@ -109,7 +111,9 @@ export default async function ClientsPage() {
                           </span>
                         )}
                       </div>
-                      <span>{c.name}</span>
+                      <Link href={`/clients/${c.id}`} className="hover:underline">
+                        {c.name}
+                      </Link>
                     </div>
                   </td>
                   <td className="px-4 py-2.5 text-ink-2">
@@ -142,7 +146,7 @@ export default async function ClientsPage() {
                       <span className="text-ink-3">0</span>
                     )}
                   </td>
-                </tr>
+                </ClickableRow>
               ))}
             </tbody>
           </table>

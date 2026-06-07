@@ -61,7 +61,11 @@ export default async function VendorsPage() {
       ) : (
         <div className="grid grid-cols-3 gap-4">
           {rows.map(v => (
-            <div key={v.id} className="card hover:border-line-strong cursor-pointer">
+            <Link
+              key={v.id}
+              href={`/vendors/${v.id}`}
+              className="card hover:border-line-strong cursor-pointer block transition-colors duration-75 active:bg-bg"
+            >
               <div className="flex flex-wrap items-center gap-1 mb-2">
                 <span className="pill pill-type pill-supplier">
                   {t('entity_type.supplier')}
@@ -85,7 +89,7 @@ export default async function VendorsPage() {
               {v.categories.length > 0 && <div className="text-xs text-ink-2 mt-2.5">{v.categories.join(' · ')}</div>}
               <div className="text-xs text-ink-2 mt-1.5">{v.contactName} · {v.contactEmail}</div>
               {v.typicalLeadTimeDays && <div className="text-xs text-ink-3 mt-1">Lead: {v.typicalLeadTimeDays}d</div>}
-            </div>
+            </Link>
           ))}
         </div>
       )}

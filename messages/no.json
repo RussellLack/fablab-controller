@@ -165,7 +165,11 @@
     "client": "Kunde",
     "stage": "Fase",
     "budget": "Budsjett",
-    "handover": "Overlevering"
+    "handover": "Overlevering",
+    "amount": "Beløp",
+    "deadline": "Frist",
+    "project": "Prosjekt",
+    "status": "Status"
   },
   "crumbs": {
     "dashboard": "Dashbord",
@@ -1927,5 +1931,30 @@
     "supplier": "Leverandør",
     "project": "Prosjekt",
     "dual_role_title": "Denne motparten har to roller — separate oppføringer på hver side dekker kunderelasjonen og leverandørrelasjonen."
+  },
+  "entity_detail": {
+    "back_to_clients": "Alle kunder",
+    "back_to_vendors": "Alle leverandører",
+    "inactive": "Inaktiv",
+    "contact_section": "Kontakt",
+    "commercial_section": "Kommersielt",
+    "address_section": "Adresse",
+    "notes_section": "Notater",
+    "contact_name": "Navn",
+    "contact_email": "E-post",
+    "contact_phone": "Telefon",
+    "org_number": "Org.nr.",
+    "payment_terms": "Betalingsbetingelser",
+    "payment_terms_supplier": "Betingelser",
+    "bank_account": "Bankkonto",
+    "currency": "Valuta",
+    "lead_time": "Ledetid",
+    "days": "dager",
+    "related_projects": "Prosjekter",
+    "related_pos": "Innkjøpsordrer",
+    "related_rfqs": "Tilbudsforespørsler",
+    "no_projects": "Ingen prosjekter for denne kunden ennå.",
+    "no_pos": "Ingen innkjøpsordrer er rutet til denne leverandøren.",
+    "no_rfqs": "Denne leverandøren er ennå ikke invitert til en tilbudsforespørsel."
   }
 }
