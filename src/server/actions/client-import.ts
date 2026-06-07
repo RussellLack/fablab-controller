@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { db, clients, auditLogs } from '@/db';
 import { getCurrentUser } from '@/lib/supabase/server';
 import { isStaffEmail } from '@/lib/auth-helpers';
+import { parseCsv, stripBomAndTrim, validateHeaders } from '@/lib/csv-parse';
 
 /**
  * CSV import for /clients — symmetric with the bulk Export CSV.
@@ -67,49 +68,6 @@ const EXPECTED_HEADERS = [
   'Active projects'
 ];
 
-function parseCsv(input: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let cell = '';
-  let inQuotes = false;
-  for (let i = 0; i < input.length; i++) {
-    const ch = input[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (input[i + 1] === '"') {
-          cell += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        cell += ch;
-      }
-    } else {
-      if (ch === '"') {
-        inQuotes = true;
-      } else if (ch === ',') {
-        row.push(cell);
-        cell = '';
-      } else if (ch === '\n') {
-        row.push(cell);
-        rows.push(row);
-        row = [];
-        cell = '';
-      } else if (ch === '\r') {
-        // ignore — handled together with \n below
-      } else {
-        cell += ch;
-      }
-    }
-  }
-  if (cell.length > 0 || row.length > 0) {
-    row.push(cell);
-    rows.push(row);
-  }
-  return rows;
-}
-
 function parseRow(rowNumber: number, cells: string[]): PreviewItem {
   const errors: string[] = [];
   if (cells.length < 2) {
@@ -160,20 +118,13 @@ function parseRow(rowNumber: number, cells: string[]): PreviewItem {
 }
 
 async function buildPlan(csv: string): Promise<PreviewResult> {
-  const trimmed = csv.replace(/^﻿/, '').trim();
+  const trimmed = stripBomAndTrim(csv);
   if (!trimmed) return { ok: false, error: 'CSV is empty' };
   const rows = parseCsv(trimmed).filter((r) => r.some((c) => c.trim().length > 0));
   if (rows.length === 0) return { ok: false, error: 'No rows found' };
 
-  // Validate header row
-  const header = rows[0]!.map((c) => c.trim());
-  const matchesExpected = EXPECTED_HEADERS.every((h, i) => (header[i] ?? '').toLowerCase() === h.toLowerCase());
-  if (!matchesExpected) {
-    return {
-      ok: false,
-      error: `Header row should be: ${EXPECTED_HEADERS.join(', ')}`
-    };
-  }
+  const headerErr = validateHeaders(rows[0]!, EXPECTED_HEADERS);
+  if (headerErr) return { ok: false, error: headerErr };
 
   const items: PreviewItem[] = [];
   for (let i = 1; i < rows.length; i++) {

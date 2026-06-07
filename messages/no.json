@@ -2036,7 +2036,22 @@
     "col_notes": "Notater / feil",
     "decision_insert": "Innsett",
     "decision_update": "Oppdater",
-    "decision_error": "Feil"
+    "decision_error": "Feil",
+    "title_vendors": "Importer leverandører fra CSV",
+    "intro_vendors": "Rundtur med masseeksport: rediger eksporten i et regneark, lim den tilbake her, forhåndsvis planlagte endringer, og lagre. Matcher på eksakt navn. Kategorier bruker ‘;’ som skilletegn i cellen. Nye rader får standardvaluta utledet fra land.",
+    "placeholder_vendors": "Lim inn CSV her, eller bruk Velg fil… over.",
+    "confirm_vendors": "Bruke denne importen til leverandørtabellen? Endringslogg blir skrevet for hver berørt leverandør.",
+    "col_country": "Land",
+    "title_projects": "Importer prosjekter fra CSV",
+    "intro_projects": "Rundtur med masseeksport: rediger eksporten, lim tilbake, forhåndsvis, og lagre. Matcher på Referanse. Kunde-kolonnen slås opp etter navn.",
+    "update_only_warning": "Prosjekter kan KUN oppdateres her. CSV oppretter ikke nye prosjekter (de skal komme via Lead → Konverter), og Fase-kolonnen leses men skrives ikke — fase-overganger styres av livssyklus-knappene Pause / Gå videre.",
+    "placeholder_projects": "Lim inn CSV her, eller bruk Velg fil… over.",
+    "confirm_projects": "Bruke denne importen? Endringslogg blir skrevet for hvert berørt prosjekt. Fase-kolonnen ignoreres.",
+    "summary_projects": "{updates, plural, =0 {ingen oppdateringer} =1 {1 oppdatering} other {# oppdateringer}} · {errors, plural, =0 {ingen feil} =1 {1 feil} other {# feil}}",
+    "back_to_projects": "Tilbake til prosjekter",
+    "col_reference": "Referanse",
+    "col_title": "Tittel",
+    "col_client": "Kunde"
   },
   "bulk": {
     "n_selected": "{n, plural, =1 {1 valgt} other {# valgt}}",

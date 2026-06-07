@@ -266,6 +266,9 @@ export function ProjectsExplorer({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link href="/projects/import" className="btn text-[12px]">
+            {t('csv_import.import_button')}
+          </Link>
           <ViewModeToggle
             view={state.view}
             onChange={(v) => {

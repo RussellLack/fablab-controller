@@ -2036,7 +2036,22 @@
     "col_notes": "Notes / errors",
     "decision_insert": "Insert",
     "decision_update": "Update",
-    "decision_error": "Error"
+    "decision_error": "Error",
+    "title_vendors": "Import vendors from CSV",
+    "intro_vendors": "Round-trip with the bulk Export CSV: edit the export in a spreadsheet, paste it back here, preview the planned changes, then commit. Matches by exact name. Categories use ‘;’ as the in-cell separator. New rows get a default currency derived from country.",
+    "placeholder_vendors": "Paste CSV here, or use Choose file… above.",
+    "confirm_vendors": "Apply this import to the vendors database? Audit log rows will be written for every affected vendor.",
+    "col_country": "Country",
+    "title_projects": "Import projects from CSV",
+    "intro_projects": "Round-trip with the bulk Export CSV: edit the export, paste it back, preview, then commit. Matches by Reference. Client column is resolved by name lookup.",
+    "update_only_warning": "Projects are UPDATE-ONLY here. CSV won’t create new projects (those should come through Leads → Convert) and the Stage column is read but never written — stage transitions are managed by the Advance / Hold lifecycle UI.",
+    "placeholder_projects": "Paste CSV here, or use Choose file… above.",
+    "confirm_projects": "Apply this import? Audit log rows will be written for every affected project. The Stage column will be ignored.",
+    "summary_projects": "{updates, plural, =0 {no updates} =1 {1 update} other {# updates}} · {errors, plural, =0 {no errors} =1 {1 error} other {# errors}}",
+    "back_to_projects": "Back to projects",
+    "col_reference": "Reference",
+    "col_title": "Title",
+    "col_client": "Client"
   },
   "bulk": {
     "n_selected": "{n, plural, =1 {1 selected} other {# selected}}",
