@@ -3,7 +3,42 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 const PUBLIC_PATHS = ['/login', '/auth/callback'];
 
+// Hard ceiling on the Supabase auth round-trip from the edge. Netlify Edge
+// cold-starts can already eat 1-3s of Deno boot before our code runs; if
+// Supabase is slow on top of that the whole edge function times out and
+// the user sees "the edge function timed out" error. Degrading gracefully
+// (treating the request as signed-out) is strictly better than crashing.
+// 3s is generous — warm hits return in <100ms.
+const GET_USER_TIMEOUT_MS = 3_000;
+
+type GetUserResult = Awaited<ReturnType<ReturnType<typeof createServerClient>['auth']['getUser']>>;
+
+function getUserWithTimeout(
+  supabase: ReturnType<typeof createServerClient>
+): Promise<GetUserResult> {
+  return Promise.race([
+    supabase.auth.getUser(),
+    new Promise<GetUserResult>((resolve) =>
+      setTimeout(
+        () => resolve({ data: { user: null }, error: null } as unknown as GetUserResult),
+        GET_USER_TIMEOUT_MS
+      )
+    )
+  ]);
+}
+
 export async function updateSession(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  const isPublic = PUBLIC_PATHS.some(p => path.startsWith(p));
+
+  // Fast path: /auth/callback handles its own cookie exchange, so middleware
+  // doesn't need to fetch the user there. Skipping the Supabase round-trip
+  // on the OAuth landing removes the most painful cold-start landmine —
+  // that's the page users hit immediately after clicking "Sign in".
+  if (path.startsWith('/auth/callback')) {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -25,17 +60,15 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired
-  const { data: { user } } = await supabase.auth.getUser();
-
-  const path = request.nextUrl.pathname;
-  const isPublic = PUBLIC_PATHS.some(p => path.startsWith(p));
+  // Refresh session if expired — with a hard timeout so a slow / hanging
+  // auth round-trip can't take down the entire edge function.
+  const { data: { user } } = await getUserWithTimeout(supabase);
 
   // Defensive OAuth-code rescue.
   //
-  // If an unauthenticated request lands on any non-callback path with a
-  // UUID-format `?code=` parameter, treat it as a misrouted OAuth return
-  // and re-route to /auth/callback preserving the code.
+  // If an unauthenticated request lands on any non-callback, non-public
+  // path with a UUID-format `?code=` parameter, treat it as a misrouted
+  // OAuth return and re-route to /auth/callback preserving the code.
   //
   // Why this is needed: when our login-page `redirectTo` is not present
   // in Supabase's Redirect URLs allow-list (or the Site URL drifts away
@@ -43,14 +76,17 @@ export async function updateSession(request: NextRequest) {
   // ships the code there instead of /auth/callback. Without this rescue
   // the user is bounced to /login and login appears to fail.
   //
-  // The PKCE code_verifier cookie set by signInWithOAuth on the login
-  // client travels with this request, so the exchange in /auth/callback
-  // still succeeds after the re-route.
+  // The `!isPublic` guard is critical: it stops the rescue from firing
+  // on /login itself. /auth/callback redirects exchange failures to
+  // /login?error=auth_failed; if Netlify leaks the original `?code=`
+  // through, that URL becomes /login?error=auth_failed&code=… and
+  // without this guard the rescue would bounce that straight back to
+  // /auth/callback — infinite loop.
   //
   // UUID regex narrows the rescue to actual Supabase auth codes — no
   // false positive on any legitimate `?code=` query param the app may
   // use for other purposes.
-  if (!user && path !== '/auth/callback') {
+  if (!user && !isPublic) {
     const code = request.nextUrl.searchParams.get('code');
     if (
       code &&
