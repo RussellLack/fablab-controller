@@ -89,21 +89,21 @@ function projectGroups(id: string): Group[] {
       titleKey: 'sidebar.linear',
       items: [
         { href: `${base}`, key: 'tab.brief', icon: '①' },
-        { href: `${base}/scope`, key: 'tab.scope', icon: '②', soon: true },
+        { href: `${base}/scope`, key: 'tab.scope', icon: '②' },
         { href: `${base}/packages`, key: 'tab.items', icon: '③' },
         // Procurement umbrella for now points at RFQs; Phase 2 will introduce a
         // proper /procurement landing that branches to RFQs + POs.
         { href: `${base}/rfqs`, key: 'tab.rfqs', icon: '④' },
         { href: `${base}/pos`, key: 'tab.pos', icon: '⑤' },
-        { href: `${base}/delivery`, key: 'tab.delivery', icon: '⑥', soon: true },
-        { href: `${base}/handover`, key: 'tab.handover', icon: '⑦', soon: true }
+        { href: `${base}/delivery`, key: 'tab.delivery', icon: '⑥' },
+        { href: `${base}/handover`, key: 'tab.handover', icon: '⑦' }
       ]
     },
     {
       titleKey: 'sidebar.transverse',
       items: [
         { href: `${base}/approvals`, key: 'tab.approvals', icon: '⌽' },
-        { href: `${base}/change-control`, key: 'tab.change_control', icon: '⇄', soon: true },
+        { href: `${base}/change-control`, key: 'tab.change_control', icon: '⇄' },
         { href: `${base}/risk`, key: 'tab.risk', icon: '⚠' },
         { href: `${base}/finance`, key: 'tab.finance', icon: '◈' },
         // Element list is the existing route; doc treats it as the Reporting
