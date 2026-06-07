@@ -22,10 +22,44 @@ addOrigin(process.env.URL);
 addOrigin(process.env.DEPLOY_PRIME_URL);
 addOrigin(process.env.NEXT_PUBLIC_APP_URL);
 
+/**
+ * Security headers applied to every server-rendered response.
+ *
+ * Why these are here and not in netlify.toml: when @netlify/plugin-nextjs
+ * serves a page through a Function (which is every Next.js SSR / RSC /
+ * dynamic route), the [[headers]] rules in netlify.toml are bypassed.
+ * Only static assets in /_next/static/* pick those up. Setting headers
+ * from next.config.mjs ensures HTML responses for actual users get the
+ * same baseline.
+ *
+ * HSTS is added at the Netlify edge automatically — we don't duplicate
+ * it here.
+ *
+ * Permissions-Policy denies all powerful features by default; the brief
+ * wizard uses file inputs for client uploads but doesn't need camera /
+ * mic / geolocation. Add features back here only as the product grows
+ * into needing them.
+ */
+const securityHeaders = [
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  {
+    key: 'Permissions-Policy',
+    value:
+      'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()'
+  }
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: __dirname,
+  async headers() {
+    return [
+      { source: '/:path*', headers: securityHeaders }
+    ];
+  },
   experimental: {
     serverActions: { allowedOrigins }
   }
