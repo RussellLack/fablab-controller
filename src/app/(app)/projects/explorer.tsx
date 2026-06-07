@@ -2,11 +2,14 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { ProjectRow } from './project-row';
 import { SavedViewTabs, useSavedViews } from '@/components/saved-views';
 import { useUrlState } from '@/components/use-url-state';
+import { BulkActionsBar } from '@/components/bulk-actions-bar';
+import { downloadCsv, csvFilename } from '@/lib/csv';
+import { bulkUpdateProjectPriority } from '@/server/actions/project-edit';
 import { formatMoney, formatDate, cx } from '@/lib/utils';
 
 /**
@@ -137,6 +140,8 @@ export function ProjectsExplorer({
     })
   });
   const [activeViewId, setActiveViewId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [bulkPending, startBulkTransition] = useTransition();
 
   const { views, add, remove } = useSavedViews<ExplorerState>('projects');
 
@@ -194,6 +199,61 @@ export function ProjectsExplorer({
     if (!name) return;
     const id = add(name, state);
     setActiveViewId(id);
+  }
+
+  /* ─────── multi-row selection ─────── */
+  const allFilteredSelected = filtered.length > 0 && filtered.every((r) => selectedIds.has(r.id));
+  const someFilteredSelected = !allFilteredSelected && filtered.some((r) => selectedIds.has(r.id));
+
+  function toggleSelectAll() {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allFilteredSelected) for (const r of filtered) next.delete(r.id);
+      else for (const r of filtered) next.add(r.id);
+      return next;
+    });
+  }
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+  function clearSelectedRows() { setSelectedIds(new Set()); }
+
+  /* ─────── bulk actions ─────── */
+  function exportSelectedCsv() {
+    const ids = selectedIds;
+    if (ids.size === 0) return;
+    const picked = rows.filter((r) => ids.has(r.id));
+    const headers = ['Reference', 'Title', 'Client', 'Stage', 'Budget', 'Currency', 'Target handover'];
+    const out = picked.map((p) => [
+      p.reference,
+      p.title,
+      p.clientName ?? '',
+      p.currentStage,
+      p.budget ?? '',
+      p.budgetCurrency ?? '',
+      p.targetHandoverDate ?? ''
+    ]);
+    downloadCsv(csvFilename('projects'), headers, out);
+  }
+
+  function bulkPriorityChange(newPriority: string) {
+    if (selectedIds.size === 0) return;
+    if (!confirm(t('bulk.confirm_priority_change', { n: selectedIds.size, priority: t(`projects_detail.priority_value.${newPriority}`) }))) return;
+    const ids = Array.from(selectedIds);
+    startBulkTransition(async () => {
+      const result = await bulkUpdateProjectPriority(ids, newPriority);
+      if (!result.ok) {
+        alert(result.error);
+        return;
+      }
+      setSelectedIds(new Set());
+      router.refresh();
+    });
   }
 
   return (
@@ -288,8 +348,44 @@ export function ProjectsExplorer({
           sortKey={state.sortKey}
           cycleSort={cycleSort}
           sortArrow={sortArrow}
+          selection={{
+            selectedIds,
+            toggleSelect,
+            toggleSelectAll,
+            allSelected: allFilteredSelected,
+            someSelected: someFilteredSelected
+          }}
         />
       )}
+
+      <BulkActionsBar count={selectedIds.size} onClear={clearSelectedRows}>
+        <button
+          onClick={exportSelectedCsv}
+          className="text-surface hover:text-surface/80 text-[12px]"
+        >
+          {t('bulk.export_csv')}
+        </button>
+        <div className="flex items-center gap-1.5">
+          <span className="text-surface/70 text-[12px]">{t('bulk.set_priority')}:</span>
+          <select
+            disabled={bulkPending}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val) bulkPriorityChange(val);
+              e.target.value = '';
+            }}
+            className="text-[12px] bg-surface text-ink rounded px-1.5 py-0.5 disabled:opacity-50"
+            defaultValue=""
+          >
+            <option value="" disabled>—</option>
+            {(['low', 'normal', 'high'] as const).map((p) => (
+              <option key={p} value={p}>
+                {t(`projects_detail.priority_value.${p}`)}
+              </option>
+            ))}
+          </select>
+        </div>
+      </BulkActionsBar>
     </>
   );
 }
@@ -324,18 +420,36 @@ function TableView({
   rows,
   sortKey,
   cycleSort,
-  sortArrow
+  sortArrow,
+  selection
 }: {
   rows: ProjectListRow[];
   sortKey: SortKey;
   cycleSort: (key: SortKey) => void;
   sortArrow: (key: SortKey) => React.ReactNode;
+  selection: {
+    selectedIds: Set<string>;
+    toggleSelect: (id: string) => void;
+    toggleSelectAll: () => void;
+    allSelected: boolean;
+    someSelected: boolean;
+  };
 }) {
   const t = useTranslations();
   return (
     <table className="w-full bg-surface border border-line rounded-lg overflow-hidden">
       <thead>
         <tr>
+          <th className="text-left p-2.5 px-3 border-b border-line bg-bg w-8">
+            <input
+              type="checkbox"
+              aria-label={t('bulk.select_all')}
+              checked={selection.allSelected}
+              ref={(el) => { if (el) el.indeterminate = selection.someSelected; }}
+              onChange={selection.toggleSelectAll}
+              className="cursor-pointer"
+            />
+          </th>
           <th className="text-left p-2.5 px-3.5 border-b border-line bg-bg">
             <button
               onClick={() => cycleSort('reference')}
@@ -384,6 +498,16 @@ function TableView({
       <tbody>
         {rows.map((r) => (
           <ProjectRow key={r.id} href={`/projects/${r.id}`}>
+            <td className="p-3 px-3 border-b border-line text-[13px]">
+              <input
+                type="checkbox"
+                aria-label={t('bulk.select_row')}
+                checked={selection.selectedIds.has(r.id)}
+                onChange={() => selection.toggleSelect(r.id)}
+                onClick={(e) => e.stopPropagation()}
+                className="cursor-pointer"
+              />
+            </td>
             <td className="p-3 px-3.5 border-b border-line text-[13px]">
               <div className="flex items-center gap-2">
                 <span className="pill pill-type pill-project">{t('entity_type.project')}</span>

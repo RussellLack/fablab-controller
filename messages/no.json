@@ -1993,6 +1993,21 @@
       "high": "Høy"
     }
   },
+  "bulk": {
+    "n_selected": "{n, plural, =1 {1 valgt} other {# valgt}}",
+    "clear": "Fjern utvalg",
+    "select_all": "Velg alle rader i gjeldende visning",
+    "select_row": "Velg denne raden",
+    "export_csv": "Eksporter CSV",
+    "set_kind": "Sett type",
+    "set_priority": "Sett prioritet",
+    "set_active": "Sett inaktiv",
+    "set_inactive_active": "Gjenopprett aktiv",
+    "confirm_kind_change": "Sett type til «{kind}» for {n, plural, =1 {1 kunde} other {# kunder}}?",
+    "confirm_priority_change": "Sett prioritet til «{priority}» for {n, plural, =1 {1 prosjekt} other {# prosjekter}}?",
+    "confirm_set_inactive": "Marker {n, plural, =1 {1 leverandør} other {# leverandører}} som inaktiv?",
+    "confirm_set_active": "Gjenopprett {n, plural, =1 {1 leverandør} other {# leverandører}} til aktiv?"
+  },
   "entity_edit": {
     "edit_button": "Rediger",
     "save": "Lagre",

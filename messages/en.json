@@ -1993,6 +1993,21 @@
       "high": "High"
     }
   },
+  "bulk": {
+    "n_selected": "{n, plural, =1 {1 selected} other {# selected}}",
+    "clear": "Clear",
+    "select_all": "Select all rows in the current view",
+    "select_row": "Select this row",
+    "export_csv": "Export CSV",
+    "set_kind": "Set kind",
+    "set_priority": "Set priority",
+    "set_active": "Set inactive",
+    "set_inactive_active": "Restore active",
+    "confirm_kind_change": "Set kind to \"{kind}\" for {n, plural, =1 {1 client} other {# clients}}?",
+    "confirm_priority_change": "Set priority to \"{priority}\" for {n, plural, =1 {1 project} other {# projects}}?",
+    "confirm_set_inactive": "Mark {n, plural, =1 {1 vendor} other {# vendors}} as inactive?",
+    "confirm_set_active": "Restore {n, plural, =1 {1 vendor} other {# vendors}} to active?"
+  },
   "entity_edit": {
     "edit_button": "Edit",
     "save": "Save",

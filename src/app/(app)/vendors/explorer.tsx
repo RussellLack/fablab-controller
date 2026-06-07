@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { SavedViewTabs, useSavedViews } from '@/components/saved-views';
 import { useUrlState } from '@/components/use-url-state';
+import { BulkActionsBar } from '@/components/bulk-actions-bar';
+import { downloadCsv, csvFilename } from '@/lib/csv';
+import { bulkSetVendorActive } from '@/server/actions/vendors';
 
 /**
  * Client-side explorer for /vendors — search, filter, sort, plus
@@ -115,6 +118,8 @@ export function VendorsExplorer({
     })
   });
   const [activeViewId, setActiveViewId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [bulkPending, startBulkTransition] = useTransition();
 
   const { views, add, remove } = useSavedViews<ExplorerState>('vendors');
 
@@ -185,6 +190,63 @@ export function VendorsExplorer({
     if (!name) return;
     const id = add(name, state);
     setActiveViewId(id);
+  }
+
+  /* ─────── multi-row selection ─────── */
+  const allFilteredSelected = filtered.length > 0 && filtered.every((r) => selectedIds.has(r.id));
+  const someFilteredSelected = !allFilteredSelected && filtered.some((r) => selectedIds.has(r.id));
+
+  function toggleSelectAll() {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allFilteredSelected) for (const r of filtered) next.delete(r.id);
+      else for (const r of filtered) next.add(r.id);
+      return next;
+    });
+  }
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+  function clearSelectedRows() { setSelectedIds(new Set()); }
+
+  /* ─────── bulk actions ─────── */
+  function exportSelectedCsv() {
+    const ids = selectedIds;
+    if (ids.size === 0) return;
+    const picked = rows.filter((r) => ids.has(r.id));
+    const headers = ['Name', 'Kind', 'Country', 'Contact', 'Email', 'Lead time (days)', 'Rating', 'Categories'];
+    const out = picked.map((v) => [
+      v.name,
+      v.kind,
+      v.country ?? '',
+      v.contactName ?? '',
+      v.contactEmail ?? '',
+      v.typicalLeadTimeDays != null ? String(v.typicalLeadTimeDays) : '',
+      v.rating != null ? String(v.rating) : '',
+      v.categories.join('; ')
+    ]);
+    downloadCsv(csvFilename('vendors'), headers, out);
+  }
+
+  function bulkSetActive(active: boolean) {
+    if (selectedIds.size === 0) return;
+    const key = active ? 'bulk.confirm_set_active' : 'bulk.confirm_set_inactive';
+    if (!confirm(t(key, { n: selectedIds.size }))) return;
+    const ids = Array.from(selectedIds);
+    startBulkTransition(async () => {
+      const result = await bulkSetVendorActive(ids, active);
+      if (!result.ok) {
+        alert(result.error);
+        return;
+      }
+      setSelectedIds(new Set());
+      router.refresh();
+    });
   }
 
   return (
@@ -296,10 +358,40 @@ export function VendorsExplorer({
           sortKey={state.sortKey}
           cycleSort={cycleSort}
           sortArrow={sortArrow}
+          selection={{
+            selectedIds,
+            toggleSelect,
+            toggleSelectAll,
+            allSelected: allFilteredSelected,
+            someSelected: someFilteredSelected
+          }}
         />
       ) : (
         <CardGrid rows={filtered} onSelect={selectRow} />
       )}
+
+      <BulkActionsBar count={selectedIds.size} onClear={clearSelectedRows}>
+        <button
+          onClick={exportSelectedCsv}
+          className="text-surface hover:text-surface/80 text-[12px]"
+        >
+          {t('bulk.export_csv')}
+        </button>
+        <button
+          onClick={() => bulkSetActive(false)}
+          disabled={bulkPending}
+          className="text-surface hover:text-surface/80 text-[12px] disabled:opacity-50"
+        >
+          {t('bulk.set_active')}
+        </button>
+        <button
+          onClick={() => bulkSetActive(true)}
+          disabled={bulkPending}
+          className="text-surface hover:text-surface/80 text-[12px] disabled:opacity-50"
+        >
+          {t('bulk.set_inactive_active')}
+        </button>
+      </BulkActionsBar>
     </>
   );
 }
@@ -335,13 +427,21 @@ function TableView({
   onSelect,
   sortKey,
   cycleSort,
-  sortArrow
+  sortArrow,
+  selection
 }: {
   rows: VendorRow[];
   onSelect: (id: string) => void;
   sortKey: SortKey;
   cycleSort: (key: SortKey) => void;
   sortArrow: (key: SortKey) => string;
+  selection: {
+    selectedIds: Set<string>;
+    toggleSelect: (id: string) => void;
+    toggleSelectAll: () => void;
+    allSelected: boolean;
+    someSelected: boolean;
+  };
 }) {
   const t = useTranslations();
   return (
@@ -349,6 +449,16 @@ function TableView({
       <table className="w-full text-[13px]">
         <thead className="text-[11px] uppercase tracking-wider text-ink-3 bg-bg">
           <tr>
+            <th className="text-left px-3 py-2.5 w-8">
+              <input
+                type="checkbox"
+                aria-label={t('bulk.select_all')}
+                checked={selection.allSelected}
+                ref={(el) => { if (el) el.indeterminate = selection.someSelected; }}
+                onChange={selection.toggleSelectAll}
+                className="cursor-pointer"
+              />
+            </th>
             <th className="text-left px-4 py-2.5">
               <button
                 onClick={() => cycleSort('name')}
@@ -381,9 +491,23 @@ function TableView({
           {rows.map((v) => (
             <tr
               key={v.id}
-              onClick={() => onSelect(v.id)}
+              onClick={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest('a, button, input')) return;
+                onSelect(v.id);
+              }}
               className="border-t border-line hover:bg-bg cursor-pointer"
             >
+              <td className="px-3 py-2.5">
+                <input
+                  type="checkbox"
+                  aria-label={t('bulk.select_row')}
+                  checked={selection.selectedIds.has(v.id)}
+                  onChange={() => selection.toggleSelect(v.id)}
+                  onClick={(e) => e.stopPropagation()}
+                  className="cursor-pointer"
+                />
+              </td>
               <td className="px-4 py-2.5 font-medium">
                 <div className="flex items-center gap-2 flex-wrap">
                   <div className="flex items-center gap-1">

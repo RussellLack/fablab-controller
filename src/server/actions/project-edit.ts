@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { db, projects, auditLogs } from '@/db';
 import { getCurrentUser } from '@/lib/supabase/server';
 import { isStaffEmail } from '@/lib/auth-helpers';
@@ -88,4 +88,54 @@ export async function updateProjectMetadata(
   revalidatePath(`/projects/${projectId}`);
   revalidatePath('/projects');
   redirect(`/projects/${projectId}`);
+}
+
+/* ────────────── bulk actions ────────────── */
+
+const PRIORITIES = ['low', 'normal', 'high'] as const;
+type Priority = (typeof PRIORITIES)[number];
+
+type BulkResult = { ok: true; affected: number } | { ok: false; error: string };
+
+/**
+ * Bulk-set priority on many projects. Common during planning weeks
+ * when staff triage a batch of imported PowerOffice projects.
+ */
+export async function bulkUpdateProjectPriority(
+  ids: string[],
+  newPriority: string
+): Promise<BulkResult> {
+  const user = await getCurrentUser();
+  if (!user || !isStaffEmail(user.email)) {
+    return { ok: false, error: 'Not authorised' };
+  }
+  if (!ids.length) return { ok: false, error: 'No ids provided' };
+  if (!PRIORITIES.includes(newPriority as Priority)) {
+    return { ok: false, error: 'Invalid priority' };
+  }
+
+  const before = await db
+    .select({ id: projects.id, priority: projects.priority })
+    .from(projects)
+    .where(inArray(projects.id, ids));
+
+  await db
+    .update(projects)
+    .set({ priority: newPriority as Priority, updatedAt: new Date() })
+    .where(inArray(projects.id, ids));
+
+  const auditRows = before
+    .filter((b) => b.priority !== newPriority)
+    .map((b) => ({
+      entityType: 'project',
+      entityId: b.id,
+      actorId: user.id,
+      action: 'update_metadata',
+      before: { priority: b.priority },
+      after: { priority: newPriority }
+    }));
+  if (auditRows.length) await db.insert(auditLogs).values(auditRows);
+
+  revalidatePath('/projects');
+  return { ok: true, affected: ids.length };
 }

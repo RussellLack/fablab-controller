@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { db, vendors, auditLogs } from '@/db';
 import { getCurrentUser } from '@/lib/supabase/server';
 import { isStaffEmail } from '@/lib/auth-helpers';
@@ -87,4 +87,49 @@ export async function updateVendor(
   revalidatePath(`/vendors/${vendorId}`);
   revalidatePath('/vendors');
   redirect(`/vendors/${vendorId}`);
+}
+
+/* ────────────── bulk actions ────────────── */
+
+type BulkResult = { ok: true; affected: number } | { ok: false; error: string };
+
+/**
+ * Bulk-flip the `active` flag on many vendors. Used to deactivate a
+ * batch of obsolete suppliers in one go (or restore them). Writes one
+ * audit log row per vendor whose flag actually flipped.
+ */
+export async function bulkSetVendorActive(
+  ids: string[],
+  active: boolean
+): Promise<BulkResult> {
+  const user = await getCurrentUser();
+  if (!user || !isStaffEmail(user.email)) {
+    return { ok: false, error: 'Not authorised' };
+  }
+  if (!ids.length) return { ok: false, error: 'No ids provided' };
+
+  const before = await db
+    .select({ id: vendors.id, active: vendors.active })
+    .from(vendors)
+    .where(inArray(vendors.id, ids));
+
+  await db
+    .update(vendors)
+    .set({ active, updatedAt: new Date() })
+    .where(inArray(vendors.id, ids));
+
+  const auditRows = before
+    .filter((b) => b.active !== active)
+    .map((b) => ({
+      entityType: 'vendor',
+      entityId: b.id,
+      actorId: user.id,
+      action: 'update',
+      before: { active: b.active },
+      after: { active }
+    }));
+  if (auditRows.length) await db.insert(auditLogs).values(auditRows);
+
+  revalidatePath('/vendors');
+  return { ok: true, affected: ids.length };
 }

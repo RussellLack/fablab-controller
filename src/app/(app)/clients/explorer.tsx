@@ -2,11 +2,14 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { ClickableRow } from '@/components/clickable-row';
 import { SavedViewTabs, useSavedViews } from '@/components/saved-views';
 import { useUrlState } from '@/components/use-url-state';
+import { BulkActionsBar } from '@/components/bulk-actions-bar';
+import { downloadCsv, csvFilename } from '@/lib/csv';
+import { bulkUpdateClientKind } from '@/server/actions/clients';
 
 /**
  * Client-side explorer for /clients.
@@ -125,6 +128,8 @@ export function ClientsExplorer({
     })
   });
   const [activeViewId, setActiveViewId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [bulkPending, startBulkTransition] = useTransition();
 
   const { views, add, remove } = useSavedViews<ExplorerState>('clients');
 
@@ -205,6 +210,66 @@ export function ClientsExplorer({
     params.delete('selected');
     const qs = params.toString();
     router.replace(qs ? `/clients?${qs}` : '/clients', { scroll: false });
+  }
+
+  /* ─────── multi-row selection (table view only) ─────── */
+  const allFilteredSelected = filtered.length > 0 && filtered.every((r) => selectedIds.has(r.id));
+  const someFilteredSelected = !allFilteredSelected && filtered.some((r) => selectedIds.has(r.id));
+
+  function toggleSelectAll() {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allFilteredSelected) for (const r of filtered) next.delete(r.id);
+      else for (const r of filtered) next.add(r.id);
+      return next;
+    });
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function clearSelectedRows() {
+    setSelectedIds(new Set());
+  }
+
+  /* ─────── bulk actions ─────── */
+  function exportSelectedCsv() {
+    const ids = selectedIds;
+    if (ids.size === 0) return;
+    const picked = rows.filter((r) => ids.has(r.id));
+    const headers = ['Name', 'Kind', 'Org no.', 'Contact', 'Email', 'Phone', 'Payment terms (days)', 'Active projects'];
+    const rowsOut = picked.map((c) => [
+      c.name,
+      c.kind,
+      c.orgNumber ?? '',
+      c.primaryContactName ?? '',
+      c.primaryContactEmail ?? '',
+      c.primaryContactPhone ?? '',
+      String(c.paymentTermsDays),
+      String(c.activeProjects)
+    ]);
+    downloadCsv(csvFilename('clients'), headers, rowsOut);
+  }
+
+  function bulkKindChange(newKind: string) {
+    if (selectedIds.size === 0) return;
+    if (!confirm(t('bulk.confirm_kind_change', { n: selectedIds.size, kind: t(`client_kind.${newKind}`) }))) return;
+    const ids = Array.from(selectedIds);
+    startBulkTransition(async () => {
+      const result = await bulkUpdateClientKind(ids, newKind);
+      if (!result.ok) {
+        alert(result.error);
+        return;
+      }
+      setSelectedIds(new Set());
+      router.refresh();
+    });
   }
 
   return (
@@ -304,8 +369,49 @@ export function ClientsExplorer({
           sortKey={state.sortKey}
           cycleSort={cycleSort}
           sortIndicator={sortIndicator}
+          selection={{
+            selectedIds,
+            toggleSelect,
+            toggleSelectAll,
+            allSelected: allFilteredSelected,
+            someSelected: someFilteredSelected
+          }}
         />
       )}
+
+      {/* Bulk-action bar — only meaningful in table view since the
+          checkboxes live there. Stays mounted in other views so
+          existing selections persist if the user toggles back. */}
+      <BulkActionsBar count={selectedIds.size} onClear={clearSelectedRows}>
+        <button
+          onClick={exportSelectedCsv}
+          className="text-surface hover:text-surface/80 text-[12px]"
+        >
+          {t('bulk.export_csv')}
+        </button>
+        <div className="flex items-center gap-1.5">
+          <span className="text-surface/70 text-[12px]">
+            {t('bulk.set_kind')}:
+          </span>
+          <select
+            disabled={bulkPending}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val) bulkKindChange(val);
+              e.target.value = '';
+            }}
+            className="text-[12px] bg-surface text-ink rounded px-1.5 py-0.5 disabled:opacity-50"
+            defaultValue=""
+          >
+            <option value="" disabled>—</option>
+            {FILTERS.filter((f) => f.key !== 'all' && f.key !== 'dual_role').map((f) => (
+              <option key={f.key} value={f.key}>
+                {t(f.labelKey)}
+              </option>
+            ))}
+          </select>
+        </div>
+      </BulkActionsBar>
     </>
   );
 }
@@ -353,13 +459,21 @@ function FullTable({
   onSelect,
   sortKey,
   cycleSort,
-  sortIndicator
+  sortIndicator,
+  selection
 }: {
   rows: ClientRow[];
   onSelect: (id: string) => void;
   sortKey: SortKey;
   cycleSort: (key: SortKey) => void;
   sortIndicator: (key: SortKey) => React.ReactNode;
+  selection: {
+    selectedIds: Set<string>;
+    toggleSelect: (id: string) => void;
+    toggleSelectAll: () => void;
+    allSelected: boolean;
+    someSelected: boolean;
+  };
 }) {
   const t = useTranslations();
   return (
@@ -367,6 +481,16 @@ function FullTable({
       <table className="w-full text-[13px]">
         <thead className="text-[11px] uppercase tracking-wider text-ink-3 bg-bg">
           <tr>
+            <th className="text-left px-3 py-2.5 w-8">
+              <input
+                type="checkbox"
+                aria-label={t('bulk.select_all')}
+                checked={selection.allSelected}
+                ref={(el) => { if (el) el.indeterminate = selection.someSelected; }}
+                onChange={selection.toggleSelectAll}
+                className="cursor-pointer"
+              />
+            </th>
             <th className="text-left px-4 py-2.5">
               <button
                 onClick={() => cycleSort('name')}
@@ -402,6 +526,16 @@ function FullTable({
         <tbody>
           {rows.map((c) => (
             <ClickableRow key={c.id} href={`/clients/${c.id}`}>
+              <td className="px-3 py-2.5">
+                <input
+                  type="checkbox"
+                  aria-label={t('bulk.select_row')}
+                  checked={selection.selectedIds.has(c.id)}
+                  onChange={() => selection.toggleSelect(c.id)}
+                  onClick={(e) => e.stopPropagation()}
+                  className="cursor-pointer"
+                />
+              </td>
               <td className="px-4 py-2.5 font-medium">
                 <div className="flex items-center gap-2 flex-wrap">
                   <div className="flex items-center gap-1">
