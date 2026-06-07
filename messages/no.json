@@ -1944,11 +1944,21 @@
     "sort_name": "Navn",
     "sort_country": "Land",
     "sort_leadTime": "Ledetid",
-    "sort_rating": "Vurdering"
+    "sort_rating": "Vurdering",
+    "view_table": "Tabellvisning",
+    "view_grid": "Rutenett",
+    "view_split": "Delt visning (liste + detalj)",
+    "select_a_row": "Velg en rad for å se detaljene her.",
+    "tab_all": "Alle",
+    "save_current_view": "Lagre denne visningen",
+    "prompt_view_name": "Navn på visningen (f.eks. \"Kulturinstitusjoner med aktive prosjekter\"):",
+    "confirm_delete_view": "Slett lagret visning «{name}»?",
+    "delete_view": "Slett visning"
   },
   "entity_detail": {
     "back_to_clients": "Alle kunder",
     "back_to_vendors": "Alle leverandører",
+    "open_full_page": "Åpne full side",
     "inactive": "Inaktiv",
     "contact_section": "Kontakt",
     "commercial_section": "Kommersielt",

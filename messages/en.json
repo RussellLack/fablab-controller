@@ -1944,11 +1944,21 @@
     "sort_name": "Name",
     "sort_country": "Country",
     "sort_leadTime": "Lead time",
-    "sort_rating": "Rating"
+    "sort_rating": "Rating",
+    "view_table": "Table view",
+    "view_grid": "Grid view",
+    "view_split": "Split view (list + detail)",
+    "select_a_row": "Select a row to see its details here.",
+    "tab_all": "All",
+    "save_current_view": "Save current view",
+    "prompt_view_name": "Name this view (e.g. \"Cultural clients with active projects\"):",
+    "confirm_delete_view": "Delete saved view \"{name}\"?",
+    "delete_view": "Delete view"
   },
   "entity_detail": {
     "back_to_clients": "All clients",
     "back_to_vendors": "All vendors",
+    "open_full_page": "Open full page",
     "inactive": "Inactive",
     "contact_section": "Contact",
     "commercial_section": "Commercial",

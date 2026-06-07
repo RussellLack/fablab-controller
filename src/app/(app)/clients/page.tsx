@@ -1,13 +1,15 @@
 import { asc, sql } from 'drizzle-orm';
 import { db, clients, projects, vendors } from '@/db';
 import { ClientsExplorer, type ClientRow } from './explorer';
+import { ClientDetailPanel } from './detail-panel';
 
 /**
- * Clients list — server fetches all rows once, the client-side
- * <ClientsExplorer> handles search / sort / filter UI.
+ * Clients list — server fetches the full set and (when split view is
+ * active via `?selected=<id>`) pre-renders the inline detail panel
+ * so the explorer never has to refetch on the client.
  *
- * Read-only; creation flows still live in /leads/new. Click any row
- * to open /clients/[id].
+ * Click any row → /clients/[id] (table & grid views), or load into
+ * the right-hand panel in split view.
  */
 async function getClients(): Promise<ClientRow[]> {
   if (!process.env.DATABASE_URL) return [];
@@ -27,8 +29,6 @@ async function getClients(): Promise<ClientRow[]> {
           where ${projects.clientId} = ${clients.id}
             and ${projects.currentStage} not in ('cancelled', 'archived')
         )`,
-        // Dual-role detection — qualified literals inside the subquery
-        // (see /clients/[id] for the drizzle-shadowing explanation).
         isAlsoVendor: sql<boolean>`EXISTS (
           SELECT 1 FROM ${vendors} v
           WHERE lower(v.name) = lower(clients.name)
@@ -45,7 +45,18 @@ async function getClients(): Promise<ClientRow[]> {
   }
 }
 
-export default async function ClientsPage() {
+export default async function ClientsPage({
+  searchParams
+}: {
+  searchParams: Promise<{ selected?: string }>;
+}) {
+  const sp = await searchParams;
+  const selectedId = sp.selected ?? null;
   const rows = await getClients();
-  return <ClientsExplorer rows={rows} />;
+
+  const selectedDetail = selectedId
+    ? <ClientDetailPanel clientId={selectedId} mode="panel" />
+    : null;
+
+  return <ClientsExplorer rows={rows} selectedDetail={selectedDetail} />;
 }
