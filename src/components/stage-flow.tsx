@@ -50,7 +50,9 @@ export function StageFlow({
             className={cx(
               'w-8 h-8 rounded-full border-2 grid place-items-center text-xs font-semibold transition-colors duration-75',
               done && 'bg-ink border-ink text-surface group-hover:bg-[#333]',
-              current && 'bg-accent border-accent text-white group-hover:bg-[#d63a22]',
+              // Current = brand (deep heritage red), not accent (bright urgency red).
+              // Frees accent-red for transient problem overlays elsewhere on the page.
+              current && 'bg-brand border-brand text-surface group-hover:bg-[#26120b]',
               !done && !current && 'bg-bg border-line text-ink-3 group-hover:border-line-strong group-hover:text-ink-2'
             )}
           >

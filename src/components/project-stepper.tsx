@@ -31,10 +31,18 @@ const STATE_BADGE: Record<GateState, string> = {
   locked: '⌀'
 };
 
+// Aligned with StageFlow's three states so the page speaks one language:
+//   • done       = ink (black filled)          — completed gate
+//   • in_progress = brand (deep heritage red)  — current focus, not urgency
+//   • locked     = bg/line (cream + muted)     — future, not yet reachable
+//
+// Accent (bright red) is intentionally NOT used here — that family is
+// reserved for transient attention overlays (overdue, BINDING, blocked).
+// Danger (the darker red used on the Fablab-rolle banner) stays untouched.
 const STATE_CLASS: Record<GateState, string> = {
-  done: 'border-ok text-ok bg-ok-soft',
-  in_progress: 'border-accent text-accent bg-accent-soft',
-  locked: 'border-line-strong text-ink-3 bg-bg'
+  done: 'border-ink text-surface bg-ink',
+  in_progress: 'border-brand text-surface bg-brand',
+  locked: 'border-line text-ink-3 bg-bg'
 };
 
 const GATE_LABEL_KEY: Record<GateName, string> = {
@@ -89,9 +97,13 @@ export function ProjectStepper({
               key={gate}
               href={href}
               className={cx(
-                'flex items-center gap-2 px-3 py-2 rounded-md text-[13px] border',
+                'flex items-center gap-2 px-3 py-2 rounded-md text-[13px] border transition-colors duration-75',
                 STATE_CLASS[result.state],
-                active && 'ring-2 ring-ink',
+                // ring-accent for the "currently viewing" cue — bright red
+                // contrasts cleanly against all three state backgrounds
+                // (ink-black, brand-deep-red, bg-cream). ring-ink (the old
+                // choice) was invisible on the dark filled states.
+                active && 'ring-2 ring-accent ring-offset-1 ring-offset-bg',
                 result.state === 'locked' && 'opacity-70'
               )}
               title={result.nextActionKey ? t(result.nextActionKey) : undefined}
