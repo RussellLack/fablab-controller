@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ProjectRow } from './project-row';
 import { SavedViewTabs, useSavedViews } from '@/components/saved-views';
+import { useUrlState } from '@/components/use-url-state';
 import { formatMoney, formatDate, cx } from '@/lib/utils';
 
 /**
@@ -116,7 +117,25 @@ export function ProjectsExplorer({
   const searchParams = useSearchParams();
   const selectedId = searchParams.get('selected');
 
-  const [state, setState] = useState<ExplorerState>(DEFAULT_STATE);
+  const [state, setState] = useUrlState<ExplorerState>({
+    basePath: '/projects',
+    defaultState: DEFAULT_STATE,
+    debounceKeys: ['search'],
+    serialise: (s) => ({
+      q: s.search || null,
+      filter: s.filter === DEFAULT_STATE.filter ? null : s.filter,
+      sort: s.sortKey === DEFAULT_STATE.sortKey ? null : s.sortKey,
+      dir: s.sortDir === DEFAULT_STATE.sortDir ? null : s.sortDir,
+      view: s.view === DEFAULT_STATE.view ? null : s.view
+    }),
+    parse: (p) => ({
+      search: p.get('q') ?? DEFAULT_STATE.search,
+      filter: p.get('filter') ?? DEFAULT_STATE.filter,
+      sortKey: (p.get('sort') as SortKey) ?? DEFAULT_STATE.sortKey,
+      sortDir: (p.get('dir') as SortDir) ?? DEFAULT_STATE.sortDir,
+      view: (p.get('view') as ViewMode) ?? DEFAULT_STATE.view
+    })
+  });
   const [activeViewId, setActiveViewId] = useState<string | null>(null);
 
   const { views, add, remove } = useSavedViews<ExplorerState>('projects');
@@ -138,7 +157,7 @@ export function ProjectsExplorer({
   const setField = useCallback(<K extends keyof ExplorerState>(key: K, value: ExplorerState[K]) => {
     setState((prev) => ({ ...prev, [key]: value }));
     setActiveViewId(null);
-  }, []);
+  }, [setState]);
 
   function cycleSort(key: SortKey) {
     if (state.sortKey === key) setField('sortDir', state.sortDir === 'asc' ? 'desc' : 'asc');

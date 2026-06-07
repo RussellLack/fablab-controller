@@ -1932,6 +1932,22 @@
     "project": "Prosjekt",
     "dual_role_title": "Denne motparten har to roller — separate oppføringer på hver side dekker kunderelasjonen og leverandørrelasjonen."
   },
+  "palette": {
+    "trigger_label": "Søk kunder, leverandører, prosjekter…",
+    "aria_label": "Søk i kunder, leverandører og prosjekter",
+    "placeholder": "Skriv et navn, en referanse eller en kontakt for å søke overalt…",
+    "loading": "Laster register…",
+    "start_typing": "Begynn å skrive for å søke i kunder, leverandører og prosjekter.",
+    "no_results": "Ingen treff.",
+    "hint_navigate": "naviger",
+    "hint_select": "åpne",
+    "hint_open": "overalt",
+    "group": {
+      "client": "Kunder",
+      "vendor": "Leverandører",
+      "project": "Prosjekter"
+    }
+  },
   "explorer": {
     "search_placeholder_clients": "Søk kunder på navn, kontakt, e-post eller org.nr.",
     "search_placeholder_vendors": "Søk leverandører på navn, kontakt, land eller kategori",

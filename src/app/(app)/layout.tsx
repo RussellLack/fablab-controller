@@ -1,6 +1,7 @@
 import { Sidebar } from '@/components/sidebar';
 import { Header } from '@/components/header';
 import { JourneyOverlay } from '@/components/journey-overlay';
+import { CommandPalette } from '@/components/command-palette';
 import { getCurrentUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { isStaffEmail } from '@/lib/auth-helpers';
@@ -29,6 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Sidebar />
       <main className="p-6 px-8 overflow-auto">{children}</main>
       <JourneyOverlay />
+      <CommandPalette />
     </div>
   );
 }
