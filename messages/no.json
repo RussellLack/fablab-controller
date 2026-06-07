@@ -1993,6 +1993,12 @@
       "high": "Høy"
     }
   },
+  "module_bar": {
+    "current_focus_hint": "Denne modulen tilsvarer prosjektets nåværende fase — det er her det aktive arbeidet skal foregå."
+  },
+  "stage_flow": {
+    "click_hint": "Åpne modulen {stage}"
+  },
   "risk_register": {
     "title": "Risikoregister",
     "subtitle": "Åpne risikoer på tvers av alle aktive prosjekter, gruppert etter score-bånd. Kritisk øverst; forsinkede tiltaksfrister markeres i rødt. Klikk en risiko for å handle på den fra prosjektets egen kontekst.",

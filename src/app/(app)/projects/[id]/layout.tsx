@@ -81,7 +81,11 @@ export default async function ProjectLayout({
       />
 
       {/* Layer C — Project module bar */}
-      <ProjectModuleBar projectId={p.id} openCoachCount={openCoachCount} />
+      <ProjectModuleBar
+        projectId={p.id}
+        currentStage={p.currentStage}
+        openCoachCount={openCoachCount}
+      />
 
       {/* Layer D — Existing project header + stepper */}
       <div className="flex items-end justify-between mb-6 gap-4">
@@ -134,7 +138,7 @@ export default async function ProjectLayout({
       </div>
 
       <RoleBanner role={p.fablabRole} />
-      <StageFlow currentStage={p.currentStage} />
+      <StageFlow currentStage={p.currentStage} projectId={p.id} />
       <div className="mt-6">
         <ProjectStepper projectId={p.id} gates={gates} />
         {children}

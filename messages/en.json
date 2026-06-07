@@ -1993,6 +1993,12 @@
       "high": "High"
     }
   },
+  "module_bar": {
+    "current_focus_hint": "This module corresponds to the project's current stage — active work should be happening here."
+  },
+  "stage_flow": {
+    "click_hint": "Open the {stage} module"
+  },
   "risk_register": {
     "title": "Risk register",
     "subtitle": "Open risks across every active project, grouped by score band. Critical bubbles to the top; overdue mitigation dates are flagged in red. Click a risk to act on it from its own project context.",
