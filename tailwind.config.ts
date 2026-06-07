@@ -34,7 +34,7 @@ const config: Config = {
       letterSpacing: { tighter: '-0.02em', wider: '0.06em' }
     }
   },
-  plugins: []
+  plugins: [require('@tailwindcss/typography')]
 };
 
 export default config;

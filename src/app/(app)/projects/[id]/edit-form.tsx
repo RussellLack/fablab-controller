@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { updateProjectMetadata } from '@/server/actions/project-edit';
+import { MarkdownEditor } from '@/components/markdown-editor';
 
 export type EditableProject = {
   id: string;
@@ -90,12 +91,7 @@ export function ProjectEditForm({ project }: { project: EditableProject }) {
         </Field>
         <div className="mt-3">
           <Field label={t('entity_edit.description')} error={err('description')}>
-            <textarea
-              name="description"
-              defaultValue={project.description ?? ''}
-              rows={4}
-              className={inputCls}
-            />
+            <MarkdownEditor name="description" defaultValue={project.description ?? ''} rows={6} />
           </Field>
         </div>
       </div>

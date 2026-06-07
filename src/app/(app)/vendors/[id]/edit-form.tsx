@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { updateVendor } from '@/server/actions/vendors';
+import { MarkdownEditor } from '@/components/markdown-editor';
 
 export type EditableVendor = {
   id: string;
@@ -189,7 +190,7 @@ export function VendorEditForm({ vendor }: { vendor: EditableVendor }) {
       <div className="card">
         <div className="card-title">{t('entity_detail.notes_section')}</div>
         <Field label="" error={err('notes')}>
-          <textarea name="notes" defaultValue={vendor.notes ?? ''} rows={4} className={inputCls} />
+          <MarkdownEditor name="notes" defaultValue={vendor.notes ?? ''} rows={6} />
         </Field>
       </div>
     </form>

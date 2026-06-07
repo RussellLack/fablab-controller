@@ -282,15 +282,20 @@ export function ClientsExplorer({
             {t('explorer.showing_n_of', { n: filtered.length, all: rows.length })}
           </p>
         </div>
-        <ViewModeToggle
-          view={state.view}
-          onChange={(v) => {
-            setField('view', v);
-            // Leaving split mode clears the URL selection so refresh doesn't
-            // leave a dangling ?selected= param in the URL.
-            if (v !== 'split' && selectedId) clearSelection();
-          }}
-        />
+        <div className="flex items-center gap-2">
+          <Link href="/clients/import" className="btn text-[12px]">
+            {t('csv_import.import_button')}
+          </Link>
+          <ViewModeToggle
+            view={state.view}
+            onChange={(v) => {
+              setField('view', v);
+              // Leaving split mode clears the URL selection so refresh doesn't
+              // leave a dangling ?selected= param in the URL.
+              if (v !== 'split' && selectedId) clearSelection();
+            }}
+          />
+        </div>
       </div>
 
       {/* Saved-view tabs */}

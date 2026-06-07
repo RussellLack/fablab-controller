@@ -1993,6 +1993,51 @@
       "high": "High"
     }
   },
+  "audit": {
+    "title": "Change history",
+    "count": "{n, plural, =0 {no changes recorded} =1 {1 change recorded} other {# changes recorded}}",
+    "empty": "No changes recorded for this entity yet. Edits saved from here forward will appear in this timeline.",
+    "view_history": "History",
+    "back_to_client": "Back to client",
+    "back_to_vendor": "Back to vendor",
+    "back_to_project": "Back to project",
+    "unknown_actor": "Unknown user",
+    "action": {
+      "update": "Updated",
+      "update_metadata": "Metadata updated",
+      "csv_import_insert": "Created via CSV import",
+      "csv_import_update": "Updated via CSV import"
+    }
+  },
+  "markdown": {
+    "write": "Write",
+    "preview": "Preview",
+    "help": "Markdown supported",
+    "empty_preview": "Nothing to preview yet."
+  },
+  "csv_import": {
+    "import_button": "Import CSV",
+    "title_clients": "Import clients from CSV",
+    "intro_clients": "Round-trip with the bulk Export CSV: edit the export in a spreadsheet, paste it back here, preview the planned changes, then commit. Matches by Org no. (preferred) or by exact name.",
+    "source": "Source",
+    "choose_file": "Choose file…",
+    "placeholder_clients": "Paste CSV here, or use Choose file… above.",
+    "preview": "Preview",
+    "previewing": "Previewing…",
+    "commit": "Commit {n, plural, =1 {1 change} other {# changes}}",
+    "confirm": "Apply this import to the database? Audit log rows will be written for every affected client.",
+    "plan": "Planned changes",
+    "applied": "Applied",
+    "summary": "{inserts, plural, =0 {No inserts} =1 {1 insert} other {# inserts}} · {updates, plural, =0 {no updates} =1 {1 update} other {# updates}} · {errors, plural, =0 {no errors} =1 {1 error} other {# errors}}",
+    "col_decision": "Outcome",
+    "col_name": "Name",
+    "col_kind": "Kind",
+    "col_org": "Org no.",
+    "col_notes": "Notes / errors",
+    "decision_insert": "Insert",
+    "decision_update": "Update",
+    "decision_error": "Error"
+  },
   "bulk": {
     "n_selected": "{n, plural, =1 {1 selected} other {# selected}}",
     "clear": "Clear",

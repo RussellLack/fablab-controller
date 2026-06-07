@@ -130,16 +130,31 @@ export async function VendorDetailPanel({
           >
             ← {t('entity_detail.back_to_vendors')}
           </Link>
-          <Link href={`/vendors/${vendor.id}?edit=1`} className="btn text-[12px]">
-            {t('entity_edit.edit_button')}
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/vendors/${vendor.id}/history`}
+              className="text-[12px] text-ink-3 hover:text-ink"
+            >
+              {t('audit.view_history')}
+            </Link>
+            <Link href={`/vendors/${vendor.id}?edit=1`} className="btn text-[12px]">
+              {t('entity_edit.edit_button')}
+            </Link>
+          </div>
         </div>
       )}
       {isPanel && (
-        <div className="flex justify-end mb-2">
+        <div className="flex items-center justify-end gap-2 mb-2 text-[11px]">
+          <Link
+            href={`/vendors/${vendor.id}?edit=1`}
+            className="text-ink-3 hover:text-ink underline-offset-2 hover:underline"
+          >
+            {t('entity_edit.edit_button')}
+          </Link>
+          <span className="text-ink-3">·</span>
           <Link
             href={`/vendors/${vendor.id}`}
-            className="text-[11px] text-ink-3 hover:text-ink underline-offset-2 hover:underline"
+            className="text-ink-3 hover:text-ink underline-offset-2 hover:underline"
           >
             {t('entity_detail.open_full_page')} →
           </Link>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { updateClient } from '@/server/actions/clients';
+import { MarkdownEditor } from '@/components/markdown-editor';
 
 /**
  * Edit form for /clients/[id]?edit=1.
@@ -189,7 +190,7 @@ export function ClientEditForm({ client }: { client: EditableClient }) {
       <div className="card">
         <div className="card-title">{t('entity_detail.notes_section')}</div>
         <Field name="notes" label="" error={fieldError('notes')}>
-          <textarea name="notes" defaultValue={client.notes ?? ''} rows={4} className={inputCls} />
+          <MarkdownEditor name="notes" defaultValue={client.notes ?? ''} rows={6} />
         </Field>
       </div>
     </form>

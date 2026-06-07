@@ -122,6 +122,9 @@ export default async function ProjectLayout({
               )}
             </Link>
           )}
+          <Link href={`/projects/${p.id}/history`} className="btn btn-ghost text-[12px]">
+            {t('audit.view_history')}
+          </Link>
           <Link href={`/projects/${p.id}?edit=1`} className="btn btn-ghost text-[12px]">
             {t('entity_edit.edit_button')}
           </Link>

@@ -1993,6 +1993,51 @@
       "high": "Høy"
     }
   },
+  "audit": {
+    "title": "Endringslogg",
+    "count": "{n, plural, =0 {ingen endringer registrert} =1 {1 endring registrert} other {# endringer registrert}}",
+    "empty": "Ingen endringer registrert for denne oppføringen ennå. Endringer som lagres herfra og fremover vises i denne tidslinjen.",
+    "view_history": "Historikk",
+    "back_to_client": "Tilbake til kunde",
+    "back_to_vendor": "Tilbake til leverandør",
+    "back_to_project": "Tilbake til prosjekt",
+    "unknown_actor": "Ukjent bruker",
+    "action": {
+      "update": "Oppdatert",
+      "update_metadata": "Metadata oppdatert",
+      "csv_import_insert": "Opprettet via CSV-import",
+      "csv_import_update": "Oppdatert via CSV-import"
+    }
+  },
+  "markdown": {
+    "write": "Skriv",
+    "preview": "Forhåndsvisning",
+    "help": "Markdown støttet",
+    "empty_preview": "Ingenting å forhåndsvise ennå."
+  },
+  "csv_import": {
+    "import_button": "Importer CSV",
+    "title_clients": "Importer kunder fra CSV",
+    "intro_clients": "Rundtur med masseeksport: rediger eksporten i et regneark, lim den tilbake her, forhåndsvis planlagte endringer, og lagre. Matcher på Org.nr. (foretrukket) eller eksakt navn.",
+    "source": "Kilde",
+    "choose_file": "Velg fil…",
+    "placeholder_clients": "Lim inn CSV her, eller bruk Velg fil… over.",
+    "preview": "Forhåndsvis",
+    "previewing": "Forhåndsviser…",
+    "commit": "Lagre {n, plural, =1 {1 endring} other {# endringer}}",
+    "confirm": "Bruke denne importen til databasen? Endringslogg blir skrevet for hver berørt kunde.",
+    "plan": "Planlagte endringer",
+    "applied": "Lagret",
+    "summary": "{inserts, plural, =0 {Ingen innsettinger} =1 {1 innsetting} other {# innsettinger}} · {updates, plural, =0 {ingen oppdateringer} =1 {1 oppdatering} other {# oppdateringer}} · {errors, plural, =0 {ingen feil} =1 {1 feil} other {# feil}}",
+    "col_decision": "Resultat",
+    "col_name": "Navn",
+    "col_kind": "Type",
+    "col_org": "Org.nr.",
+    "col_notes": "Notater / feil",
+    "decision_insert": "Innsett",
+    "decision_update": "Oppdater",
+    "decision_error": "Feil"
+  },
   "bulk": {
     "n_selected": "{n, plural, =1 {1 valgt} other {# valgt}}",
     "clear": "Fjern utvalg",
