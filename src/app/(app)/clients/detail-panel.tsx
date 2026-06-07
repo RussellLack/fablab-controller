@@ -109,12 +109,17 @@ export async function ClientDetailPanel({
     <div className={isPanel ? 'h-full overflow-y-auto pr-1' : ''}>
       {/* Chrome — only render the back link on full-page mode */}
       {!isPanel && (
-        <Link
-          href="/clients"
-          className="inline-flex items-center gap-1 text-[12px] text-ink-3 hover:text-ink mb-3"
-        >
-          ← {t('entity_detail.back_to_clients')}
-        </Link>
+        <div className="flex items-center justify-between mb-3">
+          <Link
+            href="/clients"
+            className="inline-flex items-center gap-1 text-[12px] text-ink-3 hover:text-ink"
+          >
+            ← {t('entity_detail.back_to_clients')}
+          </Link>
+          <Link href={`/clients/${client.id}?edit=1`} className="btn text-[12px]">
+            {t('entity_edit.edit_button')}
+          </Link>
+        </div>
       )}
       {isPanel && (
         <div className="flex justify-end mb-2">

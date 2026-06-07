@@ -1993,6 +1993,31 @@
       "high": "Høy"
     }
   },
+  "entity_edit": {
+    "edit_button": "Rediger",
+    "save": "Lagre",
+    "saving": "Lagrer…",
+    "cancel": "Avbryt",
+    "name": "Navn",
+    "kind": "Type",
+    "country": "Land",
+    "default_currency": "Standardvaluta",
+    "rating": "Vurdering",
+    "lead_time_days": "Ledetid (dager)",
+    "active": "Aktiv",
+    "categories": "Kategorier",
+    "categories_help": "Komma-separerte stikkord.",
+    "title": "Tittel",
+    "description": "Beskrivelse",
+    "priority": "Prioritet",
+    "project_type": "Prosjekttype",
+    "fablab_role": "Fablab-rolle",
+    "site_address": "Stedsadresse",
+    "budget": "Budsjett",
+    "budget_currency": "Budsjettvaluta",
+    "target_handover": "Mål for overlevering",
+    "stage_note": "Fase- og livssyklusoverganger styres av Pause / Gå videre-knappene over. Dette skjemaet redigerer bare prosjektets metadata."
+  },
   "entity_detail": {
     "back_to_clients": "Alle kunder",
     "back_to_vendors": "Alle leverandører",

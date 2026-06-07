@@ -66,10 +66,42 @@ async function getLeadIntake(projectId: string): Promise<IntakeContext | null> {
   }
 }
 
-export default async function ProjectBriefPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProjectBriefPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ edit?: string }>;
+}) {
   const { id } = await params;
+  const sp = await searchParams;
   const p = await getProject(id);
   if (!p) notFound();
+
+  // Edit mode swaps the brief content for the metadata form. Layout
+  // chrome (breadcrumb, module bar, stage, stepper, Hold/Advance)
+  // stays — lifecycle context is always relevant on a project.
+  if (sp.edit === '1') {
+    const { ProjectEditForm } = await import('./edit-form');
+    return (
+      <ProjectEditForm
+        project={{
+          id: p.id,
+          reference: p.reference,
+          title: p.title,
+          description: p.description,
+          projectType: p.projectType,
+          fablabRole: p.fablabRole,
+          priority: p.priority,
+          siteAddress: p.siteAddress,
+          budget: p.budget,
+          budgetCurrency: p.budgetCurrency,
+          targetHandoverDate: p.targetHandoverDate
+        }}
+      />
+    );
+  }
+
   const t = await getTranslations();
 
   const [intake, gates, coachItems] = await Promise.all([

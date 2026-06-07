@@ -1993,6 +1993,31 @@
       "high": "High"
     }
   },
+  "entity_edit": {
+    "edit_button": "Edit",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "name": "Name",
+    "kind": "Type",
+    "country": "Country",
+    "default_currency": "Default currency",
+    "rating": "Rating",
+    "lead_time_days": "Lead time (days)",
+    "active": "Active",
+    "categories": "Categories",
+    "categories_help": "Comma-separated tags.",
+    "title": "Title",
+    "description": "Description",
+    "priority": "Priority",
+    "project_type": "Project type",
+    "fablab_role": "Fablab role",
+    "site_address": "Site address",
+    "budget": "Budget",
+    "budget_currency": "Budget currency",
+    "target_handover": "Target handover",
+    "stage_note": "Stage and lifecycle transitions are managed by the Advance / Hold buttons above. This form edits the project's metadata only."
+  },
   "entity_detail": {
     "back_to_clients": "All clients",
     "back_to_vendors": "All vendors",
