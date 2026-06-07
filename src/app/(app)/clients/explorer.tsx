@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ClickableRow } from '@/components/clickable-row';
-import { SavedViewTabs, useSavedViews } from './saved-views';
+import { SavedViewTabs, useSavedViews } from '@/components/saved-views';
 
 /**
  * Client-side explorer for /clients.

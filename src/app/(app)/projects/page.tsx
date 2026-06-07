@@ -1,14 +1,8 @@
 import { db, projects, clients } from '@/db';
 import { eq } from 'drizzle-orm';
 import { ProjectsExplorer, type ProjectListRow } from './explorer';
+import { ProjectDetailPanel } from './detail-panel';
 
-/**
- * Projects list — server fetches the full live set (excluding
- * cancelled rows; archived projects appear in the filter as their
- * own stage bucket and stay in the result so users can search them).
- *
- * Client-side <ProjectsExplorer> handles search / stage filter / sort.
- */
 async function getProjects(): Promise<ProjectListRow[]> {
   if (!process.env.DATABASE_URL) return [];
   try {
@@ -31,7 +25,16 @@ async function getProjects(): Promise<ProjectListRow[]> {
   }
 }
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+  searchParams
+}: {
+  searchParams: Promise<{ selected?: string }>;
+}) {
+  const sp = await searchParams;
+  const selectedId = sp.selected ?? null;
   const rows = await getProjects();
-  return <ProjectsExplorer rows={rows} />;
+  const selectedDetail = selectedId
+    ? <ProjectDetailPanel projectId={selectedId} />
+    : null;
+  return <ProjectsExplorer rows={rows} selectedDetail={selectedDetail} />;
 }

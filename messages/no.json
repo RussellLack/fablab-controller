@@ -1955,6 +1955,28 @@
     "confirm_delete_view": "Slett lagret visning «{name}»?",
     "delete_view": "Slett visning"
   },
+  "projects_detail": {
+    "type": "Type",
+    "role": "Rolle",
+    "priority": "Prioritet",
+    "site": "Sted",
+    "description": "Beskrivelse",
+    "role_value": {
+      "design_advisory_only": "Kun designrådgivning",
+      "design_and_specification": "Design + spesifikasjon",
+      "procurement_support": "Innkjøpsstøtte",
+      "procurement_and_resale": "Innkjøp + videresalg",
+      "supplier_coordination": "Leverandørkoordinering",
+      "delivery_coordination": "Leveransekoordinering",
+      "installation_coordination": "Monteringskoordinering",
+      "full_project_control": "Full prosjektkontroll"
+    },
+    "priority_value": {
+      "low": "Lav",
+      "normal": "Normal",
+      "high": "Høy"
+    }
+  },
   "entity_detail": {
     "back_to_clients": "Alle kunder",
     "back_to_vendors": "Alle leverandører",

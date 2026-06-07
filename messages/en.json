@@ -1955,6 +1955,28 @@
     "confirm_delete_view": "Delete saved view \"{name}\"?",
     "delete_view": "Delete view"
   },
+  "projects_detail": {
+    "type": "Type",
+    "role": "Role",
+    "priority": "Priority",
+    "site": "Site",
+    "description": "Description",
+    "role_value": {
+      "design_advisory_only": "Design advisory only",
+      "design_and_specification": "Design + specification",
+      "procurement_support": "Procurement support",
+      "procurement_and_resale": "Procurement + resale",
+      "supplier_coordination": "Supplier coordination",
+      "delivery_coordination": "Delivery coordination",
+      "installation_coordination": "Installation coordination",
+      "full_project_control": "Full project control"
+    },
+    "priority_value": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High"
+    }
+  },
   "entity_detail": {
     "back_to_clients": "All clients",
     "back_to_vendors": "All vendors",

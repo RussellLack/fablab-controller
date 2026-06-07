@@ -1,11 +1,8 @@
 import { db, vendors, clients } from '@/db';
 import { eq, desc, sql } from 'drizzle-orm';
 import { VendorsExplorer, type VendorRow } from './explorer';
+import { VendorDetailPanel } from './detail-panel';
 
-/**
- * Vendors list — server fetches all active vendors once, the
- * client-side <VendorsExplorer> handles search / sort / filter UI.
- */
 async function getVendors(): Promise<VendorRow[]> {
   if (!process.env.DATABASE_URL) return [];
   try {
@@ -37,7 +34,16 @@ async function getVendors(): Promise<VendorRow[]> {
   }
 }
 
-export default async function VendorsPage() {
+export default async function VendorsPage({
+  searchParams
+}: {
+  searchParams: Promise<{ selected?: string }>;
+}) {
+  const sp = await searchParams;
+  const selectedId = sp.selected ?? null;
   const rows = await getVendors();
-  return <VendorsExplorer rows={rows} />;
+  const selectedDetail = selectedId
+    ? <VendorDetailPanel vendorId={selectedId} mode="panel" />
+    : null;
+  return <VendorsExplorer rows={rows} selectedDetail={selectedDetail} />;
 }
