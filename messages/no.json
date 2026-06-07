@@ -1922,10 +1922,10 @@
     "scope_note_title": "Planlagt omfang",
     "scope_note_body": "Kapasitetsplanlegging, verkstedsplanlegging og gjennomstrømning per jobb hører til en senere iterasjon av denne modulen. I dag viser siden det systemet allerede vet: hvilke leverandører som representerer interne verksteder, og hvilke innkjøpsordrer som er rutet til dem."
   },
-  "dual_role": {
-    "also_customer": "Også kunde",
-    "also_customer_title": "Denne leverandøren er også registrert som kunde. De to oppføringene dekker leverandørrollen og kunderollen hver for seg.",
-    "also_vendor": "Også leverandør",
-    "also_vendor_title": "Denne kunden er også registrert som leverandør. De to oppføringene dekker kunderollen og leverandørrollen hver for seg."
+  "entity_type": {
+    "customer": "Kunde",
+    "supplier": "Leverandør",
+    "project": "Prosjekt",
+    "dual_role_title": "Denne motparten har to roller — separate oppføringer på hver side dekker kunderelasjonen og leverandørrelasjonen."
   }
 }

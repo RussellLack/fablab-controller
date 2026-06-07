@@ -62,19 +62,22 @@ export default async function VendorsPage() {
         <div className="grid grid-cols-3 gap-4">
           {rows.map(v => (
             <div key={v.id} className="card hover:border-line-strong cursor-pointer">
+              <div className="flex flex-wrap items-center gap-1 mb-2">
+                <span className="pill pill-type pill-supplier">
+                  {t('entity_type.supplier')}
+                </span>
+                {v.isAlsoClient && (
+                  <span
+                    className="pill pill-type pill-customer"
+                    title={t('entity_type.dual_role_title')}
+                  >
+                    {t('entity_type.customer')}
+                  </span>
+                )}
+              </div>
               <div className="flex justify-between items-start">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <div className="font-semibold text-[14px]">{v.name}</div>
-                    {v.isAlsoClient && (
-                      <span
-                        className="inline-block text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-purple-soft text-purple"
-                        title={t('dual_role.also_customer_title')}
-                      >
-                        {t('dual_role.also_customer')}
-                      </span>
-                    )}
-                  </div>
+                  <div className="font-semibold text-[14px]">{v.name}</div>
                   <div className="text-[11px] text-ink-3 mt-0.5">{t(`vendor.kind.${v.kind}`)}{v.country ? ` · ${v.country}` : ''}</div>
                 </div>
                 {v.rating && <span className="text-xs">★ {v.rating}</span>}

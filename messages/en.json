@@ -1922,10 +1922,10 @@
     "scope_note_title": "Planned scope",
     "scope_note_body": "Capacity planning, shop-floor scheduling, and per-job throughput live in this module's future iteration. Today the page surfaces what the rest of the system already knows: which vendor rows represent in-house workshops, and which POs are routed to them."
   },
-  "dual_role": {
-    "also_customer": "Also a customer",
-    "also_customer_title": "This vendor is also registered as a client. The two records cover its supplier role and its customer role separately.",
-    "also_vendor": "Also a vendor",
-    "also_vendor_title": "This client is also registered as a vendor. The two records cover its customer role and its supplier role separately."
+  "entity_type": {
+    "customer": "Customer",
+    "supplier": "Supplier",
+    "project": "Project",
+    "dual_role_title": "This counterparty plays two roles — separate records on each side cover its customer relationship and its supplier relationship."
   }
 }

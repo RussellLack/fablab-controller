@@ -27,4 +27,14 @@
   .pill-spec { @apply text-warn bg-warn-soft; }
   .pill-proc, .pill-install { @apply text-accent bg-accent-soft; }
   .pill-handover { @apply text-ok bg-ok-soft; }
+
+  /* Entity-class pills — typology of a row in /clients, /vendors, /projects.
+     Distinct visual family from stage pills above so they read at a glance:
+     blue = inbound counterparty, amber = outbound counterparty,
+     purple = engagement entity. Uppercase + tighter letter-spacing
+     reinforces that these are the canonical type labels. */
+  .pill-type { @apply uppercase tracking-wider text-[10px]; }
+  .pill-customer { @apply text-info bg-info-soft; }
+  .pill-supplier { @apply text-warn bg-warn-soft; }
+  .pill-project  { @apply text-purple bg-purple-soft; }
 }

@@ -95,16 +95,21 @@ export default async function ClientsPage() {
               {rows.map((c) => (
                 <tr key={c.id} className="border-t border-line">
                   <td className="px-4 py-2.5 font-medium">
-                    <div className="flex items-center gap-1.5">
-                      <span>{c.name}</span>
-                      {c.isAlsoVendor && (
-                        <span
-                          className="inline-block text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-purple-soft text-purple"
-                          title={t('dual_role.also_vendor_title')}
-                        >
-                          {t('dual_role.also_vendor')}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-1">
+                        <span className="pill pill-type pill-customer">
+                          {t('entity_type.customer')}
                         </span>
-                      )}
+                        {c.isAlsoVendor && (
+                          <span
+                            className="pill pill-type pill-supplier"
+                            title={t('entity_type.dual_role_title')}
+                          >
+                            {t('entity_type.supplier')}
+                          </span>
+                        )}
+                      </div>
+                      <span>{c.name}</span>
                     </div>
                   </td>
                   <td className="px-4 py-2.5 text-ink-2">

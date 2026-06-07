@@ -78,7 +78,12 @@ function ProjectsList({ rows }: { rows: Awaited<ReturnType<typeof getProjects>> 
             {rows.map(r => (
               <ProjectRow key={r.id} href={`/projects/${r.id}`}>
                 <td className="p-3 px-3.5 border-b border-line text-[13px]">
-                  <Link href={`/projects/${r.id}`} className="ref hover:underline">{r.reference}</Link>
+                  <div className="flex items-center gap-2">
+                    <span className="pill pill-type pill-project">
+                      {t('entity_type.project')}
+                    </span>
+                    <Link href={`/projects/${r.id}`} className="ref hover:underline">{r.reference}</Link>
+                  </div>
                 </td>
                 <td className="p-3 px-3.5 border-b border-line text-[13px]">{r.title}</td>
                 <td className="p-3 px-3.5 border-b border-line text-[13px]">{r.clientName ?? '—'}</td>
