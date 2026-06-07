@@ -1,12 +1,43 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { db, vendors } from '@/db';
-import { eq, desc } from 'drizzle-orm';
+import { db, vendors, clients } from '@/db';
+import { eq, desc, sql } from 'drizzle-orm';
 
 async function getVendors() {
   if (!process.env.DATABASE_URL) return [];
   try {
-    return await db.select().from(vendors).where(eq(vendors.active, true)).orderBy(desc(vendors.createdAt)).limit(200);
+    return await db
+      .select({
+        id: vendors.id,
+        name: vendors.name,
+        kind: vendors.kind,
+        country: vendors.country,
+        categories: vendors.categories,
+        contactName: vendors.contactName,
+        contactEmail: vendors.contactEmail,
+        typicalLeadTimeDays: vendors.typicalLeadTimeDays,
+        rating: vendors.rating,
+        // Dual-role flag: this vendor also exists as a client (matched by
+        // case-insensitive name OR Norwegian org no. — the vendor's org no.
+        // is stashed in notes as "Org.nr.: <N>" by the importer, so a row
+        // like "Kinnarps AS Fakturamottak" still matches client "Kinnarps AS"
+        // when both share the same Norwegian org no.).
+        //
+        // NOTE: outer-table references (vendors.name, vendors.notes) are
+        // written as literal SQL rather than ${vendors.name} because drizzle
+        // renders unqualified column names that get shadowed by the inner
+        // subquery's column scope and silently match every row.
+        isAlsoClient: sql<boolean>`EXISTS (
+          SELECT 1 FROM ${clients} c
+          WHERE lower(c.name) = lower(vendors.name)
+             OR (c.org_number IS NOT NULL
+                 AND vendors.notes ~ ('Org\\.nr\\.: ' || c.org_number || '(\\D|$)'))
+        )`
+      })
+      .from(vendors)
+      .where(eq(vendors.active, true))
+      .orderBy(desc(vendors.createdAt))
+      .limit(200);
   } catch {
     return [];
   }
@@ -32,8 +63,18 @@ export default async function VendorsPage() {
           {rows.map(v => (
             <div key={v.id} className="card hover:border-line-strong cursor-pointer">
               <div className="flex justify-between items-start">
-                <div>
-                  <div className="font-semibold text-[14px]">{v.name}</div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <div className="font-semibold text-[14px]">{v.name}</div>
+                    {v.isAlsoClient && (
+                      <span
+                        className="inline-block text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-purple-soft text-purple"
+                        title={t('dual_role.also_customer_title')}
+                      >
+                        {t('dual_role.also_customer')}
+                      </span>
+                    )}
+                  </div>
                   <div className="text-[11px] text-ink-3 mt-0.5">{t(`vendor.kind.${v.kind}`)}{v.country ? ` · ${v.country}` : ''}</div>
                 </div>
                 {v.rating && <span className="text-xs">★ {v.rating}</span>}

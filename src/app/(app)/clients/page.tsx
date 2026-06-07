@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { asc, sql } from 'drizzle-orm';
-import { db, clients, projects } from '@/db';
+import { db, clients, projects, vendors } from '@/db';
 
 /**
  * Clients — REFERENCE list view.
@@ -30,6 +30,22 @@ async function getClients() {
           select count(*)::int from ${projects}
           where ${projects.clientId} = ${clients.id}
             and ${projects.currentStage} not in ('cancelled', 'archived')
+        )`,
+        // Dual-role flag: this client also exists as a vendor (matched by
+        // case-insensitive name OR Norwegian org no. — the latter compares
+        // against the "Org.nr.: <N>" marker the vendor importer stashes in
+        // notes, so a different display name like "Kinnarps AS" /
+        // "Kinnarps AS Fakturamottak" still matches when the org no. lines up.
+        //
+        // NOTE: we have to write the outer-table references as literal SQL
+        // (clients.name, clients.org_number) rather than ${clients.name} etc.,
+        // because drizzle renders unqualified column names that get shadowed
+        // by the inner subquery's column scope and silently match every row.
+        isAlsoVendor: sql<boolean>`EXISTS (
+          SELECT 1 FROM ${vendors} v
+          WHERE lower(v.name) = lower(clients.name)
+             OR (clients.org_number IS NOT NULL
+                 AND v.notes ~ ('Org\\.nr\\.: ' || clients.org_number || '(\\D|$)'))
         )`
       })
       .from(clients)
@@ -78,7 +94,19 @@ export default async function ClientsPage() {
             <tbody>
               {rows.map((c) => (
                 <tr key={c.id} className="border-t border-line">
-                  <td className="px-4 py-2.5 font-medium">{c.name}</td>
+                  <td className="px-4 py-2.5 font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <span>{c.name}</span>
+                      {c.isAlsoVendor && (
+                        <span
+                          className="inline-block text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-purple-soft text-purple"
+                          title={t('dual_role.also_vendor_title')}
+                        >
+                          {t('dual_role.also_vendor')}
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-2.5 text-ink-2">
                     {t(`client_kind.${c.kind}`)}
                   </td>
