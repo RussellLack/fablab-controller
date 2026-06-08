@@ -63,7 +63,7 @@ export function UserMenu({
     <div ref={wrapRef} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 text-[13px] text-ink-2 hover:text-ink transition-colors px-1 py-1 rounded"
+        className="flex items-center gap-2 text-[13px] text-ink-2 hover:text-ink hover:bg-bg active:bg-line transition-colors px-1.5 py-1 rounded"
         aria-haspopup="menu"
         aria-expanded={open}
       >
@@ -71,7 +71,16 @@ export function UserMenu({
           {userInitials}
         </div>
         <span>{userName}</span>
-        <span className="text-[10px] text-ink-3 ml-0.5">{open ? '▴' : '▾'}</span>
+        {/* Chevron — bumped from 10/ink-3 (basically invisible) to
+            13/ink so it actually reads as a clickable affordance. */}
+        <span
+          className={`text-[13px] text-ink ml-1 inline-block transition-transform leading-none ${
+            open ? 'rotate-180' : ''
+          }`}
+          aria-hidden="true"
+        >
+          ▾
+        </span>
       </button>
 
       {open && (
