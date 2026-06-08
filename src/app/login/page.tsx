@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { LangToggle } from '@/components/lang-toggle';
@@ -12,6 +12,16 @@ export default function LoginPage() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // If /auth/callback bounced us back with ?error=auth_failed (code
+  // exchange failure), surface a useful message at the top of the form
+  // so the user knows what went wrong and that retrying may work.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error') === 'auth_failed') {
+      setError(t('login.auth_failed'));
+    }
+  }, [t]);
 
   async function signInWithGoogle() {
     const supabase = createClient();
@@ -75,6 +85,15 @@ export default function LoginPage() {
           <span className="text-brand">●</span> {t('brand')}
         </div>
         <div className="text-ink-2 text-[13px] mb-7">{t('login.sub')}</div>
+
+        {/* Top-of-form error banner — surfaces auth_failed bounces from
+            /auth/callback so the user knows the prior attempt failed and
+            isn't left wondering why they were sent back. */}
+        {error && (
+          <div className="text-left mb-4 text-[12px] text-warn bg-warn-soft border border-warn/20 rounded px-3 py-2">
+            {error}
+          </div>
+        )}
 
         <button
           onClick={signInWithGoogle}
