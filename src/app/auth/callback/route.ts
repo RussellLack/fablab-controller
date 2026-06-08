@@ -82,10 +82,26 @@ export async function GET(request: Request) {
       // sometimes don't survive the cross-path redirect cleanly).
       //
       // Bounce to /login with an error marker so the loop ends; surface
-      // the underlying error to Sentry so we can see WHY.
+      // the underlying error to both Sentry (if configured) and stderr
+      // so it shows up in Netlify function logs either way.
       exchangeFailed = true
+      const reason = error?.message ?? 'no session returned'
+      const errCode = (error as { code?: string } | null)?.code
+      const errStatus = (error as { status?: number } | null)?.status
+      const tail = [
+        errCode ? `code=${errCode}` : null,
+        errStatus ? `status=${errStatus}` : null
+      ].filter(Boolean).join(' ')
+      // `[auth.callback]` prefix makes these easy to grep in Netlify's
+      // Functions tab. Includes the email we attempted (if returned)
+      // so the same user across multiple attempts is correlatable.
+      console.error(
+        `[auth.callback] exchange failed for ${sessionEmail ?? '<no email>'}: ${reason}${
+          tail ? ` (${tail})` : ''
+        }`
+      )
       Sentry.captureException(
-        new Error(`Auth code exchange failed: ${error?.message ?? 'no session returned'}`),
+        new Error(`Auth code exchange failed: ${reason}`),
         { tags: { area: 'auth.callback' } }
       )
     } else if (data.session.user?.id && data.session.provider_token) {
