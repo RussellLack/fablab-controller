@@ -1745,6 +1745,10 @@
     "all_ok": "✓ Alle tre Oppdrags-port-kriterier oppfylt. Lagring vil lagre beskrivelse og rolle; Oppdrags-porten vil leses som ferdig ved neste refresh.",
     "save_anyway": "Du kan likevel lagre beskrivelse + rolle nå. Oppdrags-porten vil bli ferdig når det manglende kriteriet over er oppfylt."
   },
+  "user_menu": {
+    "sign_out": "Logg ut",
+    "signing_out": "Logger ut…"
+  },
   "portal": {
     "sign_out": "Logg ut",
     "welcome": "Hei {name}",

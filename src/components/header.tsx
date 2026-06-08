@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { LangToggle } from './lang-toggle';
 import { HeaderSearchTrigger } from './header-search-trigger';
+import { UserMenu } from './user-menu';
 
 export function Header({ userInitials = 'RL', userName = 'Russell L.' }: { userInitials?: string; userName?: string }) {
   const t = useTranslations();
@@ -15,12 +16,8 @@ export function Header({ userInitials = 'RL', userName = 'Russell L.' }: { userI
       </div>
       <div className="flex items-center gap-4">
         <LangToggle />
-        <div className="flex items-center gap-2 text-[13px] text-ink-2">
-          <div className="w-7 h-7 rounded-full bg-accent text-white grid place-items-center text-xs font-semibold">
-            {userInitials}
-          </div>
-          <span>{userName}</span>
-        </div>
+        {/* Avatar pill — opens a dropdown with name + Sign out. */}
+        <UserMenu userName={userName} userInitials={userInitials} />
       </div>
     </header>
   );

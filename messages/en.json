@@ -1745,6 +1745,10 @@
     "all_ok": "✓ All three Brief gate criteria met. Saving will persist the description and role; the Brief gate will read as done on the next refresh.",
     "save_anyway": "You can still save description + role now. The Brief gate will flip to done once the missing criterion above is satisfied."
   },
+  "user_menu": {
+    "sign_out": "Sign out",
+    "signing_out": "Signing out…"
+  },
   "portal": {
     "sign_out": "Sign out",
     "welcome": "Hi {name}",
