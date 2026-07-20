@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/auth/callback', '/api/health'];
+const PUBLIC_PATHS = ['/login', '/auth/callback', '/api/health', '/api/public'];
 
 // Hard ceiling on the Supabase auth round-trip from the edge. Netlify Edge
 // cold-starts can already eat 1-3s of Deno boot before our code runs; if
@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
   //   - /auth/callback handles its own cookie exchange.
   //   - /api/health is an unauthenticated probe; we want it to respond as
   //     fast as possible for monitoring services.
-  if (path.startsWith('/auth/callback') || path.startsWith('/api/health')) {
+  if (path.startsWith('/auth/callback') || path.startsWith('/api/health') || path.startsWith('/api/public')) {
     return NextResponse.next({ request });
   }
 
