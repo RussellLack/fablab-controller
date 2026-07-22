@@ -37,7 +37,8 @@
     "translation": "Oversettelser",
     "today": "I dag",
     "risk": "Risikoregister",
-    "reporting": "Rapportering"
+    "reporting": "Rapportering",
+    "team": "Team"
   },
   "action": {
     "new_project": "+ Nytt prosjekt",
@@ -1526,7 +1527,8 @@
     "back_to_global": "Tilbake til hovedmeny",
     "linear": "Lineær",
     "transverse": "Tverrgående",
-    "soon": "snart"
+    "soon": "snart",
+    "group_admin": "Administrasjon"
   },
   "binding": {
     "binding": "BINDENDE",
@@ -2145,5 +2147,42 @@
     "no_projects": "Ingen prosjekter for denne kunden ennå.",
     "no_pos": "Ingen innkjøpsordrer er rutet til denne leverandøren.",
     "no_rfqs": "Denne leverandøren er ennå ikke invitert til en tilbudsforespørsel."
+  },
+  "staff": {
+    "title": "Team og tilgang",
+    "subtitle": "Legg til, fjern og administrer hvem som kan bruke Controlleren. Ansatte logger inn med Google Workspace-kontoen sin; eksterne medlemmer du legger til her, logger inn med sin egen Google-konto.",
+    "add_heading": "Legg til et teammedlem",
+    "field_email": "E-post",
+    "field_name": "Navn (valgfritt)",
+    "field_name_ph": "Fullt navn",
+    "field_roles": "Roller",
+    "notify_label": "Send dem en invitasjon på e-post",
+    "added_ok": "Medlem lagt til.",
+    "add_button": "Legg til medlem",
+    "adding": "Legger til…",
+    "col_member": "Medlem",
+    "col_roles": "Roller",
+    "col_status": "Status",
+    "col_actions": "Handlinger",
+    "status_pending": "Invitert",
+    "status_active": "Aktiv",
+    "status_inactive": "Deaktivert",
+    "you": "Deg",
+    "save": "Lagre",
+    "cancel": "Avbryt",
+    "edit_roles": "Rediger roller",
+    "deactivate": "Deaktiver",
+    "activate": "Aktiver",
+    "remove": "Fjern",
+    "remove_invite": "Avbryt invitasjon",
+    "confirm_remove": "Bekreft",
+    "role": {
+      "project_lead": "Prosjektleder",
+      "designer": "Designer",
+      "procurement": "Innkjøp",
+      "site_coordinator": "Plasskoordinator",
+      "approver": "Godkjenner",
+      "admin": "Administrator"
+    }
   }
 }

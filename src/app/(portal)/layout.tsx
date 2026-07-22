@@ -1,6 +1,6 @@
 import { getCurrentUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 import { PortalHeader } from '@/components/portal/portal-header';
 
 /**
@@ -27,7 +27,7 @@ export default async function PortalLayout({
   const user = await getCurrentUser();
 
   if (!user) redirect('/login');
-  if (isStaffEmail(user.email)) redirect('/dashboard');
+  if ((await isStaffAllowed(user.email))) redirect('/dashboard');
 
   return (
     <div className="min-h-screen flex flex-col bg-bg">

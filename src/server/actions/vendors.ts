@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { eq, inArray } from 'drizzle-orm';
 import { db, vendors, auditLogs } from '@/db';
 import { getCurrentUser } from '@/lib/supabase/server';
-import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 import { vendorEditSchema } from '@/lib/validations/vendor';
 
 type ActionResult =
@@ -18,7 +18,7 @@ export async function updateVendor(
   formData: FormData
 ): Promise<ActionResult> {
   const user = await getCurrentUser();
-  if (!user || !isStaffEmail(user.email)) {
+  if (!user || !(await isStaffAllowed(user.email))) {
     return { ok: false, error: 'Not authorised' };
   }
 
@@ -103,7 +103,7 @@ export async function bulkSetVendorActive(
   active: boolean
 ): Promise<BulkResult> {
   const user = await getCurrentUser();
-  if (!user || !isStaffEmail(user.email)) {
+  if (!user || !(await isStaffAllowed(user.email))) {
     return { ok: false, error: 'Not authorised' };
   }
   if (!ids.length) return { ok: false, error: 'No ids provided' };

@@ -5,6 +5,7 @@ import { and, eq, isNull, sql } from 'drizzle-orm';
 import { db, projectCustomerInvitations } from '@/db';
 import { createClient as supabaseServer } from '@/lib/supabase/server';
 import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 
 type ActionResult =
   | { ok: true }
@@ -40,7 +41,7 @@ async function assertStaffCaller(): Promise<
   if (!user?.id || !user.email) {
     return { ok: false, error: 'Not authenticated' };
   }
-  if (!isStaffEmail(user.email)) {
+  if (!(await isStaffAllowed(user.email))) {
     return { ok: false, error: 'Only Fablab staff can invite customers' };
   }
   return { ok: true, userId: user.id };

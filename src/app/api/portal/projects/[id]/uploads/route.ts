@@ -26,7 +26,7 @@ import { and, eq, isNull, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db, projectCustomerInvitations, projectCustomerUploads } from '@/db';
 import { createClient } from '@/lib/supabase/server';
-import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB — matches RFQ/PO attachment cap.
 
@@ -51,7 +51,7 @@ async function assertCustomerWithInvitation(
   if (!user?.id || !user.email) {
     return { ok: false, status: 401, error: 'Not authenticated' };
   }
-  if (isStaffEmail(user.email)) {
+  if ((await isStaffAllowed(user.email))) {
     return {
       ok: false,
       status: 403,

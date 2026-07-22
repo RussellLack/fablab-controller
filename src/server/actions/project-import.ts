@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { eq, inArray } from 'drizzle-orm';
 import { db, projects, clients, auditLogs } from '@/db';
 import { getCurrentUser } from '@/lib/supabase/server';
-import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 import { parseCsv, stripBomAndTrim, validateHeaders } from '@/lib/csv-parse';
 
 /**
@@ -198,7 +198,7 @@ async function buildPlan(csv: string): Promise<PreviewResult> {
 
 export async function previewProjectsCsv(csv: string): Promise<PreviewResult> {
   const user = await getCurrentUser();
-  if (!user || !isStaffEmail(user.email)) return { ok: false, error: 'Not authorised' };
+  if (!user || !(await isStaffAllowed(user.email))) return { ok: false, error: 'Not authorised' };
   return buildPlan(csv);
 }
 
@@ -206,7 +206,7 @@ export async function commitProjectsCsv(
   csv: string
 ): Promise<PreviewResult & { applied?: boolean }> {
   const user = await getCurrentUser();
-  if (!user || !isStaffEmail(user.email)) return { ok: false, error: 'Not authorised' };
+  if (!user || !(await isStaffAllowed(user.email))) return { ok: false, error: 'Not authorised' };
 
   const plan = await buildPlan(csv);
   if (!plan.ok) return plan;

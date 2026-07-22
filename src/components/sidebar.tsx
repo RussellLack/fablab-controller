@@ -234,7 +234,7 @@ function ProjectControlFileStrip({ projectId }: { projectId: string }) {
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
   const projectMatch = pathname.match(/^\/projects\/([^/]+)/);
   const projectId =
@@ -266,6 +266,15 @@ export function Sidebar() {
       {GLOBAL_GROUPS.map((g) => (
         <NavGroupBlock key={g.titleKey} group={g} pathname={pathname} />
       ))}
+      {isAdmin && (
+        <NavGroupBlock
+          group={{
+            titleKey: 'sidebar.group_admin',
+            items: [{ href: '/team', key: 'nav.team', icon: '◐' }]
+          }}
+          pathname={pathname}
+        />
+      )}
     </aside>
   );
 }

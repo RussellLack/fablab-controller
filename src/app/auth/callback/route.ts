@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import * as Sentry from '@sentry/nextjs'
 import { saveGoogleTokens } from '@/server/lib/google-tokens'
-import { isStaffEmail } from '@/lib/auth-helpers'
+import { isStaffAllowed } from '@/lib/staff-access'
 
 /**
  * Build a same-origin redirect Response with a clean Location header.
@@ -134,7 +134,7 @@ export async function GET(request: Request) {
   let landing = '/dashboard'
   if (next && next.startsWith('/')) {
     landing = next
-  } else if (sessionEmail && !isStaffEmail(sessionEmail)) {
+  } else if (sessionEmail && !(await isStaffAllowed(sessionEmail))) {
     landing = '/portal'
   }
   return redirectTo(landing, baseUrl)

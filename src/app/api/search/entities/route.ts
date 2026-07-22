@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { eq, asc, desc, sql } from 'drizzle-orm';
 import { db, clients, vendors, projects } from '@/db';
 import { getCurrentUser } from '@/lib/supabase/server';
-import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 
 /**
  * Search index for the global Cmd-K command palette.
@@ -34,7 +34,7 @@ type Entry = {
 
 export async function GET() {
   const user = await getCurrentUser();
-  if (!user || !isStaffEmail(user.email)) {
+  if (!user || !(await isStaffAllowed(user.email))) {
     return NextResponse.json({ error: 'unauthorised' }, { status: 401 });
   }
 

@@ -322,6 +322,23 @@ export const users = pgTable('users', {
   emailIdx: index('users_email_idx').on(t.email)
 }));
 
+/**
+ * staff_allowlist — DB-driven roster of who may access the staff app.
+ * Chiefly grants access to external (non-Workspace) members added from the
+ * Team screen, with no code deploy. Company-domain staff auto-provision and
+ * do not need a row here. RLS-enabled + revoked from anon/authenticated, so
+ * unlike the legacy tables it is not reachable with the browser anon key.
+ */
+export const staffAllowlist = pgTable('staff_allowlist', {
+  email: varchar('email', { length: 320 }).primaryKey(),
+  name: varchar('name', { length: 200 }),
+  roles: text('roles').array().notNull().default(sql`'{project_lead}'::text[]`),
+  active: boolean('active').notNull().default(true),
+  invitedBy: uuid('invited_by'),
+  invitedAt: timestamp('invited_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+});
+
 /* ─────────────────────────── RFQ ATTACHMENTS ─────────────────────────── */
 /**
  * Files attached to an RFQ — uploaded to Supabase Storage by the browser,

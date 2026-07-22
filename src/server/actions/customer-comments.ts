@@ -9,7 +9,7 @@ import {
   users
 } from '@/db';
 import { createClient as supabaseServer } from '@/lib/supabase/server';
-import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 import { notifyCommentRecipients } from '@/server/lib/comment-notifications';
 
 /**
@@ -51,7 +51,7 @@ async function authoriseCaller(
   if (!user?.id || !user.email) {
     return { ok: false, error: 'Not authenticated' };
   }
-  if (isStaffEmail(user.email)) {
+  if ((await isStaffAllowed(user.email))) {
     return { ok: true, userId: user.id, isStaff: true };
   }
   // Customer path — must have an active invitation for the project.

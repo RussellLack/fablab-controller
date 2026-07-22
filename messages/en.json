@@ -37,7 +37,8 @@
     "translation": "Translations",
     "today": "Today",
     "risk": "Risk register",
-    "reporting": "Reporting"
+    "reporting": "Reporting",
+    "team": "Team"
   },
   "action": {
     "new_project": "+ New project",
@@ -1526,7 +1527,8 @@
     "back_to_global": "Back to global nav",
     "linear": "Linear",
     "transverse": "Transverse",
-    "soon": "soon"
+    "soon": "soon",
+    "group_admin": "Admin"
   },
   "binding": {
     "binding": "BINDING",
@@ -2145,5 +2147,42 @@
     "no_projects": "No projects yet for this client.",
     "no_pos": "No purchase orders routed to this vendor.",
     "no_rfqs": "This vendor hasn't been invited to any RFQ yet."
+  },
+  "staff": {
+    "title": "Team & access",
+    "subtitle": "Add, remove and manage who can use the Controller. Company staff sign in with their Google Workspace account; external members you add here sign in with their own Google account.",
+    "add_heading": "Add a team member",
+    "field_email": "Email",
+    "field_name": "Name (optional)",
+    "field_name_ph": "Full name",
+    "field_roles": "Roles",
+    "notify_label": "Email them an invitation to sign in",
+    "added_ok": "Member added.",
+    "add_button": "Add member",
+    "adding": "Adding…",
+    "col_member": "Member",
+    "col_roles": "Roles",
+    "col_status": "Status",
+    "col_actions": "Actions",
+    "status_pending": "Invited",
+    "status_active": "Active",
+    "status_inactive": "Deactivated",
+    "you": "You",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit_roles": "Edit roles",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "remove": "Remove",
+    "remove_invite": "Cancel invite",
+    "confirm_remove": "Confirm",
+    "role": {
+      "project_lead": "Project lead",
+      "designer": "Designer",
+      "procurement": "Procurement",
+      "site_coordinator": "Site coordinator",
+      "approver": "Approver",
+      "admin": "Admin"
+    }
   }
 }

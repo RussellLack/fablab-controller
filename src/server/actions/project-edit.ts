@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { eq, inArray } from 'drizzle-orm';
 import { db, projects, auditLogs } from '@/db';
 import { getCurrentUser } from '@/lib/supabase/server';
-import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 import { projectEditSchema } from '@/lib/validations/project-edit';
 
 type ActionResult =
@@ -26,7 +26,7 @@ export async function updateProjectMetadata(
   formData: FormData
 ): Promise<ActionResult> {
   const user = await getCurrentUser();
-  if (!user || !isStaffEmail(user.email)) {
+  if (!user || !(await isStaffAllowed(user.email))) {
     return { ok: false, error: 'Not authorised' };
   }
 
@@ -106,7 +106,7 @@ export async function bulkUpdateProjectPriority(
   newPriority: string
 ): Promise<BulkResult> {
   const user = await getCurrentUser();
-  if (!user || !isStaffEmail(user.email)) {
+  if (!user || !(await isStaffAllowed(user.email))) {
     return { ok: false, error: 'Not authorised' };
   }
   if (!ids.length) return { ok: false, error: 'No ids provided' };

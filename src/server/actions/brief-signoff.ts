@@ -10,7 +10,7 @@ import {
   projectCustomerInvitations
 } from '@/db';
 import { createClient as supabaseServer } from '@/lib/supabase/server';
-import { isStaffEmail } from '@/lib/auth-helpers';
+import { isStaffAllowed } from '@/lib/staff-access';
 
 /**
  * Customer brief sign-off (B5).
@@ -61,7 +61,7 @@ export async function postBriefSignoff(
   if (!user?.id || !user.email) {
     return { ok: false, error: 'Not authenticated' };
   }
-  if (isStaffEmail(user.email)) {
+  if ((await isStaffAllowed(user.email))) {
     return {
       ok: false,
       error: 'Staff cannot sign off on the customer\'s behalf'
