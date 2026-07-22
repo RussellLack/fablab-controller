@@ -35,10 +35,12 @@ export default function LoginPage() {
         scopes:
           'openid email profile https://www.googleapis.com/auth/gmail.send',
         queryParams: {
-          // Restrict to the Fablab Design Workspace. The Workspace domain
-          // is `fablabdesign.com` (the website domain) — *not* `fablab.no`
-          // which was an early incorrect value carried over from a draft.
-          hd: 'fablabdesign.com',
+          // NOTE: no `hd` (hosted-domain) lock here. Staff normally use their
+          // @fablabdesign.com Workspace account, but individually allow-listed
+          // external members (see STAFF_EMAILS in lib/auth-helpers) sign in
+          // with a personal Google account, which an `hd` lock would block.
+          // Staff-vs-customer access is enforced by isStaffEmail(), not by the
+          // Google account's domain.
           // Required so Google returns a refresh_token we can persist for
           // server-side Gmail API calls outside the browser session.
           access_type: 'offline',
